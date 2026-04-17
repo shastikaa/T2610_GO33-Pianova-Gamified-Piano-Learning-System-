@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Piano Journey · Interactive Lesson Unlock System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none; /* avoids accidental text selection on buttons, but keeps readability */
+        }
+
+        body {
+    background-image: url('https://eu-central.storage.cloudconvert.com/tasks/14d7e5e6-fd26-47e5-b2c0-2f046bc1c6a3/background.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=cloudconvert-production%2F20260416%2Ffra%2Fs3%2Faws4_request&X-Amz-Date=20260416T032358Z&X-Amz-Expires=86400&X-Amz-Signature=37c46d670d6e3d1c4b753699adada2b249401e4be4e21d9fc8bde5038910eca3&X-Amz-SignedHeaders=host&response-content-disposition=inline%3B%20filename%3D%22background.png%22&response-content-type=image%2Fpng&x-id=GetObject');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Segoe UI', 'Poppins', 'Inter', system-ui, -apple-system, 'Roboto', sans-serif;
+    padding: 2rem 1.5rem;
+}
+
+        /* main card container */
+        .piano-card {
+            max-width: 700px;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.74);
+            backdrop-filter: blur(2px);
+            border-radius: 3rem;
+            box-shadow: 0 25px 45px rgba(255, 180, 100, 0.803), 0 0 0 1px rgba(255, 215, 150, 0.3);
+            overflow: hidden;
+            transition: all 0.2s ease;
+        }
+
+        /* header with piano keys motif */
+        .hero {
+            background: #2c1e12;
+            background-image: repeating-linear-gradient(90deg, 
+                #3e2a1c 0px, #3e2a1c 2px, 
+                #ecd9b4 2px, #ecd9b4 8px,
+                #2c1e12 8px, #2c1e12 12px);
+            padding: 1.5rem 2rem;
+            text-align: center;
+            border-bottom: 4px solid #e0b87a;
+        }
+
+        .hero h1 {
+            font-size: 2.6rem;
+            letter-spacing: 2px;
+            background: linear-gradient(135deg, #f50606a7, #fd0303ca);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            font-weight: 800;
+        }
+
+        .hero p {
+            color: #ffeaC7;
+            font-weight: 500;
+            margin-top: 8px;
+            font-size: 0.95rem;
+        }
+
+        /* lessons container */
+        .lessons-container {
+            padding: 2rem 1.8rem 2rem 1.8rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        /* individual lesson card */
+        .lesson-card {
+            background: white;
+            border-radius: 2rem;
+            transition: all 0.25s ease;
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0,0,0,0.1);
+            overflow: hidden;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .lesson-card.locked {
+            opacity: 0.85;
+            background: #f6f2ea;
+        }
+
+        .lesson-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.2rem 1.6rem;
+            cursor: pointer;
+            background: inherit;
+            transition: background 0.2s;
+        }
+
+        .lesson-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+
+        .level-badge {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            background: #f0e5d2;
+            display: inline-block;
+            width: fit-content;
+            padding: 0.2rem 0.8rem;
+            border-radius: 40px;
+            color: #6b4c2c;
+        }
+
+        .lesson-title {
+            font-size: 1.65rem;
+            font-weight: 800;
+            color: #2e241f;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .lock-icon {
+            font-size: 1.3rem;
+            font-weight: 500;
+            background: #ddd0bc;
+            width: 32px;
+            height: 32px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 60px;
+        }
+
+        .status-chip {
+            background: #e7e0d4;
+            border-radius: 60px;
+            padding: 0.3rem 1rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .status-chip.locked-badge {
+            background: #c9bcab;
+            color: #4a3a2a;
+        }
+
+        .status-chip.unlocked-badge {
+            background: #c7e9d0;
+            color: #1c5a2a;
+        }
+
+        .status-chip.start-badge {
+            background: #f8d5a3;
+            color: #894e1c;
+        }
+
+        .btn-action {
+            background: none;
+            border: none;
+            font-weight: 700;
+            font-size: 0.85rem;
+            padding: 0.5rem 1.2rem;
+            border-radius: 3rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: #f3ede5;
+            color: #2b2b2b;
+        }
+
+        .btn-primary {
+            background: #2c7a47;
+            color: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .btn-primary:active {
+            transform: scale(0.96);
+            background: #1f5a35;
+        }
+
+        .btn-secondary {
+            background: #e2cfb3;
+            color: #3c2a1b;
+        }
+
+        .btn-secondary:active {
+            transform: scale(0.96);
+        }
+
+        .btn-disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            filter: grayscale(0.05);
+            pointer-events: none;
+        }
+
+        .expand-details {
+            padding: 0rem 1.6rem 1.2rem 1.6rem;
+            border-top: 1px solid #ede3d5;
+            background: #fefaf5;
+            font-size: 0.9rem;
+            color: #5a4a38;
+            transition: all 0.2s;
+        }
+
+        .song-list, .chord-preview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+            margin-bottom: 8px;
+        }
+
+        .badge-song {
+            background: #e2cfb3;
+            padding: 4px 12px;
+            border-radius: 40px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .info-text {
+            font-size: 0.8rem;
+            margin-top: 8px;
+            color: #7f6a53;
+        }
+
+        .reset-area {
+            padding: 0.2rem 1.8rem 2rem 1.8rem;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .reset-btn {
+            background: #dbcbb8;
+            border: none;
+            padding: 0.6rem 1.3rem;
+            border-radius: 3rem;
+            font-weight: 600;
+            font-size: 0.75rem;
+            color: #3a2a1c;
+            cursor: pointer;
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .reset-btn:active {
+            transform: scale(0.96);
+        }
+
+        footer {
+            font-size: 0.7rem;
+            text-align: center;
+            padding: 1rem;
+            background: #050505;
+            color: #e3115a;
+        }
+
+        /* responsiveness */
+        @media (max-width: 500px) {
+            .lesson-title {
+                font-size: 1.25rem;
+            }
+            .lesson-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+            .status-chip {
+                align-self: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="piano-card">
+    <div class="hero">
+        <h1> Piano Lessons</h1>
+        <p>master keys · progressive unlock system</p>
+    </div>
+ <div class="lessons-container" id="lessonsContainer">
+        <!-- Dynamic content injected via JS but structured exactly to your spec:
+             Level 1: Basics (Beginner - start unlocked)
+             Level 2: Simple Songs (Unlock)
+             Level 3: Chords (Locked initially)
+             Level 4: Advanced (Locked initially)
+             With progression logic: each level unlocks after previous level is completed. -->
+    </div>
+
+    <div class="reset-area">
+        <button class="reset-btn" id="resetProgressBtn">⟳ Reset all progress (start fresh)</button>
+    </div>
+    <footer>
+        ✨ Complete a lesson to unlock the next level ✨
+    </footer>
+</div>
+
+<script>
+    // ----- LESSON DATA MATCHING YOUR VISUAL STRUCTURE -----
+    const lessonsData = [
+        {
+            id: 1,
+            name: "Basics",
+            subtitle: "Beginner",
+            status: "available",   // 'available' means unlocked and ready to complete
+            completed: false,
+            locked: false,
+            unlockCondition: null, // always unlocked
+            details: "Finger position, posture, middle C, first exercises.",
+            songsPreview: ["Warm-up scales", "Ode to Joy (simplified)", "Hand coordination"],
+            chordHint: null
+        },
+        {
+            id: 2,
+            name: "Simple Songs",
+            subtitle: "Unlock",
+            status: "locked",      // starts locked, becomes available after level1 completed
+            completed: false,
+            locked: true,
+            unlockCondition: 1,    // requires lesson id 1 to be completed
+            details: "Play full melodies: Twinkle Twinkle, Jingle Bells, Happy Birthday.",
+            songsPreview: ["🎵 Twinkle Twinkle", "🎵 Jingle Bells", "🎵 Happy Birthday"],
+            chordHint: null
+        },
+        {
+            id: 3,
+            name: "Chords",
+            subtitle: "Locked → Chords mastery",
+            status: "locked",
+            completed: false,
+            locked: true,
+            unlockCondition: 2,    // requires Simple Songs completed
+            details: "Major & minor triads, chord progressions, C - G - Am - F.",
+            songsPreview: ["Chord inversions", "Pop progression  I-V-vi-IV", "Simple accompaniment"],
+            chordHint: "C major • G major • A minor • F major"
+        },
+        {
+            id: 4,
+            name: "Advanced",
+            subtitle: "Locked → Advanced Techniques",
+            status: "locked",
+            completed: false,
+            locked: true,
+            unlockCondition: 3,    // requires Chords completed
+            details: "Arpeggios, improvisation, extended chords (7th, 9th), complex rhythms.",
+            songsPreview: ["🎹 Für Elise (original)", "🎹 Moonlight Sonata excerpt", "🎹 Jazz blues"],
+            chordHint: "7th chords · improvisation tools"
+        }
+    ];
+
+// Helper: Load/Save progress to localStorage
+    function loadProgress() {
+        const saved = localStorage.getItem("pianoLessonsProgress");
+        if (!saved) return null;
+        try {
+            const parsed = JSON.parse(saved);
+            if (Array.isArray(parsed) && parsed.length === lessonsData.length) {
+                return parsed;
+            }
+        } catch(e) {}
+        return null;
+    }
+
+    function saveProgress(progressArray) {
+        localStorage.setItem("pianoLessonsProgress", JSON.stringify(progressArray));
+    }
+
+    // Initialize global state: either from storage or fresh default
+    let lessonsState = [];
+
+    function initState() {
+        const savedProgress = loadProgress();
+        if (savedProgress) {
+            lessonsState = savedProgress;
+            // ensure consistency: lock status based on completion and unlock conditions
+            recomputeLockStatusFromState();
+        } else {
+            // fresh start: level 1 Basics = unlocked & not completed, others locked accordingly.
+            lessonsState = lessonsData.map(lesson => ({
+                id: lesson.id,
+                completed: false,
+                locked: lesson.id !== 1,  // only level1 starts unlocked, others locked
+                // We also track 'available' status dynamically in UI, but we manage locked flag.
+            }));
+            // ensure level1 is definitely unlocked and not completed
+            lessonsState[0].locked = false;
+            lessonsState[0].completed = false;
+            // recompute unlock cascade (level2,3,4 based on previous completion)
+            recomputeLockStatusFromState();
+        }
+        // Final sanity: propagate changes and save
+        syncAndSave();
+    }
+
+    // recompute lock status based on completed lessons and unlockCondition
+    function recomputeLockStatusFromState() {
+        for (let i = 0; i < lessonsState.length; i++) {
+            const lesson = lessonsState[i];
+            const originalLesson = lessonsData.find(l => l.id === lesson.id);
+            if (!originalLesson) continue;
+            
+            // if condition exists: check if required lesson is completed
+            if (originalLesson.unlockCondition) {
+                const requiredLesson = lessonsState.find(l => l.id === originalLesson.unlockCondition);
+                if (requiredLesson && requiredLesson.completed === true) {
+                    lesson.locked = false;
+                } else {
+                    // if required not completed -> locked (unless already completed, but completed can't be locked)
+                    if (!lesson.completed) {
+                        lesson.locked = true;
+                    } else {
+                        // completed lessons remain unlocked logically
+                        lesson.locked = false;
+                    }
+                }
+            } else {
+                // level 1: no condition
+                lesson.locked = false;
+            }
+            
+            // edge: completed lessons should never be locked (makes sense)
+            if (lesson.completed) lesson.locked = false;
+        }
+    }
+
+    // after any change, recompute locks and persist
+    function syncAndSave() {
+        recomputeLockStatusFromState();
+        saveProgress(lessonsState);
+        renderLessonsUI();
+    }
+
+    // Mark a lesson as completed (if it's unlocked and not completed yet)
+    function completeLesson(lessonId) {
+        const lessonState = lessonsState.find(l => l.id === lessonId);
+        const originalLesson = lessonsData.find(d => d.id === lessonId);
+        if (!lessonState || !originalLesson) return false;
+        
+        // cannot complete if locked
+        if (lessonState.locked) return false;
+        // already completed
+        if (lessonState.completed) return false;
+        
+        // complete it!
+        lessonState.completed = true;
+        // after completing, lesson stays unlocked obviously
+        lessonState.locked = false;
+        
+        // Recalculate locks for all next lessons (since prerequisite met)
+        syncAndSave();
+        return true;
+    }
+    
+    // Reset all progress: start over, only Level1 unlocked, nothing completed
+    function resetAllProgress() {
+        lessonsState = lessonsData.map(lesson => ({
+            id: lesson.id,
+            completed: false,
+            locked: lesson.id !== 1,
+        }));
+        // level1 unlocked
+        const level1 = lessonsState.find(l => l.id === 1);
+        if (level1) level1.locked = false;
+        syncAndSave();
+    }
+    
+    // ---------- UI Rendering (based on your design) ----------
+    function renderLessonsUI() {
+        const container = document.getElementById('lessonsContainer');
+        if (!container) return;
+        
+        container.innerHTML = '';
+        
+        lessonsData.forEach((lessonMeta, idx) => {
+            const state = lessonsState.find(s => s.id === lessonMeta.id);
+            if (!state) return;
+            
+            const isLocked = state.locked;
+            const isCompleted = state.completed;
+            const isAvailable = !isLocked && !isCompleted;  // ready to complete
+            const isDone = isCompleted;
+            
+            // decide status label & badge styles
+            let statusText = '';
+            let statusIcon = '';
+            let statusClass = '';
+            let actionButton = null;
+            
+            if (isLocked) {
+                statusText = '🔒 Locked';
+                statusClass = 'locked-badge';
+                statusIcon = '🔒';
+            } else if (isCompleted) {
+                statusText = '✅ Completed';
+                statusClass = 'unlocked-badge';
+                statusIcon = '✔️';
+            } else if (isAvailable) {
+                statusText = '✨ Ready · Start Lesson';
+                statusClass = 'start-badge';
+                statusIcon = '🎵';
+            } else {
+                statusText = 'Available';
+                statusClass = 'start-badge';
+            }
+            
+            // create card
+            const cardDiv = document.createElement('div');
+            cardDiv.className = `lesson-card ${isLocked ? 'locked' : ''}`;
+            
+            // header click to expand/collapse? but we don't need collapse per design, but we show details area always (style friendly)
+            // I'll include an expandable details area that always visible for better info
+            const headerDiv = document.createElement('div');
+            headerDiv.className = 'lesson-header';
+            
+            // left info
+            const infoDiv = document.createElement('div');
+            infoDiv.className = 'lesson-info';
+            
+            const badgeSpan = document.createElement('div');
+            badgeSpan.className = 'level-badge';
+            badgeSpan.innerText = `Level ${lessonMeta.id} · ${lessonMeta.subtitle}`;
+            
+            const titleSpan = document.createElement('div');
+            titleSpan.className = 'lesson-title';
+            titleSpan.innerHTML = `${lessonMeta.name} ${isLocked ? '<span class="lock-icon">🔒</span>' : (isCompleted ? '<span style="font-size:1.3rem;">🏆</span>' : '🎹')}`;
+            
+            infoDiv.appendChild(badgeSpan);
+            infoDiv.appendChild(titleSpan);
+            
+            // status chip + action button container
+            const rightActions = document.createElement('div');
+            rightActions.style.display = 'flex';
+            rightActions.style.alignItems = 'center';
+            rightActions.style.gap = '12px';
+            
+            const statusChip = document.createElement('div');
+            statusChip.className = `status-chip ${statusClass}`;
+            statusChip.innerHTML = `${statusIcon} ${statusText}`;
+            rightActions.appendChild(statusChip);
+            
+            // action button logic
+            if (!isLocked && !isCompleted) {
+                // show "Complete Lesson" button to mark as done
+                const completeBtn = document.createElement('button');
+                completeBtn.className = 'btn-action btn-primary';
+                completeBtn.innerHTML = '🎼 Complete & Unlock Next ➤';
+                completeBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    completeLesson(lessonMeta.id);
+                });
+                rightActions.appendChild(completeBtn);
+            } else if (isCompleted) {
+                const doneBtn = document.createElement('button');
+                doneBtn.className = 'btn-action btn-secondary';
+                doneBtn.disabled = true;
+                doneBtn.style.cursor = 'default';
+                doneBtn.innerHTML = '✓ Mastered';
+                doneBtn.style.opacity = '0.7';
+                rightActions.appendChild(doneBtn);
+            } else if (isLocked) {
+                const lockInfoBtn = document.createElement('button');
+                lockInfoBtn.className = 'btn-action btn-secondary btn-disabled';
+                lockInfoBtn.innerHTML = '🔐 Locked';
+                lockInfoBtn.disabled = true;
+                rightActions.appendChild(lockInfoBtn);
+            }
+            
+            headerDiv.appendChild(infoDiv);
+            headerDiv.appendChild(rightActions);
+            
+            // expandable details: always show extra content (song previews & chord info)
+            const detailsDiv = document.createElement('div');
+            detailsDiv.className = 'expand-details';
+            
+            // show description
+            const descP = document.createElement('p');
+            descP.style.fontWeight = '500';
+            descP.style.marginBottom = '10px';
+            descP.innerHTML = `📘 ${lessonMeta.details}`;
+            detailsDiv.appendChild(descP);
+            
+            // songs preview
+            if (lessonMeta.songsPreview && lessonMeta.songsPreview.length) {
+                const songsTitle = document.createElement('div');
+                songsTitle.style.fontSize = '0.75rem';
+                songsTitle.style.fontWeight = 'bold';
+                songsTitle.style.marginTop = '6px';
+                songsTitle.innerText = '🎶 Repertoire / exercises:';
+                detailsDiv.appendChild(songsTitle);
+                const songsContainer = document.createElement('div');
+                songsContainer.className = 'song-list';
+                lessonMeta.songsPreview.forEach(song => {
+                    const chip = document.createElement('span');
+                    chip.className = 'badge-song';
+                    chip.innerText = song;
+                    songsContainer.appendChild(chip);
+                });
+                detailsDiv.appendChild(songsContainer);
+            }
+            
+            // chord hint if any
+            if (lessonMeta.chordHint) {
+                const chordDiv = document.createElement('div');
+                chordDiv.className = 'info-text';
+                chordDiv.innerHTML = `🎸 <strong>Chord focus:</strong> ${lessonMeta.chordHint}`;
+                detailsDiv.appendChild(chordDiv);
+            }
+            
+            // extra lock info for locked lessons: show prerequisite
+            if (isLocked && lessonMeta.unlockCondition) {
+                const prereqLesson = lessonsData.find(l => l.id === lessonMeta.unlockCondition);
+                const prereqState = lessonsState.find(s => s.id === lessonMeta.unlockCondition);
+                if (prereqLesson && prereqState && !prereqState.completed) {
+                    const lockMsg = document.createElement('div');
+                    lockMsg.className = 'info-text';
+                    lockMsg.style.background = '#f0e2cf';
+                    lockMsg.style.padding = '6px 12px';
+                    lockMsg.style.borderRadius = '40px';
+                    lockMsg.style.marginTop = '10px';
+                    lockMsg.innerHTML = `🔓 Unlock requirement: Complete "${prereqLesson.name}" first.`;
+                    detailsDiv.appendChild(lockMsg);
+                }
+            } else if (!isLocked && !isCompleted) {
+                const readyMsg = document.createElement('div');
+                readyMsg.className = 'info-text';
+                readyMsg.style.marginTop = '12px';
+                readyMsg.style.color = '#2c7a47';
+                readyMsg.innerHTML = '⭐ Click "Complete & Unlock Next" when you finish this level → next lesson unlocks!';
+                detailsDiv.appendChild(readyMsg);
+            } else if (isCompleted && lessonMeta.id < lessonsData.length) {
+                const nextUnlockMsg = document.createElement('div');
+                nextUnlockMsg.className = 'info-text';
+                nextUnlockMsg.style.marginTop = '8px';
+                nextUnlockMsg.style.color = '#b97f44';
+                const nextLevel = lessonsData.find(l => l.unlockCondition === lessonMeta.id);
+                if (nextLevel) {
+                    nextUnlockMsg.innerHTML = `🎉 Great! You've unlocked "${nextLevel.name}"! Continue your piano journey.`;
+                } else {
+                    nextUnlockMsg.innerHTML = `🎉 Congratulations! You've mastered this level.`;
+                }
+                detailsDiv.appendChild(nextUnlockMsg);
+            }
+            
+            cardDiv.appendChild(headerDiv);
+            cardDiv.appendChild(detailsDiv);
+            container.appendChild(cardDiv);
+        });
+        
+        // add small notification if all completed
+        const allCompleted = lessonsState.every(s => s.completed === true);
+        if (allCompleted && lessonsState.length > 0) {
+            const congratsMsg = document.createElement('div');
+            congratsMsg.style.backgroundColor = '#f7e5c2';
+            congratsMsg.style.padding = '1rem';
+            congratsMsg.style.borderRadius = '2rem';
+            congratsMsg.style.marginTop = '0.5rem';
+            congratsMsg.style.textAlign = 'center';
+            congratsMsg.style.fontWeight = 'bold';
+            congratsMsg.innerHTML = '🏆✨ MAESTRO! You completed all piano lessons! ✨🏆';
+            container.appendChild(congratsMsg);
+        }
+    }
+    
+    // Event listener for reset button
+    function bindGlobalEvents() {
+        const resetBtn = document.getElementById('resetProgressBtn');
+        if (resetBtn) {
+            resetBtn.addEventListener('click', () => {
+                if (confirm('Reset all progress? Level 1 will be available, others locked again.')) {
+                    resetAllProgress();
+                }
+            });
+        }
+    }
+    
+    // Initial load
+    function init() {
+        initState();
+        bindGlobalEvents();
+        renderLessonsUI();
+    }
+    
+    init();
+</script>
+</body>
+</html>
+    

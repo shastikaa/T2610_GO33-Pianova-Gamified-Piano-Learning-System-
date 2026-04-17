@@ -1,0 +1,282 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    user-select: none;
+}
+
+body {
+    background: linear-gradient(145deg, #135d33 0%, #b3b6b9 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Segoe UI', 'Poppins', 'Inter', system-ui, -apple-system, 'Roboto', sans-serif;
+    padding: 2rem 1.5rem;
+}
+
+/* main card container */
+.piano-card {
+    max-width: 700px;
+    width: 100%;
+    background: rgba(255, 248, 235, 0.95);
+    backdrop-filter: blur(2px);
+    border-radius: 3rem;
+    box-shadow: 0 25px 45px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 215, 150, 0.3);
+    overflow: hidden;
+    transition: all 0.2s ease;
+}
+
+/* header with piano keys motif */
+.hero {
+    background: #2c1e12;
+    background-image: repeating-linear-gradient(90deg, 
+        #3e2a1c 0px, #3e2a1c 2px, 
+        #ecd9b4 2px, #ecd9b4 8px,
+        #2c1e12 8px, #2c1e12 12px);
+    padding: 1.5rem 2rem;
+    text-align: center;
+    border-bottom: 4px solid #e0b87a;
+}
+
+.hero h1 {
+    font-size: 2.6rem;
+    letter-spacing: 2px;
+    background: linear-gradient(135deg, #FFF3E0, #FFE0A3);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    text-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    font-weight: 800;
+}
+
+.hero p {
+    color: #ffeaC7;
+    font-weight: 500;
+    margin-top: 8px;
+    font-size: 0.95rem;
+}
+
+/* lessons container */
+.lessons-container {
+    padding: 2rem 1.8rem 2rem 1.8rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+/* individual lesson card */
+.lesson-card {
+    background: white;
+    border-radius: 2rem;
+    transition: all 0.25s ease;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0,0,0,0.1);
+    overflow: hidden;
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+.lesson-card.locked {
+    opacity: 0.85;
+    background: #f6f2ea;
+}
+
+.lesson-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.2rem 1.6rem;
+    cursor: pointer;
+    background: inherit;
+    transition: background 0.2s;
+}
+
+.lesson-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.level-badge {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    background: #f0e5d2;
+    display: inline-block;
+    width: fit-content;
+    padding: 0.2rem 0.8rem;
+    border-radius: 40px;
+    color: #6b4c2c;
+}
+
+.lesson-title {
+    font-size: 1.65rem;
+    font-weight: 800;
+    color: #2e241f;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.lock-icon {
+    font-size: 1.3rem;
+    font-weight: 500;
+    background: #ddd0bc;
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 60px;
+}
+
+.status-chip {
+    background: #e7e0d4;
+    border-radius: 60px;
+    padding: 0.3rem 1rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+}
+
+.status-chip.locked-badge {
+    background: #c9bcab;
+    color: #4a3a2a;
+}
+
+.status-chip.unlocked-badge {
+    background: #c7e9d0;
+    color: #1c5a2a;
+}
+
+.status-chip.start-badge {
+    background: #f8d5a3;
+    color: #894e1c;
+}
+
+.btn-action {
+    background: none;
+    border: none;
+    font-weight: 700;
+    font-size: 0.85rem;
+    padding: 0.5rem 1.2rem;
+    border-radius: 3rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #f3ede5;
+    color: #2b2b2b;
+}
+
+.btn-primary {
+    background: #2c7a47;
+    color: white;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.btn-primary:active {
+    transform: scale(0.96);
+    background: #1f5a35;
+}
+
+.btn-secondary {
+    background: #e2cfb3;
+    color: #3c2a1b;
+}
+
+.btn-secondary:active {
+    transform: scale(0.96);
+}
+
+.btn-disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    filter: grayscale(0.05);
+    pointer-events: none;
+}
+
+.expand-details {
+    padding: 0rem 1.6rem 1.2rem 1.6rem;
+    border-top: 1px solid #ede3d5;
+    background: #fefaf5;
+    font-size: 0.9rem;
+    color: #5a4a38;
+    transition: all 0.2s;
+}
+
+.song-list, .chord-preview {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+    margin-bottom: 8px;
+}
+
+.badge-song {
+    background: #e2cfb3;
+    padding: 4px 12px;
+    border-radius: 40px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.info-text {
+    font-size: 0.8rem;
+    margin-top: 8px;
+    color: #7f6a53;
+}
+
+.reset-area {
+    padding: 0.2rem 1.8rem 2rem 1.8rem;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.reset-btn {
+    background: #dbcbb8;
+    border: none;
+    padding: 0.6rem 1.3rem;
+    border-radius: 3rem;
+    font-weight: 600;
+    font-size: 0.75rem;
+    color: #3a2a1c;
+    cursor: pointer;
+    transition: 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.reset-btn:active {
+    transform: scale(0.96);
+}
+
+footer {
+    font-size: 0.7rem;
+    text-align: center;
+    padding: 1rem;
+    background: #e7dfd3;
+    color: #6b4f34;
+}
+
+/* responsiveness */
+@media (max-width: 500px) {
+    .lesson-title {
+        font-size: 1.25rem;
+    }
+    .lesson-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+    .status-chip {
+        align-self: flex-start;
+    }
+}

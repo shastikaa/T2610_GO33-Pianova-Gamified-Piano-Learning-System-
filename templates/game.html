@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Piano Game</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<h1>🎮 Piano Game</h1>
+
+<p>Select the correct note: <b>C</b></p>
+
+<form method="POST">
+    <button name="note" value="C">C</button>
+    <button name="note" value="D">D</button>
+    <button name="note" value="E">E</button>
+</form>
+
+<p>{{ message }}</p>
+
+<br>
+<a href="/lessons">Back to Lessons</a>
+
+</body>
+</html>

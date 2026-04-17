@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Piano Journey · Interactive Lesson Unlock System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -13,202 +14,374 @@
         }
 
         body {
-    background-image: url('https://eu-central.storage.cloudconvert.com/tasks/14d7e5e6-fd26-47e5-b2c0-2f046bc1c6a3/background.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=cloudconvert-production%2F20260416%2Ffra%2Fs3%2Faws4_request&X-Amz-Date=20260416T032358Z&X-Amz-Expires=86400&X-Amz-Signature=37c46d670d6e3d1c4b753699adada2b249401e4be4e21d9fc8bde5038910eca3&X-Amz-SignedHeaders=host&response-content-disposition=inline%3B%20filename%3D%22background.png%22&response-content-type=image%2Fpng&x-id=GetObject');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-family: 'Segoe UI', 'Poppins', 'Inter', system-ui, -apple-system, 'Roboto', sans-serif;
-    padding: 2rem 1.5rem;
-}
+            background-image: url('https://images.unsplash.com/photo-1552422535-c45813c61732?w=1920');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', 'Poppins', 'Inter', system-ui, -apple-system, 'Roboto', sans-serif;
+            padding: 2rem 1.5rem;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Elegant overlay gradient */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.3) 0%, rgba(20, 15, 10, 0.2) 50%, rgba(0, 0, 0, 0.3) 100%);
+            z-index: -1;
+        }
+
+        /* floating music notes */
+        .music-note {
+            position: fixed;
+            font-size: 3rem;
+            color: rgba(255, 255, 255, 0.9);
+            animation: floatUp 12s linear infinite;
+            pointer-events: none;
+            z-index: 1000;
+            text-shadow: 0 0 15px rgba(255,255,255,0.8), 0 0 30px rgba(255,255,255,0.4);
+        }
+
+        .music-note:nth-child(1) { left: 3%; animation-delay: 0s; animation-duration: 8s; }
+        .music-note:nth-child(2) { left: 10%; animation-delay: 1s; animation-duration: 10s; font-size: 2rem; }
+        .music-note:nth-child(3) { left: 18%; animation-delay: 2s; animation-duration: 7s; font-size: 3.5rem; }
+        .music-note:nth-child(4) { left: 25%; animation-delay: 0.5s; animation-duration: 9s; }
+        .music-note:nth-child(5) { left: 32%; animation-delay: 3s; animation-duration: 11s; font-size: 2.2rem; }
+        .music-note:nth-child(6) { left: 40%; animation-delay: 1.5s; animation-duration: 8s; font-size: 4rem; }
+        .music-note:nth-child(7) { left: 48%; animation-delay: 2.5s; animation-duration: 10s; }
+        .music-note:nth-child(8) { left: 55%; animation-delay: 4s; animation-duration: 7s; font-size: 2.5rem; }
+        .music-note:nth-child(9) { left: 62%; animation-delay: 0.8s; animation-duration: 9s; font-size: 3.2rem; }
+        .music-note:nth-child(10) { left: 70%; animation-delay: 1.8s; animation-duration: 11s; }
+        .music-note:nth-child(11) { left: 78%; animation-delay: 3.2s; animation-duration: 8s; font-size: 2rem; }
+        .music-note:nth-child(12) { left: 85%; animation-delay: 2s; animation-duration: 10s; font-size: 3.8rem; }
+        .music-note:nth-child(13) { left: 92%; animation-delay: 4.5s; animation-duration: 7s; }
+        .music-note:nth-child(14) { left: 97%; animation-delay: 1.2s; animation-duration: 9s; font-size: 2.8rem; }
+
+        /* floating stars */
+        .floating-star {
+            position: fixed;
+            font-size: 1.5rem;
+            color: rgba(200, 150, 255, 0.8);
+            animation: twinkle 3s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 1000;
+            text-shadow: 0 0 10px rgba(180, 130, 255, 0.6);
+        }
+
+        .floating-star:nth-child(15) { left: 8%; top: 20%; animation-delay: 0s; }
+        .floating-star:nth-child(16) { left: 22%; top: 60%; animation-delay: 0.5s; font-size: 1.2rem; }
+        .floating-star:nth-child(17) { left: 38%; top: 30%; animation-delay: 1s; }
+        .floating-star:nth-child(18) { left: 52%; top: 70%; animation-delay: 1.5s; font-size: 1.8rem; }
+        .floating-star:nth-child(19) { left: 68%; top: 40%; animation-delay: 2s; }
+        .floating-star:nth-child(20) { left: 82%; top: 80%; animation-delay: 2.5s; font-size: 1.3rem; }
+        .floating-star:nth-child(21) { left: 95%; top: 25%; animation-delay: 0.8s; }
+        .floating-star:nth-child(22) { left: 12%; top: 45%; animation-delay: 1.2s; font-size: 1.6rem; }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(120vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-200px) rotate(360deg);
+                opacity: 0;
+            }
+        }
 
         /* main card container */
         .piano-card {
             max-width: 700px;
             width: 100%;
-            background: rgba(0, 0, 0, 0.74);
-            backdrop-filter: blur(2px);
-            border-radius: 3rem;
-            box-shadow: 0 25px 45px rgba(255, 180, 100, 0.803), 0 0 0 1px rgba(255, 215, 150, 0.3);
+            background: linear-gradient(180deg, rgba(20, 15, 10, 0.95) 0%, rgba(10, 5, 0, 0.98) 100%);
+            backdrop-filter: blur(10px);
+            border-radius: 2rem;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.7), 0 0 60px rgba(212, 175, 55, 0.4), 0 0 100px rgba(212, 175, 55, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
             overflow: hidden;
-            transition: all 0.2s ease;
+            transition: all 0.3s ease;
+            border: 2px solid rgba(212, 175, 55, 0.6);
+            position: relative;
+        }
+
+        .piano-card::before {
+            content: '';
+            position: absolute;
+            top: -3px;
+            left: -3px;
+            right: -3px;
+            bottom: -3px;
+            border-radius: 2.2rem;
+            background: linear-gradient(135deg, rgba(255, 215, 100, 0.8), rgba(212, 175, 55, 0.6), rgba(255, 215, 100, 0.8), rgba(212, 175, 55, 0.6));
+            z-index: -1;
+            animation: borderGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes borderGlow {
+            0%, 100% { opacity: 0.6; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.02); }
+        }
+
+        .piano-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.6), 0 0 50px rgba(224, 184, 122, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.15);
         }
 
         /* header with piano keys motif */
         .hero {
-            background: #2c1e12;
-            background-image: repeating-linear-gradient(90deg, 
-                #3e2a1c 0px, #3e2a1c 2px, 
-                #ecd9b4 2px, #ecd9b4 8px,
-                #2c1e12 8px, #2c1e12 12px);
-            padding: 1.5rem 2rem;
+            background: linear-gradient(180deg, #0a0500 0%, #1a1008 100%);
+            padding: 2rem 2rem 1.5rem;
             text-align: center;
-            border-bottom: 4px solid #e0b87a;
+            border-bottom: 3px solid;
+            border-image: linear-gradient(90deg, transparent, #d4af37, transparent) 1;
+            position: relative;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #d4af37, transparent);
         }
 
         .hero h1 {
-            font-size: 2.6rem;
-            letter-spacing: 2px;
-            background: linear-gradient(135deg, #f50606a7, #fd0303ca);
-            background-clip: text;
+            font-size: 2.8rem;
+            letter-spacing: 3px;
+            font-family: 'Playfair Display', 'Georgia', serif;
+            background: linear-gradient(135deg, #f5d78e 0%, #d4af37 50%, #b8962e 100%);
             -webkit-background-clip: text;
+            background-clip: text;
             color: transparent;
-            text-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            font-weight: 800;
+            text-shadow: none;
+            font-weight: 700;
+            font-style: normal;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
         }
 
         .hero p {
-            color: #ffeaC7;
-            font-weight: 500;
+            color: #a08050;
+            font-weight: 400;
             margin-top: 8px;
-            font-size: 0.95rem;
+            font-size: 1rem;
+            letter-spacing: 1px;
         }
 
         /* lessons container */
         .lessons-container {
-            padding: 2rem 1.8rem 2rem 1.8rem;
+            padding: 1.5rem;
             display: flex;
             flex-direction: column;
-            gap: 1.25rem;
+            gap: 1rem;
         }
 
         /* individual lesson card */
         .lesson-card {
-            background: white;
-            border-radius: 2rem;
-            transition: all 0.25s ease;
-            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0,0,0,0.1);
+            background: linear-gradient(135deg, rgba(30, 25, 20, 0.95) 0%, rgba(20, 15, 10, 0.95) 100%);
+            border-radius: 1.2rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(0,0,0,0.2);
             overflow: hidden;
-            border: 1px solid rgba(0,0,0,0.05);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            position: relative;
+        }
+
+        .lesson-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 1.2rem;
+            border: 2px solid transparent;
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.5), rgba(180, 140, 40, 0.2), rgba(212, 175, 55, 0.5)) border-box;
+            -webkitmask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .lesson-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(212, 175, 55, 0.15), 0 0 20px rgba(212, 175, 55, 0.2);
+        }
+
+        .lesson-card:hover::before {
+            opacity: 1;
         }
 
         .lesson-card.locked {
-            opacity: 0.85;
-            background: #f6f2ea;
+            opacity: 0.9;
+            background: linear-gradient(135deg, rgba(25, 20, 15, 0.9) 0%, rgba(15, 10, 5, 0.9) 100%);
+        }
+
+        .lesson-card.locked::before {
+            background: linear-gradient(135deg, rgba(150, 120, 50, 0.4), rgba(120, 90, 30, 0.2), rgba(150, 120, 50, 0.4));
         }
 
         .lesson-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 1.2rem 1.6rem;
+            padding: 1rem 1.4rem;
             cursor: pointer;
-            background: inherit;
+            background: transparent;
             transition: background 0.2s;
+            border-radius: 1.2rem;
+        }
+
+        .lesson-header:hover {
+            background: rgba(224, 184, 122, 0.1);
         }
 
         .lesson-info {
             display: flex;
             flex-direction: column;
-            gap: 0.3rem;
+            gap: 0.4rem;
         }
 
         .level-badge {
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            background: #f0e5d2;
+            letter-spacing: 1.5px;
+            background: linear-gradient(135deg, #d4af37 0%, #b8962e 100%);
             display: inline-block;
             width: fit-content;
-            padding: 0.2rem 0.8rem;
-            border-radius: 40px;
-            color: #6b4c2c;
+            padding: 0.25rem 0.7rem;
+            border-radius: 20px;
+            color: #1a1008;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
 
         .lesson-title {
-            font-size: 1.65rem;
-            font-weight: 800;
-            color: #2e241f;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #f5d78e;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             flex-wrap: wrap;
         }
 
         .lock-icon {
-            font-size: 1.3rem;
+            font-size: 1.1rem;
             font-weight: 500;
-            background: #ddd0bc;
-            width: 32px;
-            height: 32px;
+            background: linear-gradient(135deg, #a08040 0%, #806030 100%);
+            width: 28px;
+            height: 28px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            border-radius: 60px;
+            border-radius: 50%;
+            color: #fff;
         }
 
         .status-chip {
-            background: #e7e0d4;
-            border-radius: 60px;
-            padding: 0.3rem 1rem;
-            font-size: 0.8rem;
+            background: linear-gradient(135deg, rgba(180, 140, 50, 0.3) 0%, rgba(150, 110, 30, 0.3) 100%);
+            border-radius: 20px;
+            padding: 0.35rem 0.9rem;
+            font-size: 0.75rem;
             font-weight: 600;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             transition: all 0.2s;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            color: #d4af37;
         }
 
         .status-chip.locked-badge {
-            background: #c9bcab;
-            color: #4a3a2a;
+            background: linear-gradient(135deg, rgba(100, 80, 40, 0.3) 0%, rgba(80, 60, 20, 0.3) 100%);
+            color: #a08050;
         }
 
         .status-chip.unlocked-badge {
-            background: #c7e9d0;
-            color: #1c5a2a;
+            background: linear-gradient(135deg, rgba(80, 140, 80, 0.3) 0%, rgba(60, 120, 60, 0.3) 100%);
+            color: #7aba7a;
         }
 
         .status-chip.start-badge {
-            background: #f8d5a3;
-            color: #894e1c;
+            background: linear-gradient(135deg, rgba(180, 140, 50, 0.3) 0%, rgba(150, 110, 30, 0.3) 100%);
+            color: #d4af37;
         }
 
         .btn-action {
             background: none;
             border: none;
-            font-weight: 700;
-            font-size: 0.85rem;
-            padding: 0.5rem 1.2rem;
-            border-radius: 3rem;
+            font-weight: 600;
+            font-size: 0.8rem;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
             cursor: pointer;
             transition: all 0.2s;
             font-family: inherit;
             display: flex;
             align-items: center;
-            gap: 6px;
-            background: #f3ede5;
-            color: #2b2b2b;
+            gap: 5px;
+            background: linear-gradient(135deg, #3a3020 0%, #2a2010 100%);
+            color: #d4af37;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            border: 1px solid rgba(212, 175, 55, 0.3);
         }
 
         .btn-primary {
-            background: #2c7a47;
-            color: white;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            background: linear-gradient(135deg, #d4af37 0%, #b8962e 100%);
+            color: #1a1008;
+            box-shadow: 0 3px 8px rgba(212, 175, 55, 0.3);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #e4bf47 0%, #c8a63e 100%);
+            transform: translateY(-1px);
         }
 
         .btn-primary:active {
-            transform: scale(0.96);
-            background: #1f5a35;
+            transform: scale(0.97);
+            background: linear-gradient(135deg, #b8962e 0%, #a88620 100%);
         }
 
         .btn-secondary {
-            background: #e2cfb3;
-            color: #3c2a1b;
+            background: linear-gradient(135deg, #4a3a20 0%, #3a2a10 100%);
+            color: #d4af37;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, #5a4a30 0%, #4a3a20 100%);
         }
 
         .btn-secondary:active {
-            transform: scale(0.96);
+            transform: scale(0.97);
         }
 
         .btn-disabled {
-            opacity: 0.6;
+            opacity: 0.5;
             cursor: not-allowed;
-            filter: grayscale(0.05);
+            filter: grayscale(0.1);
             pointer-events: none;
         }
 
@@ -269,7 +442,7 @@
         }
 
         footer {
-            font-size: 0.7rem;
+            font-size: 0.9rem;
             text-align: center;
             padding: 1rem;
             background: #050505;
@@ -293,6 +466,30 @@
     </style>
 </head>
 <body>
+
+<div class="music-note">♪</div>
+<div class="music-note">♫</div>
+<div class="music-note">♬</div>
+<div class="music-note">♪</div>
+<div class="music-note">♫</div>
+<div class="music-note">♬</div>
+<div class="music-note">♪</div>
+<div class="music-note">♫</div>
+<div class="music-note">♬</div>
+<div class="music-note">♪</div>
+<div class="music-note">♫</div>
+<div class="music-note">♬</div>
+<div class="music-note">♪</div>
+<div class="music-note">♫</div>
+
+<div class="floating-star">✦</div>
+<div class="floating-star">✧</div>
+<div class="floating-star">✦</div>
+<div class="floating-star">✧</div>
+<div class="floating-star">✦</div>
+<div class="floating-star">✧</div>
+<div class="floating-star">✦</div>
+<div class="floating-star">✧</div>
 
 <div class="piano-card">
     <div class="hero">
@@ -705,4 +902,3 @@
 </script>
 </body>
 </html>
-    

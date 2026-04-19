@@ -51,6 +51,32 @@
         .panel-grid {
             grid-template-columns: 1.2fr 0.8fr;
         }
+        .account-table-wrap {
+            margin-top: 18px;
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 680px;
+        }
+        th, td {
+            text-align: left;
+            padding: 10px 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            vertical-align: top;
+        }
+        th {
+            color: var(--muted);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        td.hash {
+            font-family: Consolas, monospace;
+            font-size: 0.82rem;
+            word-break: break-all;
+            color: #d2ddff;
+        }
         ul { padding-left: 20px; }
         li { margin-bottom: 10px; }
         .tag {
@@ -65,9 +91,19 @@
         @media (max-width: 800px) {
             .topbar, .panel-grid { grid-template-columns: 1fr; }
         }
+        .video-bg {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            object-fit: cover;
+            z-index: -1;
+        }
     </style>
 </head>
 <body>
+    <video class="video-bg" autoplay muted loop playsinline>
+        <source src="{{ url_for('static', filename='bg.mp4') }}" type="video/mp4">
+    </video>
     <main class="shell">
         <section class="topbar">
             <div>
@@ -110,6 +146,37 @@
                 <p>Admin login uses the seeded database account.</p>
                 <p>User accounts created from the register page appear in the counts above.</p>
             </article>
+        </section>
+
+        <section class="panel" style="margin-top: 16px;">
+            <h2>Account records</h2>
+            <p>Passwords are stored as hashes by design. Original plain-text passwords cannot be viewed.</p>
+            <div class="account-table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Username</th>
+                            <th>Role</th>
+                            <th>Stored password hash</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for account in accounts %}
+                            <tr>
+                                <td>{{ account.id }}</td>
+                                <td>{{ account.username }}</td>
+                                <td>{{ account.role }}</td>
+                                <td class="hash">{{ account.password }}</td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="4">No accounts found.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </section>
     </main>
 </body>

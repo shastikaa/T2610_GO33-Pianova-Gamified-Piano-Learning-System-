@@ -1,4 +1,5 @@
 from functools import wraps
+import os
 
 from flask import Flask, flash, redirect, render_template, request, session, url_for
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -7,6 +8,7 @@ from templates.templates.database import (
     add_score,
     create_user,
     fetch_user_by_username,
+    get_all_accounts,
     get_admin_metrics,
     get_user_metrics,
     init_app as init_database_app,
@@ -16,7 +18,16 @@ from templates.templates.database import (
 
 app = Flask(__name__, static_folder='static')
 app.secret_key = "secret123"
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 init_database_app(app)
+
+
+@app.after_request
+def add_no_cache_headers(response):
+    response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '0'
+    return response
 
 
 def verify_password(stored_password, provided_password):
@@ -128,6 +139,7 @@ def admin_dashboard():
         'admin_dashboard.html',
         username=session['user'],
         metrics=get_admin_metrics(),
+        accounts=get_all_accounts(),
     )
 
 
@@ -169,4 +181,8 @@ init_db(app)
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(
+        host='0.0.0.0',
+        port=int(os.getenv('PORT', '5000')),
+        debug=True,
+    )

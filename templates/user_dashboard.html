@@ -62,9 +62,19 @@
             box-shadow: 0 14px 30px rgba(0, 0, 0, 0.08);
         }
         .actions a { background: var(--accent-soft); color: var(--accent); }
+        .video-bg {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            object-fit: cover;
+            z-index: -1;
+        }
     </style>
 </head>
 <body>
+    <video class="video-bg" autoplay muted loop playsinline>
+        <source src="{{ url_for('static', filename='bg.mp4') }}" type="video/mp4">
+    </video>
     <main class="shell">
         <section class="hero">
             <h1>Welcome, {{ username }}</h1>

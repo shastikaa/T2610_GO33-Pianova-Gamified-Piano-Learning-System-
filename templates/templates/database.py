@@ -181,6 +181,12 @@ def get_admin_metrics():
     }
 
 
+def get_all_accounts():
+    return get_db().execute(
+        "SELECT id, username, password, role FROM users ORDER BY id DESC"
+    ).fetchall()
+
+
 def get_user_metrics(user_id, current_level):
     db = get_db()
     score_total = db.execute(

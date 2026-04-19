@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Pianova Admin Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+        body {
+            background: #0d0d1a;
+            color: white;
+        }
+        .container {
+            display: flex;
+        }
+        .sidebar {
+            width: 220px;
+            background: #111;
+            height: 100vh;
+            padding: 20px;
+            position: fixed;
+        }
+        .logo {
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        .sidebar ul {
+            list-style: none;
+        }
+        .sidebar ul li {
+            padding: 12px;
+            margin: 8px 0;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: background 0.3s;
+        }
+        .sidebar ul li:hover,
+        .sidebar ul .active {
+            background: #6c3cff;
+        }
+        .logout {
+            margin-top: 20px;
+            padding: 10px;
+            width: 100%;
+            background: transparent;
+            border: 1px solid red;
+            color: red;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: background 0.3s;
+        }
+        .logout:hover {
+            background: rgba(255, 0, 0, 0.1);
+        }
+        .main {
+            flex: 1;
+            margin-left: 220px;
+            padding: 20px;
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 20px;
+        }
+        .profile {
+            background: #6c3cff;
+            padding: 8px 16px;
+            border-radius: 20px;
+        }
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .card {
+            padding: 20px;
+            border-radius: 12px;
+            color: white;
+        }
+        .card h3 {
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        .card p {
+            font-size: 28px;
+            font-weight: 600;
+        }
+        .card.purple { background: linear-gradient(135deg, #6c3cff, #9370db); }
+        .card.blue { background: linear-gradient(135deg, #3c7cff, #6ba3ff); }
+        .card.green { background: linear-gradient(135deg, #00c896, #30d9a8); }
+        .card.orange { background: linear-gradient(135deg, #ff9f43, #ffaa54); }
+        .content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 15px;
+        }
+        .box {
+            background: #1a1a2e;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #333;
+        }
+        .box h3 {
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+        .users {
+            list-style: none;
+        }
+        .users li {
+            padding: 10px;
+            background: #0d0d1a;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+        }
+        a.logout-link {
+            color: #ff6b6b;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        a.logout-link:hover {
+            color: #ff8888;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="logo">🎵 Pianova</div>
+        <div class="logo" style="font-size: 1rem; color: #6c3cff;">ADMIN</div>
+
+        <nav>
+            <ul>
+                <li><i class="fas fa-th-large"></i> Dashboard</li>
+                <li><i class="fas fa-users"></i> Users</li>
+                <li><i class="fas fa-book"></i> Levels & Lessons</li>
+                <li><i class="fas fa-gamepad"></i> Quiz & Games</li>
+                <li><i class="fas fa-certificate"></i> Certificates</li>
+                <li><i class="fas fa-chart-bar"></i> Progress & Reports</li>
+                <li><i class="fas fa-file-alt"></i> System Logs</li>
+                <li><i class="fas fa-cog"></i> Settings</li>
+            </ul>
+        </nav>
+
+        <a href="{{ url_for('logout') }}" class="logout logout-link" style="border: 1px solid #ff6b6b; padding: 8px;">
+            <i class="fas fa-sign-out-alt"></i> Logout
+        </a>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main">
+
+        <!-- Header -->
+        <header>
+            <h1>Welcome, {{ username }}! 👋</h1>
+            <div class="profile">Admin</div>
+        </header>
+
+        <!-- Cards -->
+        <section class="cards">
+            <div class="card purple">
+                <h3>Total Users</h3>
+                <p>{{ metrics.total_users }}</p>
+            </div>
+            <div class="card blue">
+                <h3>Completed Lessons</h3>
+                <p>{{ metrics.completed_lessons }}</p>
+            </div>
+            <div class="card green">
+                <h3>Total Scores</h3>
+                <p>{{ metrics.total_scores }}</p>
+            </div>
+            <div class="card orange">
+                <h3>Admin Count</h3>
+                <p>{{ metrics.total_admins }}</p>
+            </div>
+        </section>
+
+        <!-- Users List -->
+        <section class="content">
+
+            <div class="box">
+                <h3>Dashboard Stats</h3>
+                <p>Total Active Users: <strong>{{ metrics.total_users }}</strong></p>
+                <p>Completed Sessions: <strong>{{ metrics.completed_lessons }}</strong></p>
+                <p>Average Score: <strong>{{ (metrics.total_scores / (metrics.total_users or 1)) | int }}</strong></p>
+            </div>
+
+            <div class="box">
+                <h3>Recent Users</h3>
+                <ul class="users">
+                    {% for user in metrics.recent_users %}
+                        <li>
+                            <span>{{ user['username'] }}</span>
+                            <span style="color: #6c3cff; font-size: 0.85rem;">{{ user['role'] }}</span>
+                        </li>
+                    {% else %}
+                        <li style="color: #999;">No users yet</li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+</body>
+</html>

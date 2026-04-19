@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Pianova Login</title>
+    <style>
+        :root {
+            color-scheme: dark;
+            --bg: #0c0d12;
+            --panel: rgba(18, 21, 32, 0.92);
+            --accent: #d9b36c;
+            --accent-strong: #f0c778;
+            --text: #f3ebda;
+            --muted: #c2b59a;
+            --danger: #ef8a8a;
+            --success: #9fe0b2;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+            background: #0d0d1a;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+        .login-box {
+            width: 100%;
+            max-width: 400px;
+            background: #1a1a2e;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        h1 { text-align: center; font-size: 2.2rem; margin-bottom: 10px; color: #6c3cff; }
+        h2 { text-align: center; margin-bottom: 30px; color: #999; font-size: 1rem; }
+        form { display: grid; gap: 14px; }
+        label { font-weight: 600; color: #ddd; }
+        input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #444;
+            background: #0f0f1a;
+            color: #fff;
+            font-size: 1rem;
+        }
+        input::placeholder { color: #777; }
+        .options {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            color: #999;
+            margin: 10px 0;
+        }
+        .options a { color: #6c3cff; text-decoration: none; }
+        .options a:hover { text-decoration: underline; }
+        button {
+            border: 0;
+            border-radius: 14px;
+            padding: 14px 18px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+            color: #241a0d;
+            cursor: pointer;
+        }
+        .flash {
+            padding: 12px 14px;
+            border-radius: 12px;
+            margin-top: 16px;
+            font-size: 0.94rem;
+        }
+        .flash.error { background: rgba(239, 138, 138, 0.14); color: var(--danger); }
+        .flash.success { background: rgba(159, 224, 178, 0.14); color: var(--success); }
+        .hint {
+            margin-top: 18px;
+            padding: 14px;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--muted);
+        }
+        a { color: var(--accent-strong); }
+    </style>
+</head>
+<body>
+    <section class="card">
+        <h1>Pianova</h1>
+        <p>Login for user or admin access. Users go to the learning dashboard. Admins go to the admin dashboard.</p>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash {{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        <form method="post">
+            <div>
+                <label for="username">Username</label>
+                <input id="username" name="username" type="text" placeholder="Enter username" required>
+            </div>
+            <div>
+                <label for="password">Password</label>
+                <input id="password" name="password" type="password" placeholder="Enter password" required>
+            </div>
+            <button type="submit">Login</button>
+        </form>
+        <p>Need an account? <a href="{{ url_for('register') }}">Create one here</a>.</p>
+        <div class="hint">
+            Demo admin: <strong>admin</strong> / <strong>admin123</strong><br>
+            Demo user: <strong>student</strong> / <strong>1234</strong>
+        </div>
+    </section>
+</body>
+</html>

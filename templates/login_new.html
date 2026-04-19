@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Pianova Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background: #0d0d1a;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+        .login-box {
+            background: #1a1a2e;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 400px;
+        }
+        h1 {
+            text-align: center;
+            color: #6c3cff;
+            margin-bottom: 10px;
+            font-size: 2rem;
+        }
+        h2 {
+            text-align: center;
+            color: #999;
+            margin-bottom: 30px;
+            font-size: 1rem;
+        }
+        form {
+            display: grid;
+            gap: 14px;
+        }
+        label {
+            font-weight: 600;
+            color: #ddd;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #444;
+            background: #0f0f1a;
+            color: #fff;
+            font-size: 1rem;
+        }
+        input::placeholder {
+            color: #777;
+        }
+        .options {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            color: #999;
+            margin: 10px 0;
+        }
+        .options a {
+            color: #6c3cff;
+            text-decoration: none;
+        }
+        .options a:hover {
+            text-decoration: underline;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #6c3cff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #5a2db3;
+        }
+        .signup {
+            text-align: center;
+            margin-top: 20px;
+            color: #999;
+        }
+        .signup a {
+            color: #6c3cff;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .flash {
+            margin-bottom: 16px;
+            padding: 12px;
+            border-radius: 8px;
+            background: #c70000;
+            color: white;
+        }
+        .flash.success {
+            background: #00c896;
+            color: #0d0d1a;
+        }
+        .piano {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            display: flex;
+            gap: 2px;
+            background: #111;
+            padding: 8px;
+        }
+        .key {
+            flex: 1;
+            border-radius: 4px;
+            opacity: 0.3;
+        }
+        .key.white {
+            background: white;
+        }
+        .key.black {
+            background: black;
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-box">
+    <h1>🎵 Pianova</h1>
+    <h2>Login to Pianova</h2>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="flash {{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <form method="POST">
+        <label>Username</label>
+        <input type="text" name="username" placeholder="Enter your username" required>
+
+        <label>Password</label>
+        <input type="password" name="password" placeholder="Enter your password" required>
+
+        <div class="options">
+            <label><input type="checkbox" name="remember"> Remember Me</label>
+            <a href="#">Forgot Password?</a>
+        </div>
+
+        <button type="submit">Login</button>
+
+        <p class="signup">Don't have an account? <a href="{{ url_for('register') }}">Sign Up</a></p>
+    </form>
+</div>
+
+<!-- Piano Keyboard -->
+<div class="piano">
+    <div class="key white"></div>
+    <div class="key black"></div>
+    <div class="key white"></div>
+    <div class="key black"></div>
+    <div class="key white"></div>
+    <div class="key white"></div>
+    <div class="key black"></div>
+    <div class="key white"></div>
+    <div class="key black"></div>
+    <div class="key white"></div>
+    <div class="key black"></div>
+    <div class="key white"></div>
+    <div class="key white"></div>
+    <div class="key black"></div>
+    <div class="key white"></div>
+    <div class="key black"></div>
+    <div class="key white"></div>
+    <div class="key white"></div>
+    <div class="key black"></div>
+    <div class="key white"></div>
+    <div class="key black"></div>
+    <div class="key white"></div>
+    <div class="key black"></div>
+    <div class="key white"></div>
+</div>
+
+</body>
+</html>

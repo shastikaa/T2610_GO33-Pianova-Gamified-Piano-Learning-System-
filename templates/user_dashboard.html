@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard</title>
+    <style>
+        :root {
+            --bg: #f6efe2;
+            --panel: #ffffff;
+            --accent: #2f6f54;
+            --accent-soft: #dbe9df;
+            --text: #2a241e;
+            --muted: #6c6256;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: "Segoe UI", sans-serif;
+            background: linear-gradient(180deg, #20160f 0%, #473425 20%, var(--bg) 20%, var(--bg) 100%);
+            color: var(--text);
+        }
+        .shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 32px 0 48px; }
+        .hero {
+            background: rgba(18, 12, 8, 0.82);
+            color: #f8ecdd;
+            border-radius: 28px;
+            padding: 28px;
+            margin-bottom: 24px;
+        }
+        .hero a, .actions a {
+            display: inline-block;
+            text-decoration: none;
+            color: inherit;
+            margin-right: 12px;
+            margin-top: 12px;
+            padding: 12px 18px;
+            border-radius: 999px;
+            font-weight: 700;
+        }
+        .primary { background: #d8b470; color: #23180e; }
+        .secondary { background: rgba(255, 255, 255, 0.12); color: #f8ecdd; }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .card {
+            background: var(--panel);
+            border-radius: 22px;
+            padding: 22px;
+            box-shadow: 0 14px 30px rgba(0, 0, 0, 0.08);
+        }
+        .card span { color: var(--muted); display: block; margin-bottom: 10px; }
+        .card strong { font-size: 2rem; }
+        .actions {
+            background: var(--panel);
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: 0 14px 30px rgba(0, 0, 0, 0.08);
+        }
+        .actions a { background: var(--accent-soft); color: var(--accent); }
+    </style>
+</head>
+<body>
+    <main class="shell">
+        <section class="hero">
+            <h1>Welcome, {{ username }}</h1>
+            <p>Your account is now using the SQLite database. Login, progress, and scores are stored in Pianova.</p>
+            <a class="primary" href="{{ url_for('lessons') }}">Open lessons</a>
+            <a class="secondary" href="{{ url_for('logout') }}">Logout</a>
+        </section>
+
+        <section class="grid">
+            <article class="card">
+                <span>Completed lessons</span>
+                <strong>{{ metrics.completed_lessons }}</strong>
+            </article>
+            <article class="card">
+                <span>Total score</span>
+                <strong>{{ metrics.score_total }}</strong>
+            </article>
+            <article class="card">
+                <span>Current level</span>
+                <strong>{{ metrics.current_level }}</strong>
+            </article>
+        </section>
+
+        <section class="actions">
+            <h2>Quick actions</h2>
+            <p>Use these pages to test the merged user flow.</p>
+            <a href="{{ url_for('game') }}">Play note game</a>
+            <a href="{{ url_for('lessons') }}">Lesson page</a>
+        </section>
+    </main>
+</body>
+</html>

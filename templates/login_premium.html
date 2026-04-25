@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pianova | Login</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Bebas+Neue&family=Inter:wght@300;400;600;700&family=Poppins:wght@400;600;700&display=swap');
+
+        :root {
+            --bg-black: #0a0a0a;
+            --card-bg: #141414;
+            --gold-primary: #d4af37;
+            --gold-light: #f5e070;
+            --gold-btn: linear-gradient(135deg, #b8841e 0%, #e8c055 45%, #c09030 100%);
+            --text-gray: #8a8a8a;
+            --border-color: #2a2a2a;
+            --danger: #ff9090;
+            --success: #90e0a0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #0a0a0a;
+            color: #f5eedc;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Background */
+        .bg-video {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(0.3) saturate(0.8);
+            opacity: 0.15;
+            z-index: 0;
+        }
+
+        .bg-overlay {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(ellipse at 50% 0%, rgba(212,175,55,0.15) 0%, transparent 60%),
+                        linear-gradient(180deg, #0a0a0a 0%, #000000 50%, #0a0a0a 100%);
+            z-index: 1;
+        }
+
+        /* Main content */
+        .main-content {
+            position: relative;
+            z-index: 2;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 8%;
+            gap: 40px;
+            overflow: hidden;
+        }
+
+        /* Hero section */
+        .hero-text {
+            flex: 1;
+            max-width: 600px;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Logo */
+        .hero-logo {
+            margin-bottom: 28px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .css-logo {
+            position: relative;
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+        }
+
+        .logo-circle {
+            position: relative;
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle at 35% 35%, rgba(212,175,55,0.15), rgba(212,175,55,0.02));
+            border: 3px solid;
+            border-image: linear-gradient(135deg, rgba(212,175,55,0.8), rgba(212,175,55,0.2), rgba(212,175,55,0.8)) 1;
+            box-shadow: 
+                0 0 60px rgba(212,175,55,0.4),
+                0 0 120px rgba(212,175,55,0.2),
+                inset 0 0 60px rgba(212,175,55,0.12),
+                0 15px 50px rgba(0,0,0,0.8);
+            animation: circlePulse 4s ease-in-out infinite;
+        }
+
+        @keyframes circlePulse {
+            0%, 100% {
+                box-shadow: 
+                    0 0 60px rgba(212,175,55,0.4),
+                    0 0 120px rgba(212,175,55,0.2),
+                    inset 0 0 60px rgba(212,175,55,0.12),
+                    0 15px 50px rgba(0,0,0,0.8);
+            }
+            50% {
+                box-shadow: 
+                    0 0 90px rgba(212,175,55,0.6),
+                    0 0 160px rgba(212,175,55,0.3),
+                    inset 0 0 80px rgba(212,175,55,0.18),
+                    0 20px 60px rgba(0,0,0,1);
+            }
+        }
+
+        .logo-circle::before {
+            content: '';
+            position: absolute;
+            inset: -12px;
+            border-radius: 50%;
+            border: 2.5px solid transparent;
+            border-top-color: rgba(212,175,55,0.6);
+            border-right-color: rgba(212,175,55,0.3);
+            border-bottom-color: rgba(212,175,55,0.15);
+            border-left-color: rgba(212,175,55,0.5);
+            animation: spinBorder 5s linear infinite;
+            box-shadow: 0 0 15px rgba(212,175,55,0.3);
+            pointer-events: none;
+        }
+
+        @keyframes spinBorder {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .logo-circle::after {
+            content: '';
+            position: absolute;
+            inset: 10px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 32% 32%, rgba(212,175,55,0.25), rgba(212,175,55,0.08) 40%, transparent 70%);
+            pointer-events: none;
+            animation: innerGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes innerGlow {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 0.9; }
+        }
+
+        .logo-piano-circle {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .logo-keys-circle {
+            display: flex;
+            gap: 0px;
+            filter: drop-shadow(0 3px 8px rgba(0,0,0,0.6));
+            align-items: flex-end;
+        }
+
+        .logo-key-circle {
+            width: 8px;
+            height: 28px;
+            border-radius: 0 0 2.5px 2.5px;
+            border: 1.2px solid rgba(0,0,0,0.5);
+            box-shadow: inset 0 1px 3px rgba(255,255,255,0.8), 0 3px 6px rgba(0,0,0,0.5), inset 0 -1px 2px rgba(0,0,0,0.2);
+            animation: keyBounce 1.6s ease-in-out infinite;
+        }
+
+        .logo-key-circle:nth-child(odd) {
+            background: linear-gradient(180deg, #faf8f3 0%, #efe8d8 50%, #e8dcc5 100%);
+            height: 28px;
+            box-shadow: inset 0 2px 4px rgba(255,255,255,1), inset 0 -2px 2px rgba(0,0,0,0.15), 0 3px 6px rgba(0,0,0,0.5);
+        }
+
+        .logo-key-circle:nth-child(even) {
+            background: linear-gradient(180deg, #3a3a3a 0%, #1a1a1a 50%, #0a0a0a 100%);
+            height: 20px;
+            margin: 0 -4px;
+            z-index: 2;
+            border-color: rgba(0,0,0,0.9);
+            box-shadow: inset 0 1px 2px rgba(255,255,255,0.1), 0 3px 8px rgba(0,0,0,0.8);
+        }
+
+        .logo-key-circle:nth-child(1) { animation-delay: 0s; }
+        .logo-key-circle:nth-child(2) { animation-delay: 0.1s; }
+        .logo-key-circle:nth-child(3) { animation-delay: 0.2s; }
+        .logo-key-circle:nth-child(4) { animation-delay: 0.3s; }
+        .logo-key-circle:nth-child(5) { animation-delay: 0.2s; }
+        .logo-key-circle:nth-child(6) { animation-delay: 0.1s; }
+        .logo-key-circle:nth-child(7) { animation-delay: 0s; }
+
+        @keyframes keyBounce {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-4px) scale(1.02); }
+        }
+
+        .logo-note-accent {
+            font-size: 0.8rem;
+            color: rgba(212,175,55,0.5);
+            margin-top: 2px;
+            animation: noteFloat 2.5s ease-in-out infinite;
+        }
+
+        @keyframes noteFloat {
+            0%, 100% { transform: translateY(0) scale(1); opacity: 0.5; }
+            50% { transform: translateY(-4px) scale(1.1); opacity: 0.8; }
+        }
+
+        .logo-name {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 3.8rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            line-height: 1;
+            position: relative;
+            z-index: 3;
+            text-align: center;
+            text-transform: uppercase;
+            background: linear-gradient(135deg, #d4af37 0%, #f5e070 20%, #ffd700 40%, #fff8dc 50%, #ffd700 60%, #f5e070 80%, #d4af37 100%);
+            background-size: 300% 100%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: goldFlow 5s ease-in-out infinite;
+            filter: drop-shadow(0 0 8px rgba(212,175,55,0.6)) drop-shadow(0 4px 16px rgba(212,175,55,0.35)) drop-shadow(0 0 20px rgba(212,175,55,0.2));
+            text-shadow: 0 0 20px rgba(212,175,55,0.3);
+        }
+
+        @keyframes goldFlow {
+            0% { background-position: 300% 0; }
+            50% { background-position: 0 0; }
+            100% { background-position: 300% 0; }
+        }
+
+        .logo-sub {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.7rem;
+            letter-spacing: 0.5em;
+            text-transform: uppercase;
+            color: rgba(212,175,55,0.75);
+            font-weight: 600;
+            position: relative;
+            z-index: 3;
+            filter: drop-shadow(0 0 4px rgba(212,175,55,0.2));
+        }
+
+        .logo-accent {
+            position: absolute;
+            font-size: 1.3rem;
+            color: rgba(212,175,55,0.5);
+            animation: orbitAccent 5s linear infinite;
+            pointer-events: none;
+            filter: drop-shadow(0 0 4px rgba(212,175,55,0.4));
+            text-shadow: 0 0 8px rgba(212,175,55,0.3);
+        }
+
+        .logo-accent:nth-child(1) { top: -8px; left: 50%; transform: translateX(-50%) translateY(-80px); animation-delay: 0s; }
+        .logo-accent:nth-child(2) { bottom: -8px; right: -25px; animation-delay: 1.25s; }
+        .logo-accent:nth-child(3) { bottom: -8px; left: -25px; animation-delay: 2.5s; }
+        .logo-accent:nth-child(4) { top: -8px; right: 50%; transform: translateX(50%) translateY(-80px); animation-delay: 3.75s; }
+
+        @keyframes orbitAccent {
+            0% { opacity: 0.25; transform: scale(0.9); }
+            25% { opacity: 0.65; transform: scale(1.1); }
+            50% { opacity: 0.85; transform: scale(1); }
+            75% { opacity: 0.65; transform: scale(1.1); }
+            100% { opacity: 0.25; transform: scale(0.9); }
+        }
+
+        /* Badges */
+        .hero-badges {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 28px;
+        }
+
+        .hero-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, rgba(212,175,55,0.12), rgba(212,175,55,0.04));
+            border: 1.5px solid rgba(212,175,55,0.35);
+            border-radius: 50px;
+            padding: 8px 18px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: rgba(212,175,55,0.9);
+            box-shadow: 
+                0 4px 15px rgba(212,175,55,0.1),
+                inset 0 1px 2px rgba(212,175,55,0.15),
+                0 0 20px rgba(212,175,55,0.08);
+            filter: drop-shadow(0 0 4px rgba(212,175,55,0.15));
+            animation: badgeGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes badgeGlow {
+            0%, 100% {
+                box-shadow: 0 4px 15px rgba(212,175,55,0.1), inset 0 1px 2px rgba(212,175,55,0.15), 0 0 20px rgba(212,175,55,0.08);
+            }
+            50% {
+                box-shadow: 0 6px 20px rgba(212,175,55,0.15), inset 0 1px 2px rgba(212,175,55,0.2), 0 0 30px rgba(212,175,55,0.12);
+            }
+        }
+
+        .hero-badge:nth-child(1) { animation-delay: 0s; }
+        .hero-badge:nth-child(2) { animation-delay: 0.4s; }
+        .hero-badge:nth-child(3) { animation-delay: 0.8s; }
+
+        .hero-badge svg {
+            width: 14px;
+            height: 14px;
+            flex-shrink: 0;
+            filter: drop-shadow(0 0 2px rgba(212,175,55,0.3));
+        }
+
+        .hero-tagline {
+            font-size: 0.72rem;
+            letter-spacing: 0.35em;
+            color: rgba(212,175,55,0.65);
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            font-weight: 600;
+            filter: drop-shadow(0 0 2px rgba(212,175,55,0.2));
+        }
+
+        .hero-tagline::before,
+        .hero-tagline::after {
+            content: '';
+            display: block;
+            width: 40px;
+            height: 1.5px;
+            background: linear-gradient(90deg, transparent, rgba(212,175,55,0.6), transparent);
+            box-shadow: 0 0 8px rgba(212,175,55,0.3);
+        }
+
+        .hero-tagline::after {
+            background: linear-gradient(270deg, transparent, rgba(212,175,55,0.6), transparent);
+        }
+
+        /* Heading */
+        .hero-text h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.4rem, 4vw, 3.6rem);
+            line-height: 1.15;
+            font-weight: 400;
+            color: #f5eedc;
+            text-shadow: 
+                0 2px 50px rgba(0,0,0,0.9),
+                0 0 30px rgba(212,175,55,0.2),
+                0 4px 20px rgba(0,0,0,0.6);
+            margin-bottom: 10px;
+            letter-spacing: -0.01em;
+        }
+
+        .hero-text h1 em {
+            font-style: italic;
+            color: #e8d48a;
+            filter: drop-shadow(0 0 8px rgba(212,175,55,0.3));
+        }
+
+        .hero-text h1 span {
+            display: block;
+            color: var(--gold-primary);
+            font-weight: 900;
+            font-style: italic;
+            font-size: 110%;
+            background: linear-gradient(90deg, #e6c547, #f5d76e, #d4af37);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0 2px 12px rgba(212,175,55,0.4));
+            text-shadow: 0 0 30px rgba(212,175,55,0.2);
+        }
+
+        .hero-divider {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin: 28px 0;
+        }
+
+        .hero-divider::before,
+        .hero-divider::after {
+            content: '';
+            flex: 1;
+            height: 1.5px;
+            background: linear-gradient(90deg, rgba(212,175,55,0.8), rgba(212,175,55,0.3), transparent);
+            box-shadow: 0 0 10px rgba(212,175,55,0.2);
+        }
+
+        .hero-divider::after {
+            background: linear-gradient(270deg, rgba(212,175,55,0.8), rgba(212,175,55,0.3), transparent);
+            box-shadow: 0 0 10px rgba(212,175,55,0.2);
+        }
+
+        .hero-divider span {
+            color: var(--gold-primary);
+            font-size: 1.2rem;
+            line-height: 1;
+            filter: drop-shadow(0 0 4px rgba(212,175,55,0.3));
+        }
+
+        .hero-desc {
+            color: rgba(210,195,160,0.8);
+            font-family: 'Inter', sans-serif;
+            font-size: 1.05rem;
+            font-weight: 400;
+            line-height: 1.8;
+            letter-spacing: 0.02em;
+            filter: drop-shadow(0 0 2px rgba(0,0,0,0.3));
+        }
+
+        .hero-stats {
+            display: flex;
+            gap: 24px;
+            margin-top: 28px;
+            flex-wrap: wrap;
+        }
+
+        .hero-stat {
+            border-left: 2px solid rgba(212,175,55,0.35);
+            padding-left: 14px;
+        }
+
+        .hero-stat .num {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--gold-primary);
+            line-height: 1;
+        }
+
+        .hero-stat .label {
+            font-size: 0.7rem;
+            color: rgba(212,175,55,0.6);
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            margin-top: 6px;
+            font-weight: 600;
+        }
+
+        /* Login card */
+        .login-card {
+            background: var(--card-bg);
+            padding: 50px 60px;
+            border-radius: 20px;
+            width: 500px;
+            flex-shrink: 0;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 25px 60px rgba(0,0,0,0.6), inset 0 0 0 1px rgba(255,220,120,0.04);
+        }
+
+        .card-logo-wrap {
+            text-align: center;
+            margin-bottom: 4px;
+        }
+
+        .card-logo-wrap img {
+            width: 160px;
+            mix-blend-mode: lighten;
+            filter: drop-shadow(0 0 14px rgba(212,175,55,0.35));
+        }
+
+        .card-tagline {
+            text-align: center;
+            font-size: 0.62rem;
+            letter-spacing: 0.26em;
+            color: #6a5818;
+            text-transform: uppercase;
+            margin-bottom: 14px;
+        }
+
+        .card-subtext {
+            text-align: center;
+            color: var(--text-gray);
+            font-size: 0.85rem;
+            line-height: 1.5;
+            margin-bottom: 24px;
+        }
+
+        .flash {
+            margin-bottom: 14px;
+            padding: 10px 12px;
+            border-radius: 10px;
+            font-size: 0.86rem;
+            border: 1px solid transparent;
+        }
+
+        .flash.error {
+            background: rgba(255,80,80,0.12);
+            color: var(--danger);
+            border-color: rgba(255,120,120,0.22);
+        }
+
+        .flash.success {
+            background: rgba(100,220,130,0.12);
+            color: var(--success);
+            border-color: rgba(120,220,150,0.22);
+        }
+
+        form {
+            display: grid;
+            gap: 16px;
+        }
+
+        .input-group {
+            text-align: left;
+        }
+
+        .input-group label {
+            display: block;
+            color: var(--gold-primary);
+            font-size: 0.78rem;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            margin-bottom: 7px;
+        }
+
+        .input-wrap {
+            position: relative;
+        }
+
+        .input-wrap svg {
+            position: absolute;
+            left: 13px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 15px;
+            height: 15px;
+            color: #5a4010;
+            pointer-events: none;
+        }
+
+        .input-field {
+            width: 100%;
+            background: #1f1f1f;
+            border: 1px solid #333;
+            padding: 12px 14px 12px 38px;
+            border-radius: 10px;
+            color: white;
+            font-size: 0.93rem;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .input-field::placeholder {
+            color: rgba(180,140,60,0.3);
+        }
+
+        .input-field:focus {
+            border-color: rgba(212,175,55,0.55);
+            box-shadow: 0 0 0 3px rgba(180,140,40,0.14);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--gold-btn);
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            cursor: pointer;
+            color: #1a1000;
+            box-shadow: 0 8px 22px rgba(160,110,20,0.38);
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 12px 28px rgba(160,110,20,0.5);
+        }
+
+        .forgot-row {
+            text-align: right;
+            margin-top: -4px;
+        }
+
+        .forgot-row a {
+            font-size: 0.79rem;
+            color: var(--gold-primary);
+            text-decoration: none;
+            opacity: 0.85;
+        }
+
+        .forgot-row a:hover {
+            opacity: 1;
+            text-decoration: underline;
+        }
+
+        .signup-row {
+            margin-top: 16px;
+            text-align: center;
+            font-size: 0.84rem;
+            color: var(--text-gray);
+        }
+
+        .signup-row a {
+            color: var(--gold-primary);
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .signup-row a:hover {
+            text-decoration: underline;
+        }
+
+        .demo-info {
+            margin-top: 20px;
+            background: #1a1a1a;
+            padding: 14px 16px;
+            border-radius: 12px;
+            font-size: 0.82rem;
+            border: 1px dashed #3a3a3a;
+            color: var(--text-gray);
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            line-height: 1.65;
+        }
+
+        .demo-info svg {
+            flex-shrink: 0;
+            width: 17px;
+            height: 17px;
+            color: #5a4010;
+            margin-top: 2px;
+        }
+
+        .demo-info strong {
+            color: #ccc;
+        }
+
+        @media (max-width: 920px) {
+            .main-content {
+                flex-direction: column;
+                padding: 40px 24px;
+            }
+            .hero-text {
+                max-width: 100%;
+                text-align: center;
+            }
+            .hero-divider {
+                margin: 22px auto;
+            }
+            .hero-tagline {
+                justify-content: center;
+            }
+            .hero-badges {
+                justify-content: center;
+            }
+            .hero-stats {
+                justify-content: center;
+            }
+            .login-card {
+                width: 100%;
+                max-width: 460px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <video class="bg-video" autoplay muted loop playsinline>
+        <source src="{{ url_for('static', filename='bg.mp4') }}" type="video/mp4">
+    </video>
+    <div class="bg-overlay"></div>
+
+    <div class="main-content">
+        <div class="hero-text">
+            <div class="hero-logo">
+                <div class="css-logo">
+                    <!-- Orbiting accents -->
+                    <span class="logo-accent">♪</span>
+                    <span class="logo-accent">♫</span>
+                    <span class="logo-accent">♬</span>
+                    <span class="logo-accent">♭</span>
+                    
+                    <!-- Circular piano frame -->
+                    <div class="logo-circle">
+                        <div class="logo-piano-circle">
+                            <div class="logo-keys-circle">
+                                <div class="logo-key-circle"></div>
+                                <div class="logo-key-circle"></div>
+                                <div class="logo-key-circle"></div>
+                                <div class="logo-key-circle"></div>
+                                <div class="logo-key-circle"></div>
+                                <div class="logo-key-circle"></div>
+                                <div class="logo-key-circle"></div>
+                            </div>
+                            <div class="logo-note-accent">♪</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Brand name -->
+                    <div class="logo-name">Pianova</div>
+                    
+                    <!-- Tagline -->
+                    <div class="logo-sub">Learn Piano</div>
+                </div>
+            </div>
+
+            <!-- Feature badges -->
+            <div class="hero-badges">
+                <span class="hero-badge">
+                    <svg fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
+                    </svg>
+                    Gamified Learning
+                </span>
+                <span class="hero-badge">
+                    <svg fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
+                    </svg>
+                    10 Octaves
+                </span>
+                <span class="hero-badge">
+                    <svg fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
+                    </svg>
+                    Real-time Audio
+                </span>
+            </div>
+
+            <!-- Tagline -->
+            <div class="hero-tagline">Welcome to Excellence</div>
+
+            <!-- Heading -->
+            <h1>Master <em>Piano</em> <span>Unlock Your Potential</span></h1>
+
+            <!-- Divider -->
+            <div class="hero-divider">
+                <span>♪</span>
+            </div>
+
+            <!-- Description -->
+            <p class="hero-desc">
+                Experience the perfect blend of music, gaming, and education. Learn piano through interactive games and real-time audio synthesis.
+            </p>
+
+            <!-- Stats -->
+            <div class="hero-stats">
+                <div class="hero-stat">
+                    <div class="num">10</div>
+                    <div class="label">Octaves</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="num">70</div>
+                    <div class="label">Piano Keys</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="num">∞</div>
+                    <div class="label">Possibilities</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Login card -->
+        <div class="login-card">
+            <div class="card-tagline">Pianova</div>
+            <div class="card-subtext">Login to your account</div>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="flash {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <form method="POST" action="{{ url_for('login') }}">
+                <div class="input-group">
+                    <label>Email</label>
+                    <div class="input-wrap">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                            <polyline points="22,6 12,13 2,6"/>
+                        </svg>
+                        <input type="email" name="email" class="input-field" placeholder="your@email.com" required>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>Password</label>
+                    <div class="input-wrap">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                        </svg>
+                        <input type="password" name="password" class="input-field" placeholder="••••••••" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="login-btn">Login</button>
+
+                <div class="forgot-row">
+                    <a href="{{ url_for('forgot_password') }}">Forgot Password?</a>
+                </div>
+            </form>
+
+            <div class="signup-row">
+                Don't have an account? <a href="{{ url_for('register') }}">Sign up here</a>
+            </div>
+
+            <div class="demo-info">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+                </svg>
+                <div>
+                    <strong>Demo Credentials:</strong><br/>
+                    Email: demo@example.com<br/>
+                    Password: demo123
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

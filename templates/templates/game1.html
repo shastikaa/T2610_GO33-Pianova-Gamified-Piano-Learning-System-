@@ -1,0 +1,1310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>LearnTheNotes | Gamified Piano Learning</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: linear-gradient(145deg, #1e2a3a 0%, #0f1a24 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Poppins', 'Segoe UI', system-ui, -apple-system, 'Inter', sans-serif;
+      padding: 1.2rem;
+    }
+
+    /* main game card */
+    .game-container {
+      max-width: 1500px;
+      width: 100%;
+      background: rgba(255, 248, 225, 0.95);
+      border-radius: 3.5rem;
+      box-shadow: 0 25px 45px rgba(0, 0, 0, 0.4), inset 0 1px 2px rgba(255, 255, 255, 0.3);
+      overflow: hidden;
+      backdrop-filter: blur(0px);
+      transition: transform 0.2s ease;
+    }
+
+    /* header area with gamified vibe */
+    .lesson-header {
+      background: #2c1e2f;
+      background-image: radial-gradient(circle at 10% 20%, rgba(255,215,130,0.15) 2%, transparent 2.5%);
+      background-size: 28px 28px;
+      padding: 1.5rem 2rem;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: baseline;
+      border-bottom: 4px solid #ffcd7e;
+    }
+
+    .title-badge {
+      display: flex;
+      align-items: baseline;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    h1 {
+      font-size: 2.7rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, #FFE6B0, #FFB347);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: 0 2px 3px rgba(0,0,0,0.2);
+    }
+
+    .gamified-badge {
+      background: #ffb347;
+      padding: 0.45rem 1.2rem;
+      border-radius: 40px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: #2c1e2f;
+      box-shadow: inset 0 -1px 0 rgba(0,0,0,0.1), 0 3px 8px rgba(0,0,0,0.2);
+      backdrop-filter: blur(2px);
+    }
+
+    .level-progress {
+      background: #1f2a2e;
+      padding: 0.7rem 1.35rem;
+      border-radius: 60px;
+      display: flex;
+      gap: 0.8rem;
+      align-items: baseline;
+    }
+
+    .level-text {
+      color: #ffdd99;
+      font-weight: 600;
+      letter-spacing: 1px;
+      font-size: 1.05rem;
+    }
+
+    .xp-points {
+      background: #3b2b2a;
+      padding: 0.35rem 0.95rem;
+      border-radius: 40px;
+      color: #f9c270;
+      font-weight: 700;
+      font-size: 1rem;
+    }
+
+    /* main chart layout */
+    .chart-panel {
+      padding: 2.6rem 2.6rem 2.3rem 2.6rem;
+      background: #fffaf2;
+    }
+
+    .chart-intro {
+      text-align: center;
+      margin-bottom: 1.4rem;
+      font-weight: 500;
+      color: #6b4c2c;
+      font-size: 1.35rem;
+    }
+
+    .tap-note-section {
+      background: #fff5e8;
+      border: 1px solid #f1d2a4;
+      border-radius: 2rem;
+      padding: 1.2rem 1rem;
+      margin-bottom: 1.6rem;
+    }
+
+    .tap-note-title {
+      text-align: center;
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #5f3b20;
+      margin-bottom: 0.8rem;
+    }
+
+    .tap-note-subtitle {
+      text-align: center;
+      font-size: 0.95rem;
+      color: #7e5833;
+      margin-bottom: 0.9rem;
+    }
+
+    .staff-board {
+      position: relative;
+      width: min(760px, 100%);
+      height: 230px;
+      margin: 0 auto;
+      border-radius: 1.2rem;
+      background: #fffdf8;
+      border: 1px solid #ecd3af;
+      overflow: hidden;
+    }
+
+    .staff-line {
+      position: absolute;
+      left: 88px;
+      right: 26px;
+      height: 2px;
+      background: #5f4a2f;
+      opacity: 0.9;
+    }
+
+    .staff-line.l1 { top: 65px; }
+    .staff-line.l2 { top: 88px; }
+    .staff-line.l3 { top: 111px; }
+    .staff-line.l4 { top: 134px; }
+    .staff-line.l5 { top: 157px; }
+
+    .treble-clef-visual {
+      position: absolute;
+      left: 22px;
+      top: 46px;
+      font-size: 7.2rem;
+      color: #2b2117;
+      line-height: 1;
+    }
+
+    .staff-note-dot {
+      position: absolute;
+      width: 36px;
+      height: 24px;
+      border-radius: 50%;
+      border: 3px solid #111;
+      background: #f7f7f7;
+      opacity: 0;
+      transition: opacity 0.15s ease, transform 0.15s ease;
+      transform: scale(0.9);
+    }
+
+    .staff-note-dot.active {
+      opacity: 1;
+      transform: scale(1);
+      background: #ffeccf;
+      border-color: #5d3f1f;
+    }
+
+    .staff-note-dot::after {
+      content: '';
+      position: absolute;
+      width: 2px;
+      height: 34px;
+      right: -3px;
+      top: -30px;
+      background: #222;
+      border-radius: 2px;
+    }
+
+    .staff-note-dot[data-note='E'] { left: 190px; top: 144px; }
+    .staff-note-dot[data-note='G'] { left: 270px; top: 122px; }
+    .staff-note-dot[data-note='B'] { left: 350px; top: 100px; }
+    .staff-note-dot[data-note='D'] { left: 430px; top: 78px; }
+    .staff-note-dot[data-note='F'] { left: 510px; top: 56px; }
+
+    .tap-note-boxes {
+      display: flex;
+      justify-content: center;
+      gap: 0.65rem;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+
+    .tap-note-btn {
+      border: 1px solid #59aef1;
+      background: #a7edf1;
+      color: #0c4db0;
+      width: 62px;
+      height: 62px;
+      border-radius: 14px;
+      font-size: 1.8rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform 0.12s ease, box-shadow 0.12s ease;
+      box-shadow: 0 3px 7px rgba(23, 78, 143, 0.16);
+    }
+
+    .tap-note-btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .tap-note-btn.active {
+      background: #76d7ff;
+      box-shadow: 0 0 0 3px rgba(11, 94, 201, 0.24);
+    }
+
+    .tap-note-feedback {
+      min-height: 1.4rem;
+      text-align: center;
+      margin-top: 0.7rem;
+      color: #604326;
+      font-weight: 700;
+      font-size: 0.95rem;
+    }
+
+    .clef-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2.6rem;
+      justify-content: center;
+      margin-bottom: 2rem;
+    }
+
+    .clef-card {
+      flex: 1;
+      min-width: 420px;
+      background: #fef7e8;
+      border-radius: 2.5rem;
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255,255,240,0.8);
+      padding: 2rem 1.4rem;
+      transition: all 0.2s;
+      border: 1px solid #ffe2b5;
+    }
+
+    .clef-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .clef-icon {
+      font-size: 2.8rem;
+      font-weight: 700;
+      background: #2e241f;
+      color: #ffdd99;
+      width: 64px;
+      height: 64px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 60px;
+      box-shadow: inset 0 -2px 0 #5e3a2e, 0 5px 10px rgba(0,0,0,0.1);
+    }
+
+    .clef-title h2 {
+      font-size: 2.25rem;
+      font-weight: 700;
+      color: #3a2c23;
+      letter-spacing: -0.3px;
+    }
+
+    /* musical staff simulation (minimal but clear) */
+    .staff-visual {
+      background: #fff3e2;
+      border-radius: 28px;
+      padding: 1.3rem 0.9rem;
+      margin: 1.2rem 0;
+      box-shadow: inset 0 1px 4px rgba(0,0,0,0.02), 0 2px 6px rgba(0,0,0,0.05);
+    }
+
+    .mnemonic-section {
+      background: #fff0e0;
+      border-radius: 1.8rem;
+      padding: 1rem;
+      margin-top: 1rem;
+    }
+
+    .mnemonic {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      font-weight: 600;
+      background: #ffffffba;
+      padding: 1rem 1.15rem;
+      border-radius: 2rem;
+      margin: 0.5rem 0;
+      border-left: 6px solid #ffb347;
+    }
+
+    .mnemonic span:first-child {
+      font-weight: 800;
+      color: #b45f2b;
+      text-transform: uppercase;
+      font-size: 0.95rem;
+      letter-spacing: 1px;
+    }
+
+    .mnemonic span:last-child {
+      font-size: 1.35rem;
+      font-weight: 600;
+      color: #2c3e2f;
+      word-break: break-word;
+    }
+
+    .notes-row {
+      display: flex;
+      justify-content: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin: 1.1rem 0 0.6rem;
+    }
+
+    .note-bubble {
+      background: #f7d9a0;
+      width: 54px;
+      height: 54px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 60px;
+      font-weight: 800;
+      font-size: 1.45rem;
+      color: #2a241f;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      transition: 0.1s linear;
+      border: 1px solid #e7bc7e;
+    }
+
+    .mini-note {
+      width: 48px;
+      height: 48px;
+      font-size: 1.25rem;
+    }
+
+    .match-activity {
+      margin: 1rem 0 1.3rem;
+      border-radius: 1.8rem;
+      background: #ead7bb;
+      border: 2px solid #c49a66;
+      padding: 1.35rem 1.2rem 1.35rem;
+      position: relative;
+    }
+
+    .match-title {
+      font-size: 1.8rem;
+      text-align: center;
+      font-weight: 800;
+      color: #1f1610;
+      margin-bottom: 0.2rem;
+    }
+
+    .match-subtitle {
+      text-align: center;
+      color: #4a2f1a;
+      font-size: 1.08rem;
+      margin-bottom: 1rem;
+      font-weight: 600;
+    }
+
+    .match-board {
+      position: relative;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.45rem;
+      align-items: stretch;
+      touch-action: none;
+    }
+
+    .match-lines {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .match-column {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      position: relative;
+      z-index: 3;
+    }
+
+    .match-row,
+    .staff-match-row {
+      min-height: 82px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.6rem;
+      border-radius: 14px;
+      background: #f9eddc;
+      border: 1px solid #cfa876;
+      padding: 0.45rem 0.65rem;
+      transition: border-color 0.15s ease;
+    }
+
+    .match-row.correct,
+    .staff-match-row.correct {
+      border-color: #58a06a;
+      background: #eaf8ed;
+    }
+
+    .match-row.wrong,
+    .staff-match-row.wrong {
+      border-color: #c75935;
+      background: #ffebe4;
+    }
+
+    .match-number {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: #0f56cf;
+      color: #fff;
+      font-weight: 800;
+      font-size: 1.3rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 5px rgba(16, 67, 154, 0.3);
+      flex: 0 0 auto;
+    }
+
+    .match-letter {
+      flex: 1;
+      height: 56px;
+      border-radius: 12px;
+      border: 1px solid #4ab6d8;
+      background: #9be2ea;
+      color: #124ecb;
+      font-size: 2.2rem;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .match-dot {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #0f56cf;
+      border: 2px solid #0f56cf;
+      cursor: pointer;
+      flex: 0 0 auto;
+      transition: transform 0.12s ease;
+    }
+
+    .match-dot:hover {
+      transform: scale(1.08);
+    }
+
+    .match-dot.selected {
+      background: #fff;
+      box-shadow: 0 0 0 4px rgba(29, 102, 228, 0.2);
+    }
+
+    .match-dot.locked {
+      cursor: default;
+      opacity: 0.9;
+    }
+
+    .staff-card {
+      position: relative;
+      flex: 1;
+      height: 92px;
+      border-radius: 10px;
+      border: 2px solid #909090;
+      background:
+        linear-gradient(#1d1d1d, #1d1d1d) left 50px top 12px / calc(100% - 64px) 2px no-repeat,
+        linear-gradient(#1d1d1d, #1d1d1d) left 50px top 28px / calc(100% - 64px) 2px no-repeat,
+        linear-gradient(#1d1d1d, #1d1d1d) left 50px top 44px / calc(100% - 64px) 2px no-repeat,
+        linear-gradient(#1d1d1d, #1d1d1d) left 50px top 60px / calc(100% - 64px) 2px no-repeat,
+        linear-gradient(#1d1d1d, #1d1d1d) left 50px top 76px / calc(100% - 64px) 2px no-repeat,
+        #fff;
+      overflow: hidden;
+    }
+
+    .staff-clef {
+      position: absolute;
+      left: 8px;
+      top: 4px;
+      font-size: 2.95rem;
+      color: #0b0b0b;
+      line-height: 1;
+    }
+
+    .staff-note-mini {
+      position: absolute;
+      width: 34px;
+      height: 22px;
+      border-radius: 50%;
+      border: 3.5px solid #111;
+      background: #fff;
+      left: 56%;
+      transform: rotate(-20deg);
+    }
+
+    .staff-note-mini::after { display: none; }
+
+    .staff-note-mini.e-low  { top: 65px; }
+    .staff-note-mini.g      { top: 49px; }
+    .staff-note-mini.b      { top: 33px; }
+    .staff-note-mini.d      { top: 17px; }
+    .staff-note-mini.f      { top: 1px;  }
+    .staff-note-mini.e-high { top: 9px;  }
+
+    .match-feedback {
+      margin-top: 0.8rem;
+      text-align: center;
+      color: #714a2a;
+      font-weight: 700;
+      min-height: 1.3rem;
+    }
+
+    .match-actions {
+      display: flex;
+      justify-content: center;
+      margin-top: 0.55rem;
+    }
+
+    .match-reset {
+      border: 1px solid #d4b184;
+      background: #fff;
+      color: #2f2117;
+      border-radius: 10px;
+      padding: 0.45rem 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    @keyframes slotShake {
+      0% { transform: translateX(0); }
+      25% { transform: translateX(-3px); }
+      50% { transform: translateX(3px); }
+      75% { transform: translateX(-2px); }
+      100% { transform: translateX(0); }
+    }
+
+    .space-notes, .line-notes {
+      margin: 0.7rem 0;
+    }
+
+    hr {
+      margin: 0.5rem 0;
+      border-color: #eeddbc;
+    }
+
+    .finish-area {
+      display: flex;
+      justify-content: center;
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    .finish-btn {
+      background: #f5a65b;
+      border: none;
+      font-size: 2rem;
+      font-weight: 800;
+      padding: 1.2rem 3rem;
+      border-radius: 60px;
+      color: #2a1c12;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 8px 0 #8b4b1f;
+      font-family: inherit;
+      letter-spacing: 1px;
+    }
+
+    .finish-btn:active {
+      transform: translateY(4px);
+      box-shadow: 0 4px 0 #8b4b1f;
+    }
+
+    .feedback-toast {
+      text-align: center;
+      margin-top: 0.5rem;
+      font-weight: 600;
+      color: #bf6f2c;
+      font-size: 1.1rem;
+      min-height: 2.5rem;
+    }
+
+    /* keyboard decor */
+    .piano-deco {
+      background: #2a201b;
+      padding: 0.8rem 1rem;
+      display: flex;
+      justify-content: center;
+      gap: 0.2rem;
+      flex-wrap: wrap;
+      border-top: 3px solid #ffcd7e;
+    }
+
+    .key {
+      background: white;
+      width: 40px;
+      height: 14px;
+      border-radius: 4px 4px 8px 8px;
+      box-shadow: inset 0 -1px 0 #ccc, 0 1px 2px rgba(0,0,0,0.2);
+    }
+
+    .key.black {
+      background: #2e2b28;
+      width: 24px;
+      height: 10px;
+      margin: 0 -6px;
+      z-index: 2;
+    }
+
+    @media (max-width: 780px) {
+      .game-container {
+        border-radius: 2rem;
+      }
+      .lesson-header {
+        flex-direction: column;
+        gap: 12px;
+        align-items: center;
+        text-align: center;
+      }
+      .clef-card {
+        min-width: 280px;
+      }
+      .finish-btn {
+        font-size: 1.45rem;
+        padding: 0.85rem 2rem;
+      }
+      h1 {
+        font-size: 2rem;
+      }
+      .chart-intro {
+        font-size: 1.1rem;
+      }
+      .staff-board {
+        height: 190px;
+      }
+      .staff-line {
+        left: 72px;
+        right: 16px;
+      }
+      .staff-line.l1 { top: 56px; }
+      .staff-line.l2 { top: 75px; }
+      .staff-line.l3 { top: 94px; }
+      .staff-line.l4 { top: 113px; }
+      .staff-line.l5 { top: 132px; }
+      .treble-clef-visual {
+        left: 12px;
+        top: 40px;
+        font-size: 5.7rem;
+      }
+      .staff-note-dot {
+        width: 30px;
+        height: 20px;
+      }
+      .staff-note-dot::after {
+        height: 28px;
+        top: -24px;
+      }
+      .staff-note-dot[data-note='E'] { left: 150px; top: 121px; }
+      .staff-note-dot[data-note='G'] { left: 200px; top: 103px; }
+      .staff-note-dot[data-note='B'] { left: 250px; top: 85px; }
+      .staff-note-dot[data-note='D'] { left: 300px; top: 67px; }
+      .staff-note-dot[data-note='F'] { left: 350px; top: 49px; }
+      .tap-note-btn {
+        width: 52px;
+        height: 52px;
+        font-size: 1.45rem;
+      }
+      .mnemonic span:last-child {
+        font-size: 1.15rem;
+      }
+      .note-bubble {
+        width: 46px;
+        height: 46px;
+        font-size: 1.2rem;
+      }
+      .mini-note {
+        width: 42px;
+        height: 42px;
+        font-size: 1.1rem;
+      }
+      .match-title {
+        font-size: 1.35rem;
+      }
+      .match-subtitle {
+        font-size: 0.92rem;
+      }
+      .match-board {
+        grid-template-columns: 1fr;
+      }
+      .match-letter {
+        font-size: 1.6rem;
+      }
+      .match-row,
+      .staff-match-row {
+        min-height: 78px;
+      }
+      .staff-card {
+        height: 78px;
+        background:
+          linear-gradient(#1d1d1d, #1d1d1d) left 44px top 10px / calc(100% - 56px) 2px no-repeat,
+          linear-gradient(#1d1d1d, #1d1d1d) left 44px top 24px / calc(100% - 56px) 2px no-repeat,
+          linear-gradient(#1d1d1d, #1d1d1d) left 44px top 38px / calc(100% - 56px) 2px no-repeat,
+          linear-gradient(#1d1d1d, #1d1d1d) left 44px top 52px / calc(100% - 56px) 2px no-repeat,
+          linear-gradient(#1d1d1d, #1d1d1d) left 44px top 66px / calc(100% - 56px) 2px no-repeat,
+          #fff;
+      }
+      .staff-clef {
+        font-size: 2.5rem;
+        top: 3px;
+      }
+      .staff-note-mini {
+        width: 28px;
+        height: 18px;
+        border: 3px solid #111;
+        transform: rotate(-20deg);
+      }
+      .staff-note-mini::after { display: none; }
+      .staff-note-mini.e-low  { top: 57px; }
+      .staff-note-mini.g      { top: 43px; }
+      .staff-note-mini.b      { top: 29px; }
+      .staff-note-mini.d      { top: 15px; }
+      .staff-note-mini.f      { top: 1px;  }
+      .staff-note-mini.e-high { top: 8px;  }
+    }
+
+    /* mini hover effect */
+    .note-bubble:hover {
+      transform: scale(1.05);
+      background: #ffcf8a;
+      cursor: default;
+    }
+
+    .glow-text {
+      text-shadow: 0 0 2px #ffbe76;
+    }
+  </style>
+</head>
+<body>
+<div class="game-container">
+  <div class="lesson-header">
+    <div class="title-badge">
+      <h1>🎹 LEARNTHENOTES</h1>
+      <div class="gamified-badge">✨ GAMIFIED PIANO LEARNING ✨</div>
+    </div>
+    <div class="level-progress">
+      <span class="level-text">⭐ LEVEL 3 · MASTER READER</span>
+      <span class="xp-points">🎯 2450 XP</span>
+    </div>
+  </div>
+
+  <div class="chart-panel">
+    <!-- Chart description as shown in brief: "This chart shows the notes on the Treble Clef and Bass Clef." -->
+    <div class="chart-intro">
+      🎼 This chart shows the notes on the Treble Clef and Bass Clef. 🎼
+    </div>
+
+    <div class="tap-note-section">
+      <div class="tap-note-title">Lesson 1: Tap The Letter Box To Show The Note</div>
+      <div class="tap-note-subtitle">Every Good Boy Deserves Fudge (Treble Lines: E G B D F)</div>
+      <div class="staff-board" aria-label="Treble note staff visual">
+        <div class="staff-line l1"></div>
+        <div class="staff-line l2"></div>
+        <div class="staff-line l3"></div>
+        <div class="staff-line l4"></div>
+        <div class="staff-line l5"></div>
+        <div class="treble-clef-visual">𝄞</div>
+
+        <div class="staff-note-dot" data-note="E"></div>
+        <div class="staff-note-dot" data-note="G"></div>
+        <div class="staff-note-dot" data-note="B"></div>
+        <div class="staff-note-dot" data-note="D"></div>
+        <div class="staff-note-dot" data-note="F"></div>
+      </div>
+      <div class="tap-note-boxes">
+        <button class="tap-note-btn" type="button" data-note="E">E</button>
+        <button class="tap-note-btn" type="button" data-note="G">G</button>
+        <button class="tap-note-btn" type="button" data-note="B">B</button>
+        <button class="tap-note-btn" type="button" data-note="D">D</button>
+        <button class="tap-note-btn" type="button" data-note="F">F</button>
+      </div>
+      <div id="tapNoteFeedback" class="tap-note-feedback">Tap any letter to display it on the staff.</div>
+    </div>
+
+    <div class="match-activity" id="lineMatchGame">
+      <div class="match-title">Match each letter to its correct note</div>
+      <div class="match-subtitle">Click one blue dot on the left, then one on the right to draw a line.</div>
+      <div class="match-board">
+        <svg class="match-lines" id="matchLines"></svg>
+
+        <div class="match-column left" id="leftMatchColumn">
+          <div class="match-row" data-key="e1"><span class="match-number">1</span><span class="match-letter">E</span><span class="match-dot left" data-key="e1"></span></div>
+          <div class="match-row" data-key="g1"><span class="match-number">2</span><span class="match-letter">G</span><span class="match-dot left" data-key="g1"></span></div>
+          <div class="match-row" data-key="b1"><span class="match-number">3</span><span class="match-letter">B</span><span class="match-dot left" data-key="b1"></span></div>
+          <div class="match-row" data-key="d1"><span class="match-number">4</span><span class="match-letter">D</span><span class="match-dot left" data-key="d1"></span></div>
+          <div class="match-row" data-key="f1"><span class="match-number">5</span><span class="match-letter">F</span><span class="match-dot left" data-key="f1"></span></div>
+          <div class="match-row" data-key="e2"><span class="match-number">6</span><span class="match-letter">E</span><span class="match-dot left" data-key="e2"></span></div>
+        </div>
+
+        <div class="match-column right" id="rightMatchColumn">
+          <div class="staff-match-row" data-key="b1"><span class="match-dot right" data-key="b1"></span><div class="staff-card"><span class="staff-clef">𝄞</span><span class="staff-note-mini b"></span></div></div>
+          <div class="staff-match-row" data-key="e2"><span class="match-dot right" data-key="e2"></span><div class="staff-card"><span class="staff-clef">𝄞</span><span class="staff-note-mini e-high"></span></div></div>
+          <div class="staff-match-row" data-key="f1"><span class="match-dot right" data-key="f1"></span><div class="staff-card"><span class="staff-clef">𝄞</span><span class="staff-note-mini f"></span></div></div>
+          <div class="staff-match-row" data-key="g1"><span class="match-dot right" data-key="g1"></span><div class="staff-card"><span class="staff-clef">𝄞</span><span class="staff-note-mini g"></span></div></div>
+          <div class="staff-match-row" data-key="d1"><span class="match-dot right" data-key="d1"></span><div class="staff-card"><span class="staff-clef">𝄞</span><span class="staff-note-mini d"></span></div></div>
+          <div class="staff-match-row" data-key="e1"><span class="match-dot right" data-key="e1"></span><div class="staff-card"><span class="staff-clef">𝄞</span><span class="staff-note-mini e-low"></span></div></div>
+        </div>
+      </div>
+      <div class="match-feedback" id="matchFeedback">Matches: 0/6 correct</div>
+      <div class="match-actions">
+        <button class="match-reset" id="resetMatchGame" type="button">Reset Matching</button>
+      </div>
+    </div>
+
+    <!-- GABCDE / general note row: the original image has "GABCDE" text between clefs, we show it clearly -->
+    <div style="background: #faeedb; border-radius: 2rem; padding: 1rem 1rem; margin: 0.5rem 0 1rem 0; text-align: center; border: 1px solid #ffd9a5;">
+      <div style="font-weight: 800; font-size: 1rem; color:#5c371c;">🎶 MASTER THE MUSICAL ALPHABET 🎶</div>
+      <div class="notes-row" style="justify-content: center; gap: 0.9rem; margin-top: 8px;">
+        <div class="note-bubble" style="background:#ffdaaa;">G</div>
+        <div class="note-bubble" style="background:#ffdaaa;">A</div>
+        <div class="note-bubble" style="background:#ffdaaa;">B</div>
+        <div class="note-bubble" style="background:#ffdaaa;">C</div>
+        <div class="note-bubble" style="background:#ffdaaa;">D</div>
+        <div class="note-bubble" style="background:#ffdaaa;">E</div>
+      </div>
+      <div style="font-size: 0.75rem; margin-top: 6px;">(GABCDE - essential pitch sequence)</div>
+    </div>
+
+    <!-- finish level interactive area with gamified toast -->
+    <div class="finish-area">
+      <button class="finish-btn" id="finishLevelBtn">🏆 FINISH LEVEL 🏆</button>
+    </div>
+    <div id="feedbackMsg" class="feedback-toast"></div>
+  </div>
+
+  <!-- playful piano decoration -->
+  <div class="piano-deco">
+    <div class="key"></div><div class="key black"></div><div class="key"></div><div class="key black"></div><div class="key"></div>
+    <div class="key"></div><div class="key black"></div><div class="key"></div><div class="key black"></div><div class="key"></div><div class="key black"></div>
+    <div class="key"></div><div class="key"></div><div class="key black"></div><div class="key"></div>
+  </div>
+</div>
+
+<script>
+  (function() {
+    // Gamified interactive effect for finishing level
+    const finishButton = document.getElementById('finishLevelBtn');
+    const feedbackDiv = document.getElementById('feedbackMsg');
+    let levelCompleted = false;
+
+    // Confetti burst simulation (lightweight, DOM friendly)
+    function createConfetti() {
+      const confettiContainer = document.createElement('div');
+      confettiContainer.style.position = 'fixed';
+      confettiContainer.style.top = '0';
+      confettiContainer.style.left = '0';
+      confettiContainer.style.width = '100%';
+      confettiContainer.style.height = '100%';
+      confettiContainer.style.pointerEvents = 'none';
+      confettiContainer.style.zIndex = '9999';
+      document.body.appendChild(confettiContainer);
+
+      const colors = ['#FFD966', '#FFB347', '#FF8C42', '#F4A261', '#E9C46A', '#2A9D8F'];
+      for (let i = 0; i < 120; i++) {
+        const conf = document.createElement('div');
+        conf.style.position = 'absolute';
+        conf.style.width = Math.random() * 8 + 5 + 'px';
+        conf.style.height = Math.random() * 8 + 5 + 'px';
+        conf.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        conf.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+        conf.style.top = Math.random() * window.innerHeight + 'px';
+        conf.style.left = Math.random() * window.innerWidth + 'px';
+        conf.style.opacity = '0.9';
+        conf.style.transform = `rotate(${Math.random() * 360}deg)`;
+        conf.style.animation = `confettiFall ${Math.random() * 1.5 + 1.2}s linear forwards`;
+        confettiContainer.appendChild(conf);
+      }
+
+      // inject keyframes if not already
+      if (!document.querySelector('#confettiKeyframeStyle')) {
+        const styleSheet = document.createElement('style');
+        styleSheet.id = 'confettiKeyframeStyle';
+        styleSheet.textContent = `
+          @keyframes confettiFall {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+          }
+        `;
+        document.head.appendChild(styleSheet);
+      }
+
+      setTimeout(() => {
+        confettiContainer.remove();
+      }, 1800);
+    }
+
+    function playLevelCompleteSound() {
+      // subtle "pling" using Web Audio API if supported (optional but fun)
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+        oscillator.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+        oscillator.frequency.value = 880;
+        gainNode.gain.value = 0.2;
+        oscillator.type = 'sine';
+        oscillator.start();
+        gainNode.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 0.8);
+        oscillator.stop(audioCtx.currentTime + 0.7);
+        // resume context if suspended
+        if (audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+      } catch(e) {
+        // fallback: no sound, still ok
+        console.log("web audio not supported, but still fun!");
+      }
+    }
+
+    function showRewardMessage(message, isError = false) {
+      feedbackDiv.style.transition = '0.2s';
+      if (isError) {
+        feedbackDiv.style.color = '#c2441b';
+        feedbackDiv.style.fontWeight = 'bold';
+      } else {
+        feedbackDiv.style.color = '#2c6e2f';
+        feedbackDiv.style.fontWeight = '600';
+      }
+      feedbackDiv.innerHTML = message;
+      setTimeout(() => {
+        if (!isError && levelCompleted) {
+          // keep celebration message for 3 sec but not overwritten
+          if (feedbackDiv.innerHTML.includes('LEVEL MASTERED')) return;
+        }
+        setTimeout(() => {
+          if (!levelCompleted) {
+            feedbackDiv.innerHTML = '';
+          }
+        }, 2000);
+      }, 2500);
+    }
+
+    function finishLevelAction() {
+      if (levelCompleted) {
+        showRewardMessage("🎉 Level already mastered! Try the next lesson soon! 🎉", false);
+        return;
+      }
+      // Gamified completion: show big success, add confetti, XP gain animation
+      levelCompleted = true;
+      // add visual XP pop
+      const xpSpan = document.querySelector('.xp-points');
+      if (xpSpan) {
+        let currentXP = parseInt(xpSpan.innerText.match(/\d+/)?.[0] || 2450);
+        const newXP = currentXP + 350;
+        xpSpan.innerHTML = `🎯 ${newXP} XP`;
+        // animate plus badge
+        const plusBadge = document.createElement('span');
+        plusBadge.innerText = '+350 XP!';
+        plusBadge.style.position = 'relative';
+        plusBadge.style.left = '10px';
+        plusBadge.style.fontWeight = 'bold';
+        plusBadge.style.color = '#ffd966';
+        plusBadge.style.fontSize = '0.8rem';
+        plusBadge.style.animation = 'fadeOutUp 1s forwards';
+        xpSpan.appendChild(plusBadge);
+        if (!document.querySelector('#xpFadeStyle')) {
+          const styleXp = document.createElement('style');
+          styleXp.id = 'xpFadeStyle';
+          styleXp.textContent = `
+            @keyframes fadeOutUp {
+              0% { opacity: 1; transform: translateY(0px); }
+              100% { opacity: 0; transform: translateY(-20px); }
+            }
+          `;
+          document.head.appendChild(styleXp);
+        }
+        setTimeout(() => {
+          if (plusBadge) plusBadge.remove();
+        }, 1000);
+      }
+
+      // trigger confetti explosion
+      createConfetti();
+      playLevelCompleteSound();
+
+      // update level text (just for fun)
+      const levelSpan = document.querySelector('.level-text');
+      if (levelSpan && !levelSpan.innerText.includes('MASTER')) {
+        levelSpan.innerHTML = '🏅 LEVEL 4 · NOTE WIZARD 🏅';
+      } else if (levelSpan) {
+        levelSpan.innerHTML = '🏅 LEVEL MASTER · PIANO LEGEND 🏅';
+      }
+
+      showRewardMessage("✨✨ AMAZING! LEVEL COMPLETE! You've mastered Treble & Bass Clef! ✨✨ +350 XP", false);
+      
+      // change finish button style to show completed
+      finishButton.style.background = "#8fbc8f";
+      finishButton.style.boxShadow = "0 4px 0 #4a6e3b";
+      finishButton.innerHTML = "🏁 LEVEL MASTERED 🏁";
+      finishButton.disabled = false; // still clickable but with different message
+      // add extra mini notes animation
+      const noteElements = document.querySelectorAll('.note-bubble');
+      noteElements.forEach((note, idx) => {
+        note.style.transition = '0.1s';
+        setTimeout(() => {
+          note.style.transform = 'scale(1.08)';
+          setTimeout(() => { note.style.transform = ''; }, 200);
+        }, idx * 30);
+      });
+    }
+
+    finishButton.addEventListener('click', finishLevelAction);
+
+    // bonus: optional hovering mnemonic reinforce
+    const mnemonics = document.querySelectorAll('.mnemonic');
+    mnemonics.forEach(m => {
+      m.addEventListener('mouseenter', () => {
+        m.style.backgroundColor = '#ffe6c7';
+        m.style.transition = '0.1s';
+      });
+      m.addEventListener('mouseleave', () => {
+        m.style.backgroundColor = '#ffffffba';
+      });
+    });
+
+    // Small additional initial message
+    setTimeout(() => {
+      feedbackDiv.innerHTML = "🎵 Tap any note to review! Click FINISH LEVEL to claim reward! 🎵";
+      setTimeout(() => {
+        if (!levelCompleted) feedbackDiv.innerHTML = "";
+      }, 3000);
+    }, 500);
+
+    // Line matching game like worksheet style
+    const lineGame = document.getElementById('lineMatchGame');
+    if (lineGame) {
+      const svg = document.getElementById('matchLines');
+      const feedback = document.getElementById('matchFeedback');
+      const resetBtn = document.getElementById('resetMatchGame');
+      const leftDots = [...lineGame.querySelectorAll('.match-dot.left')];
+      const rightDots = [...lineGame.querySelectorAll('.match-dot.right')];
+      const connections = [];
+      let selectedLeftDot = null;
+      let activeDrag = null;
+
+      function dotCenter(dot) {
+        const boardRect = lineGame.querySelector('.match-board').getBoundingClientRect();
+        const rect = dot.getBoundingClientRect();
+        return {
+          x: rect.left - boardRect.left + rect.width / 2,
+          y: rect.top - boardRect.top + rect.height / 2,
+        };
+      }
+
+      function renderLines() {
+        if (!svg) return;
+        svg.innerHTML = '';
+        connections.forEach((conn) => {
+          const left = lineGame.querySelector(`.match-dot.left[data-key='${conn.leftKey}']`);
+          const right = lineGame.querySelector(`.match-dot.right[data-key='${conn.rightKey}']`);
+          if (!left || !right) return;
+          const a = dotCenter(left);
+          const b = dotCenter(right);
+          const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+          line.setAttribute('x1', String(a.x));
+          line.setAttribute('y1', String(a.y));
+          line.setAttribute('x2', String(b.x));
+          line.setAttribute('y2', String(b.y));
+          line.setAttribute('stroke', conn.correct ? '#2e9a4b' : '#c24830');
+          line.setAttribute('stroke-width', '3');
+          line.setAttribute('stroke-linecap', 'round');
+          svg.appendChild(line);
+        });
+
+        if (activeDrag && activeDrag.fromDot) {
+          const a = dotCenter(activeDrag.fromDot);
+          const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+          line.setAttribute('x1', String(a.x));
+          line.setAttribute('y1', String(a.y));
+          line.setAttribute('x2', String(activeDrag.currentX));
+          line.setAttribute('y2', String(activeDrag.currentY));
+          line.setAttribute('stroke', '#1d66e4');
+          line.setAttribute('stroke-width', '3');
+          line.setAttribute('stroke-linecap', 'round');
+          line.setAttribute('stroke-dasharray', '6 4');
+          svg.appendChild(line);
+        }
+      }
+
+      function getBoardPointFromClient(clientX, clientY) {
+        const boardRect = lineGame.querySelector('.match-board').getBoundingClientRect();
+        return {
+          x: clientX - boardRect.left,
+          y: clientY - boardRect.top,
+        };
+      }
+
+      function getRightDotFromPoint(clientX, clientY) {
+        const el = document.elementFromPoint(clientX, clientY);
+        if (!el) return null;
+        if (el.classList?.contains('match-dot') && el.classList.contains('right')) {
+          return el;
+        }
+        return el.closest?.('.match-dot.right') || null;
+      }
+
+      function finalizeConnection(leftDot, rightDot) {
+        if (!leftDot || !rightDot) return;
+        if (leftDot.classList.contains('locked') || rightDot.classList.contains('locked')) return;
+
+        const leftKey = leftDot.dataset.key;
+        const rightKey = rightDot.dataset.key;
+        const correct = leftKey === rightKey;
+
+        connections.push({ leftKey, rightKey, correct });
+
+        leftDot.classList.add('locked');
+        leftDot.classList.remove('selected');
+        rightDot.classList.add('locked');
+
+        const leftRow = leftDot.closest('.match-row');
+        const rightRow = rightDot.closest('.staff-match-row');
+        if (leftRow) leftRow.classList.add(correct ? 'correct' : 'wrong');
+        if (rightRow) rightRow.classList.add(correct ? 'correct' : 'wrong');
+
+        selectedLeftDot = null;
+        renderLines();
+        updateMatchFeedback();
+      }
+
+      function endDrag(clientX, clientY) {
+        if (!activeDrag || !activeDrag.fromDot) return;
+        const targetRightDot = getRightDotFromPoint(clientX, clientY);
+        const fromDot = activeDrag.fromDot;
+        activeDrag = null;
+        if (targetRightDot) {
+          finalizeConnection(fromDot, targetRightDot);
+        } else {
+          fromDot.classList.remove('selected');
+          selectedLeftDot = null;
+          renderLines();
+        }
+      }
+
+      function updateMatchFeedback() {
+        const total = connections.length;
+        const correct = connections.filter((c) => c.correct).length;
+        if (feedback) {
+          if (total < 6) {
+            feedback.textContent = `Matches: ${correct}/6 correct`;
+          } else if (correct === 6) {
+            feedback.textContent = 'Perfect! All matches are correct.';
+            showRewardMessage('Perfect matching. Excellent work!', false);
+          } else {
+            feedback.textContent = `Done: ${correct}/6 correct. Press Reset Matching to retry.`;
+            showRewardMessage('Some matches are wrong. Try again to improve score.', true);
+          }
+        }
+      }
+
+      function resetMatchingGame() {
+        connections.length = 0;
+        selectedLeftDot = null;
+        activeDrag = null;
+        leftDots.forEach((dot) => dot.classList.remove('selected', 'locked'));
+        rightDots.forEach((dot) => dot.classList.remove('locked'));
+        lineGame.querySelectorAll('.match-row, .staff-match-row').forEach((row) => {
+          row.classList.remove('correct', 'wrong');
+        });
+        if (feedback) feedback.textContent = 'Matches: 0/6 correct';
+        renderLines();
+      }
+
+      leftDots.forEach((dot) => {
+        dot.addEventListener('click', () => {
+          if (dot.classList.contains('locked')) return;
+          leftDots.forEach((d) => d.classList.remove('selected'));
+          selectedLeftDot = dot;
+          dot.classList.add('selected');
+        });
+
+        dot.addEventListener('pointerdown', (event) => {
+          if (dot.classList.contains('locked')) return;
+          event.preventDefault();
+          leftDots.forEach((d) => d.classList.remove('selected'));
+          selectedLeftDot = dot;
+          dot.classList.add('selected');
+          const p = getBoardPointFromClient(event.clientX, event.clientY);
+          activeDrag = {
+            fromDot: dot,
+            pointerId: event.pointerId,
+            currentX: p.x,
+            currentY: p.y,
+          };
+          renderLines();
+        });
+      });
+
+      rightDots.forEach((rightDot) => {
+        rightDot.addEventListener('click', () => {
+          if (!selectedLeftDot) return;
+          finalizeConnection(selectedLeftDot, rightDot);
+        });
+      });
+
+      window.addEventListener('pointermove', (event) => {
+        if (!activeDrag) return;
+        if (activeDrag.pointerId !== event.pointerId) return;
+        const p = getBoardPointFromClient(event.clientX, event.clientY);
+        activeDrag.currentX = p.x;
+        activeDrag.currentY = p.y;
+        renderLines();
+      });
+
+      window.addEventListener('pointerup', (event) => {
+        if (!activeDrag) return;
+        if (activeDrag.pointerId !== event.pointerId) return;
+        endDrag(event.clientX, event.clientY);
+      });
+
+      window.addEventListener('pointercancel', (event) => {
+        if (!activeDrag) return;
+        if (activeDrag.pointerId !== event.pointerId) return;
+        const fromDot = activeDrag.fromDot;
+        activeDrag = null;
+        if (fromDot) fromDot.classList.remove('selected');
+        selectedLeftDot = null;
+        renderLines();
+      });
+
+      window.addEventListener('resize', renderLines);
+      if (resetBtn) {
+        resetBtn.addEventListener('click', resetMatchingGame);
+      }
+      renderLines();
+    }
+
+    // Tap letter boxes to show matching note on the staff
+    const tapButtons = document.querySelectorAll('.tap-note-btn');
+    const staffDots = document.querySelectorAll('.staff-note-dot');
+    const tapFeedback = document.getElementById('tapNoteFeedback');
+
+    function showStaffNote(note) {
+      staffDots.forEach(dot => {
+        dot.classList.toggle('active', dot.dataset.note === note);
+      });
+      tapButtons.forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.note === note);
+      });
+      if (tapFeedback) {
+        tapFeedback.textContent = `Showing note ${note} on the staff.`;
+      }
+    }
+
+    tapButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        showStaffNote(btn.dataset.note);
+      });
+    });
+  })();
+</script>
+</body>
+</html>

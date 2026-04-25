@@ -27,6 +27,53 @@ def init_app(app):
     app.teardown_appcontext(close_db)
 
 
+def seed_levels(cursor):
+    levels = [
+        (1, 'Level 1', 'Basic Notes'),
+        (2, 'Level 2', 'Simple Melody'),
+        (3, 'Level 3', 'Intermediate'),
+        (4, 'Level 4', 'Final Challenge'),
+    ]
+    cursor.executemany(
+        """
+        INSERT INTO levels (id, level_name, description)
+        VALUES (?, ?, ?)
+        ON CONFLICT(id) DO UPDATE SET
+            level_name = excluded.level_name,
+            description = excluded.description
+        """,
+        levels,
+    )
+
+
+def seed_tasks(cursor):
+    tasks = [
+        (1, 1, 'Identify the note C', 'C'),
+        (2, 1, 'Identify the note D', 'D'),
+        (3, 1, 'Identify the note E', 'E'),
+        (4, 2, 'Play Mary Had a Little Lamb intro', 'E D C D E E E'),
+        (5, 2, 'Play Twinkle Twinkle first phrase', 'C C G G A A G'),
+        (6, 2, 'Play Happy Birthday opening', 'C C D C F E'),
+        (7, 3, 'Build the C major chord', 'C E G'),
+        (8, 3, 'Build the G major chord', 'G B D'),
+        (9, 3, 'Build the A minor chord', 'A C E'),
+        (10, 4, 'Play C major scale both hands', 'C D E F G A B C'),
+        (11, 4, 'Play arpeggio C-E-G-C', 'C E G C'),
+        (12, 4, 'Perform progression I-V-vi-IV in C', 'C G Am F'),
+    ]
+    cursor.executemany(
+        """
+        INSERT INTO tasks (id, level_id, task_name, correct_answer)
+        VALUES (?, ?, ?, ?)
+        ON CONFLICT(id) DO UPDATE SET
+            level_id = excluded.level_id,
+            task_name = excluded.task_name,
+            correct_answer = excluded.correct_answer
+        """,
+        tasks,
+    )
+
+
 def init_db(app):
     db = sqlite3.connect(_database_path(app))
     cursor = db.cursor()
@@ -98,17 +145,8 @@ def init_db(app):
 
     seed_user(cursor, 'admin', 'admin123', 'admin')
     seed_user(cursor, 'student', '1234', 'user')
-
-    levels = [
-        (1, 'Level 1', 'Basic Notes'),
-        (2, 'Level 2', 'Simple Melody'),
-        (3, 'Level 3', 'Intermediate'),
-        (4, 'Level 4', 'Final Challenge'),
-    ]
-    cursor.executemany(
-        "INSERT OR IGNORE INTO levels (id, level_name, description) VALUES (?, ?, ?)",
-        levels,
-    )
+    seed_levels(cursor)
+    seed_tasks(cursor)
 
     db.commit()
     db.close()

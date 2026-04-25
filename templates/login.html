@@ -3,220 +3,602 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pianova Login</title>
+    <title>Pianova | Login</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Bebas+Neue&family=Inter:wght@300;400;600;700&family=Dancing+Script:wght@700&display=swap');
+
         :root {
-            --ink: #0a0906;
-            --gold: #e1b348;
-            --gold-soft: #f3d68f;
-            --text: #f6ebd2;
-            --muted: #d9c8a4;
-            --panel: rgba(10, 10, 10, 0.58);
-            --border: rgba(226, 179, 71, 0.38);
-            --danger: #ffaca1;
-            --success: #b7edc1;
+            --bg-black: #0a0a0a;
+            --card-bg: #141414;
+            --gold-primary: #d4af37;
+            --gold-btn: linear-gradient(135deg, #b8841e 0%, #e8c055 45%, #c09030 100%);
+            --text-gray: #8a8a8a;
+            --border-color: #2a2a2a;
+            --danger: #ff9090;
+            --success: #90e0a0;
         }
-        * {
-            box-sizing: border-box;
-        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html { height: 100%; overflow: hidden; }
+
         body {
-            margin: 0;
-            min-height: 100vh;
-            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-            background: #070603;
-            color: var(--text);
+            background-color: #0a0a0a;
+            color: #f5eedc;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Background */
+        .bg-video {
+            position: fixed; inset: 0;
+            width: 100%; height: 100%;
+            object-fit: cover;
+            filter: brightness(0.3) saturate(0.8);
+            opacity: 0.15; z-index: 0;
+        }
+        .bg-overlay {
+            position: fixed; inset: 0;
+            background: radial-gradient(ellipse at 50% 0%, rgba(212,175,55,0.15) 0%, transparent 60%),
+                        linear-gradient(180deg, #0a0a0a 0%, #000000 50%, #0a0a0a 100%);
+            z-index: 1;
+        }
+
+        /* Main content row */
+        .main-content {
+            position: relative; z-index: 2;
+            flex: 1;
+            min-height: 0;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 10px 6% 16px 8%;
+            gap: 30px;
             overflow: hidden;
         }
 
-        .video-bg {
-            position: fixed;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            filter: brightness(0.5) saturate(1.1);
-            z-index: -3;
+        /* Particles */
+        .particles { position: absolute; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+        .particle {
+            position: absolute;
+            color: rgba(212,175,55,0.18);
+            font-size: 1.4rem;
+            user-select: none;
+            animation: flyNote linear infinite;
+        }
+        .particle:nth-child(1)  { left:4%;  animation-duration:12s; animation-delay:0s;    font-size:1.6rem; color:rgba(255,215,0,0.35); }
+        .particle:nth-child(2)  { left:13%; animation-duration:16s; animation-delay:2s;    font-size:1.1rem; color:rgba(212,175,55,0.25); }
+        .particle:nth-child(3)  { left:22%; animation-duration:10s; animation-delay:5s;    font-size:2rem;   color:rgba(255,215,0,0.3); }
+        .particle:nth-child(4)  { left:33%; animation-duration:18s; animation-delay:1s;    font-size:1.3rem; color:rgba(212,175,55,0.22); }
+        .particle:nth-child(5)  { left:45%; animation-duration:14s; animation-delay:7s;    font-size:1.8rem; color:rgba(255,215,0,0.38); }
+        .particle:nth-child(6)  { left:55%; animation-duration:11s; animation-delay:3.5s;  font-size:1rem;   color:rgba(212,175,55,0.2); }
+        .particle:nth-child(7)  { left:65%; animation-duration:17s; animation-delay:0.5s;  font-size:2.2rem; color:rgba(255,215,0,0.32); }
+        .particle:nth-child(8)  { left:74%; animation-duration:13s; animation-delay:9s;    font-size:1.4rem; color:rgba(212,175,55,0.28); }
+        .particle:nth-child(9)  { left:83%; animation-duration:15s; animation-delay:4s;    font-size:1.7rem; color:rgba(255,215,0,0.35); }
+        .particle:nth-child(10) { left:91%; animation-duration:9s;  animation-delay:6s;    font-size:1.2rem; color:rgba(212,175,55,0.22); }
+        .particle:nth-child(11) { left:8%;  animation-duration:20s; animation-delay:11s;   font-size:1.5rem; color:rgba(255,215,0,0.3); }
+        .particle:nth-child(12) { left:49%; animation-duration:13s; animation-delay:8s;    font-size:1.9rem; color:rgba(212,175,55,0.35); }
+        .particle:nth-child(13) { left:38%; animation-duration:11s; animation-delay:13s;   font-size:1.1rem; color:rgba(255,215,0,0.25); }
+        .particle:nth-child(14) { left:70%; animation-duration:16s; animation-delay:2.5s;  font-size:2rem;   color:rgba(212,175,55,0.28); }
+        .particle:nth-child(15) { left:58%; animation-duration:8s;  animation-delay:10s;   font-size:1.3rem; color:rgba(255,215,0,0.4); }
+        @keyframes flyNote {
+            0%   { transform: translateY(110vh) translateX(0) rotate(-10deg) scale(0.7); opacity:0; }
+            8%   { opacity: 1; }
+            25%  { transform: translateY(75vh)  translateX(18px)  rotate(8deg)  scale(1.05); }
+            50%  { transform: translateY(50vh)  translateX(-14px) rotate(-6deg) scale(1); }
+            75%  { transform: translateY(25vh)  translateX(20px)  rotate(10deg) scale(1.1); filter: drop-shadow(0 0 6px rgba(255,215,0,0.7)); }
+            92%  { opacity: 0.8; }
+            100% { transform: translateY(-12vh) translateX(-10px) rotate(-15deg) scale(0.8); opacity:0; }
         }
 
-        .backdrop {
-            position: fixed;
-            inset: 0;
-            background:
-                radial-gradient(circle at 50% 78%, rgba(243, 193, 74, 0.5), rgba(243, 193, 74, 0.06) 28%, rgba(0, 0, 0, 0) 55%),
-                linear-gradient(180deg, rgba(0, 0, 0, 0.62), rgba(0, 0, 0, 0.78));
-            z-index: -2;
+        /* Hero left */
+        .hero-text {
+            flex: 1; max-width: 560px;
+            position: relative; z-index: 2;
+            display: flex; flex-direction: column; gap: 0;
+            align-self: flex-start;
+            padding-top: 0;
         }
 
-        .dust {
-            position: fixed;
-            inset: 0;
+        /* Logo */
+        .hero-logo { margin-top: 10px; margin-bottom: 18px; position: relative; display: inline-block; }
+        .css-logo {
+            position: relative;
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 18px;
+        }
+
+        .logo-circle {
+            position: relative;
+            width: 130px; height: 130px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle at 35% 35%, rgba(212,175,55,0.15), rgba(212,175,55,0.02));
+            border: 3px solid rgba(212,175,55,0.65);
+            box-shadow: 0 0 60px rgba(212,175,55,0.4), 0 0 120px rgba(212,175,55,0.2),
+                        inset 0 0 60px rgba(212,175,55,0.12), 0 15px 50px rgba(0,0,0,0.8);
+            animation: circlePulse 4s ease-in-out infinite;
+        }
+        @keyframes circlePulse {
+            0%, 100% { box-shadow: 0 0 60px rgba(212,175,55,0.4), 0 0 120px rgba(212,175,55,0.2), inset 0 0 60px rgba(212,175,55,0.12), 0 15px 50px rgba(0,0,0,0.8); }
+            50%      { box-shadow: 0 0 90px rgba(212,175,55,0.6), 0 0 160px rgba(212,175,55,0.3), inset 0 0 80px rgba(212,175,55,0.18), 0 20px 60px rgba(0,0,0,1); }
+        }
+
+        /* Rotating ring */
+        .logo-circle::before {
+            content: '';
+            position: absolute; inset: -12px;
+            border-radius: 50%;
+            border: 2.5px solid transparent;
+            border-top-color: rgba(212,175,55,0.6);
+            border-right-color: rgba(212,175,55,0.3);
+            border-bottom-color: rgba(212,175,55,0.15);
+            border-left-color: rgba(212,175,55,0.5);
+            animation: spinBorder 5s linear infinite;
+            box-shadow: 0 0 15px rgba(212,175,55,0.3);
             pointer-events: none;
-            background-image:
-                radial-gradient(circle, rgba(255, 221, 137, 0.42) 1px, transparent 1px),
-                radial-gradient(circle, rgba(245, 201, 98, 0.28) 1px, transparent 1px);
-            background-size: 3px 3px, 5px 5px;
-            background-position: 0 0, 2px 3px;
-            opacity: 0.35;
-            animation: drift 20s linear infinite;
-            z-index: -1;
+        }
+        @keyframes spinBorder {
+            from { transform: rotate(0deg); }
+            to   { transform: rotate(360deg); }
         }
 
-        .layout {
-            min-height: 100vh;
-            display: grid;
-            place-items: center;
-            padding: 24px;
+        /* Inner glow */
+        .logo-circle::after {
+            content: '';
+            position: absolute; inset: 10px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 32% 32%, rgba(212,175,55,0.25), rgba(212,175,55,0.08) 40%, transparent 70%);
+            pointer-events: none;
+            animation: innerGlow 3s ease-in-out infinite;
+        }
+        @keyframes innerGlow {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 0.9; }
         }
 
-        .card {
-            width: 100%;
-            max-width: 460px;
-            padding: 32px;
-            border-radius: 24px;
-            background: var(--panel);
-            border: 1px solid var(--border);
-            box-shadow: 0 24px 70px rgba(0, 0, 0, 0.5), inset 0 0 0 1px rgba(255, 228, 169, 0.06);
-            backdrop-filter: blur(8px);
+        .logo-piano-circle {
+            position: relative; z-index: 2;
+            width: 100%; height: 100%;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 50%; overflow: hidden;
+        }
+        .logo-piano-circle img {
+            width: 100%; height: 100%;
+            object-fit: cover; border-radius: 50%;
+            animation: innerGlow 3s ease-in-out infinite;
+            filter: drop-shadow(0 0 10px rgba(212,175,55,0.4));
         }
 
-        h1 {
-            margin: 0;
-            text-align: center;
-            font-size: clamp(2rem, 4vw, 2.7rem);
-            letter-spacing: 0.06em;
-            color: var(--gold-soft);
-            text-shadow: 0 0 28px rgba(241, 193, 91, 0.28);
+        /* Brand name */
+        .logo-name {
+            font-family: 'Dancing Script', cursive;
+            font-size: 2.6rem; font-weight: 700; letter-spacing: 0.08em; line-height: 1;
+            position: relative; z-index: 3; text-align: center; text-transform: uppercase;
+            background: linear-gradient(135deg, #d4af37 0%, #f5e070 20%, #ffd700 40%, #fff8dc 50%, #ffd700 60%, #f5e070 80%, #d4af37 100%);
+            background-size: 300% 100%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: goldFlow 5s ease-in-out infinite;
+            filter: drop-shadow(0 0 8px rgba(212,175,55,0.6)) drop-shadow(0 4px 16px rgba(212,175,55,0.35));
+        }
+        @keyframes goldFlow {
+            0%   { background-position: 300% 0; }
+            50%  { background-position: 0 0; }
+            100% { background-position: 300% 0; }
         }
 
-        .subtext {
-            margin: 12px 0 22px;
-            text-align: center;
-            color: var(--muted);
-            line-height: 1.45;
-            font-size: 0.95rem;
+        .logo-sub {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.7rem; letter-spacing: 0.5em; text-transform: uppercase;
+            color: rgba(212,175,55,0.75); font-weight: 600;
+            position: relative; z-index: 3;
+            filter: drop-shadow(0 0 4px rgba(212,175,55,0.2));
+            margin-left: 18px;
         }
 
-        form {
-            display: grid;
-            gap: 14px;
+        /* Orbiting accents */
+        .logo-accent {
+            position: absolute; font-size: 1.3rem;
+            color: rgba(212,175,55,0.5); pointer-events: none;
+            filter: drop-shadow(0 0 4px rgba(212,175,55,0.4));
+            text-shadow: 0 0 8px rgba(212,175,55,0.3);
+            animation: orbitAccent 5s linear infinite;
+        }
+        .logo-accent:nth-child(1) { top:-8px; left:50%; transform:translateX(-50%) translateY(-80px); animation-delay:0s; }
+        .logo-accent:nth-child(2) { bottom:-8px; right:-25px; animation-delay:1.25s; }
+        .logo-accent:nth-child(3) { bottom:-8px; left:-25px; animation-delay:2.5s; }
+        .logo-accent:nth-child(4) { top:-8px; right:50%; transform:translateX(50%) translateY(-80px); animation-delay:3.75s; }
+        @keyframes orbitAccent {
+            0%   { opacity:0.25; transform:scale(0.9); }
+            25%  { opacity:0.65; transform:scale(1.1); }
+            50%  { opacity:0.85; transform:scale(1); }
+            75%  { opacity:0.65; transform:scale(1.1); }
+            100% { opacity:0.25; transform:scale(0.9); }
         }
 
-        label {
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: #f3dbab;
+        /* Badges */
+        .hero-badges { display:flex; gap:6px; flex-wrap:nowrap; margin-bottom:18px; }
+        .hero-badge {
+            display:flex; align-items:center; gap:8px;
+            background: linear-gradient(135deg, rgba(212,175,55,0.12), rgba(212,175,55,0.04));
+            border: 1.5px solid rgba(212,175,55,0.35);
+            border-radius: 50px; padding: 7px 12px;
+            font-size: 0.7rem; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase;
+            color: rgba(212,175,55,0.9);
+            animation: badgeGlow 3s ease-in-out infinite;
+        }
+        .hero-badge:nth-child(1) { animation-delay:0s; }
+        .hero-badge:nth-child(2) { animation-delay:0.4s; }
+        .hero-badge:nth-child(3) { animation-delay:0.8s; }
+        .hero-badge svg { width:14px; height:14px; flex-shrink:0; }
+        @keyframes badgeGlow {
+            0%, 100% { box-shadow: 0 4px 15px rgba(212,175,55,0.1), 0 0 20px rgba(212,175,55,0.08); }
+            50%      { box-shadow: 0 6px 20px rgba(212,175,55,0.15), 0 0 30px rgba(212,175,55,0.12); }
         }
 
-        input {
-            width: 100%;
-            padding: 13px 14px;
-            border-radius: 13px;
-            border: 1px solid rgba(243, 202, 109, 0.2);
-            background: rgba(12, 10, 5, 0.65);
-            color: var(--text);
-            font-size: 1rem;
-            transition: border-color 0.22s ease, box-shadow 0.22s ease;
+        .hero-tagline {
+            font-size: 0.72rem; letter-spacing: 0.35em; color: rgba(212,175,55,0.65);
+            text-transform: uppercase; margin-top: 22px; margin-bottom: 28px;
+            display: flex; align-items: center; gap: 14px; font-weight: 600;
+        }
+        .hero-tagline::before, .hero-tagline::after {
+            content: ''; display: block; width: 40px; height: 1.5px;
+            background: linear-gradient(90deg, transparent, rgba(212,175,55,0.6), transparent);
+            box-shadow: 0 0 8px rgba(212,175,55,0.3);
         }
 
-        input::placeholder {
-            color: rgba(239, 217, 168, 0.48);
+        /* Heading */
+        .hero-text h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.6rem, 2.5vw, 2.4rem); line-height: 1.25; font-weight: 400;
+            color: #f5eedc;
+            text-shadow: 0 2px 50px rgba(0,0,0,0.9), 0 0 30px rgba(212,175,55,0.2);
+            margin-bottom: 14px;
+        }
+        .hero-text h1 em { font-style: italic; color: #e8d48a; filter: drop-shadow(0 0 8px rgba(212,175,55,0.3)); }
+        .hero-text h1 span {
+            display: block; font-weight: 900; font-style: italic; font-size: 110%;
+            background: linear-gradient(90deg, #e6c547, #f5d76e, #d4af37);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
         }
 
-        input:focus {
-            outline: none;
-            border-color: rgba(243, 203, 113, 0.72);
-            box-shadow: 0 0 0 3px rgba(223, 180, 77, 0.2);
+        .hero-divider {
+            display: flex; align-items: center; gap: 14px; margin: 6px 0;
+        }
+        .hero-divider::before {
+            content: ''; flex: 1; height: 1.5px;
+            background: linear-gradient(90deg, rgba(212,175,55,0.8), rgba(212,175,55,0.3), transparent);
+        }
+        .hero-divider::after {
+            content: ''; flex: 1; height: 1.5px;
+            background: linear-gradient(270deg, rgba(212,175,55,0.8), rgba(212,175,55,0.3), transparent);
+        }
+        .hero-divider span { color: var(--gold-primary); font-size: 1.2rem; }
+
+        .hero-desc {
+            color: rgba(210,195,160,0.8); font-size: 0.9rem; line-height: 1.8; letter-spacing: 0.02em;
         }
 
-        button {
-            border: 0;
-            border-radius: 13px;
-            margin-top: 4px;
-            padding: 13px 18px;
-            font-weight: 700;
-            letter-spacing: 0.03em;
-            background: linear-gradient(140deg, #c7912f, #f4cd73 50%, #ab7723);
-            color: #1f1402;
-            cursor: pointer;
-            transition: transform 0.18s ease, box-shadow 0.18s ease;
-            box-shadow: 0 10px 24px rgba(183, 129, 31, 0.33);
+        .hero-stats { display:flex; gap:22px; margin-top:18px; flex-wrap:wrap; }
+        .hero-stat { border-left: 2px solid rgba(212,175,55,0.35); padding-left: 14px; }
+        .hero-stat .num {
+            font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 700;
+            color: var(--gold-primary); line-height: 1;
+        }
+        .hero-stat .lbl {
+            font-size: 0.65rem; letter-spacing: 0.14em; text-transform: uppercase;
+            color: rgba(212,175,55,0.55); margin-top: 3px;
         }
 
-        button:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 14px 28px rgba(183, 129, 31, 0.4);
+        /* Login Card */
+        .login-card {
+            background: var(--card-bg); padding: 20px 40px; border-radius: 20px;
+            width: 520px; flex-shrink: 0;
+            margin-left: auto; margin-right: 6%;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 25px 60px rgba(0,0,0,0.6), inset 0 0 0 1px rgba(255,220,120,0.04);
         }
-
-        .flash {
-            margin-bottom: 12px;
-            padding: 11px 12px;
-            border-radius: 11px;
-            font-size: 0.9rem;
-            border: 1px solid transparent;
-        }
-
-        .flash.error {
-            background: rgba(255, 90, 90, 0.14);
-            color: var(--danger);
-            border-color: rgba(255, 146, 146, 0.25);
-        }
-
-        .flash.success {
-            background: rgba(128, 235, 160, 0.14);
-            color: var(--success);
-            border-color: rgba(169, 245, 188, 0.24);
-        }
-
-        .signup {
-            margin-top: 16px;
-            text-align: center;
-            color: var(--muted);
-            font-size: 0.92rem;
-        }
-
-        a {
-            color: var(--gold-soft);
-            text-decoration: none;
-        }
-
-        a:hover {
-            text-decoration: underline;
-        }
-
-        .hint {
-            margin-top: 18px;
-            padding: 12px;
+        .card-logo-wrap { text-align: center; margin-bottom: 14px; display: flex; justify-content: center; }
+        .card-logo-circle {
+            position: relative;
+            width: 160px; height: 160px;
             border-radius: 12px;
-            background: rgba(245, 207, 126, 0.09);
-            border: 1px solid rgba(245, 207, 126, 0.22);
-            color: var(--muted);
-            font-size: 0.86rem;
-            line-height: 1.45;
+            border: 3px solid rgba(212,175,55,0.65);
+            box-shadow: 0 0 60px rgba(212,175,55,0.4), 0 0 120px rgba(212,175,55,0.2),
+                        inset 0 0 40px rgba(212,175,55,0.1), 0 15px 50px rgba(0,0,0,0.8);
+            animation: boxPulse 4s ease-in-out infinite;
+            overflow: hidden;
+        }
+        .card-logo-circle::before {
+            content: '';
+            position: absolute; inset: -10px;
+            border-radius: 18px;
+            border: 2.5px solid transparent;
+            border-top-color: rgba(212,175,55,0.8);
+            border-right-color: rgba(212,175,55,0.35);
+            border-bottom-color: rgba(212,175,55,0.15);
+            border-left-color: rgba(212,175,55,0.55);
+            animation: spinBorder 5s linear infinite;
+            box-shadow: 0 0 15px rgba(212,175,55,0.3);
+            pointer-events: none;
+        }
+        .card-logo-circle::after {
+            content: '';
+            position: absolute; inset: -20px;
+            border-radius: 24px;
+            border: 1.5px solid transparent;
+            border-top-color: rgba(212,175,55,0.3);
+            border-left-color: rgba(212,175,55,0.2);
+            animation: spinBorder 8s linear infinite reverse;
+            pointer-events: none;
+        }
+        .card-logo-circle img {
+            width: 100%; height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        @keyframes boxPulse {
+            0%, 100% { box-shadow: 0 0 60px rgba(212,175,55,0.4), 0 0 120px rgba(212,175,55,0.2), inset 0 0 40px rgba(212,175,55,0.1), 0 15px 50px rgba(0,0,0,0.8); }
+            50%      { box-shadow: 0 0 90px rgba(212,175,55,0.6), 0 0 160px rgba(212,175,55,0.3), inset 0 0 60px rgba(212,175,55,0.18), 0 20px 60px rgba(0,0,0,1); }
+        }
+        .card-tagline {
+            text-align: center; font-size: 0.78rem; letter-spacing: 0.28em;
+            color: #ffd700; text-transform: uppercase; margin-bottom: 8px;
+            font-weight: 800;
+            text-shadow: 0 0 8px rgba(255,215,0,0.9), 0 0 20px rgba(212,175,55,0.8), 0 0 40px rgba(212,175,55,0.5);
+            filter: drop-shadow(0 0 6px rgba(255,215,0,0.7));
+        }
+        .card-subtext {
+            text-align: center; color: var(--text-gray); font-size: 0.82rem; line-height: 1.4; margin-bottom: 14px;
+        }
+        .flash {
+            margin-bottom: 14px; padding: 10px 12px;
+            border-radius: 10px; font-size: 0.86rem; border: 1px solid transparent;
+        }
+        .flash.error   { background: rgba(255,80,80,0.12);  color: var(--danger);  border-color: rgba(255,120,120,0.22); }
+        .flash.success { background: rgba(100,220,130,0.12); color: var(--success); border-color: rgba(120,220,150,0.22); }
+
+        form { display: grid; gap: 10px; }
+        .input-group { text-align: left; }
+        .input-group label {
+            display: block; color: var(--gold-primary);
+            font-size: 0.78rem; font-weight: 600; letter-spacing: 0.04em; margin-bottom: 5px;
+        }
+        .input-wrap { position: relative; }
+        .input-wrap svg {
+            position: absolute; left: 13px; top: 50%; transform: translateY(-50%);
+            width: 15px; height: 15px; color: #5a4010; pointer-events: none;
+        }
+        .input-field {
+            width: 100%; background: #1f1f1f; border: 1px solid #333;
+            padding: 9px 14px 9px 38px; border-radius: 10px; color: white;
+            font-size: 0.93rem; outline: none; transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .input-field::placeholder { color: rgba(180,140,60,0.3); }
+        .input-field:focus {
+            border-color: rgba(212,175,55,0.55);
+            box-shadow: 0 0 0 3px rgba(180,140,40,0.14);
+        }
+        .login-btn {
+            width: 100%; padding: 11px;
+            background: var(--gold-btn); border: none; border-radius: 10px;
+            font-weight: 700; font-size: 0.95rem; letter-spacing: 0.08em; text-transform: uppercase;
+            cursor: pointer; color: #1a1000;
+            box-shadow: 0 8px 22px rgba(160,110,20,0.38);
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+        .login-btn:hover { transform: translateY(-1px); box-shadow: 0 12px 28px rgba(160,110,20,0.5); }
+        .forgot-row { text-align: right; margin-top: -4px; }
+        .forgot-row a { font-size: 0.79rem; color: var(--gold-primary); text-decoration: none; opacity: 0.85; }
+        .forgot-row a:hover { opacity: 1; text-decoration: underline; }
+        .signup-row { margin-top: 8px; text-align: center; font-size: 0.84rem; color: var(--text-gray); }
+        .signup-row a { color: var(--gold-primary); font-weight: 600; text-decoration: none; }
+        .signup-row a:hover { text-decoration: underline; }
+
+        /* PIANO SECTION */
+        .piano-section {
+            position: relative; z-index: 2;
+            background-color: #1a0e00;
+            background-image:
+                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)' opacity='0.07'/%3E%3C/svg%3E"),
+                repeating-linear-gradient(92deg, transparent 0px, transparent 18px, rgba(255,200,80,0.025) 18px, rgba(255,200,80,0.025) 19px, transparent 19px, transparent 38px, rgba(0,0,0,0.18) 38px, rgba(0,0,0,0.18) 40px),
+                repeating-linear-gradient(178deg, transparent 0px, transparent 60px, rgba(180,100,20,0.04) 60px, rgba(180,100,20,0.04) 62px, transparent 62px, transparent 130px, rgba(0,0,0,0.12) 130px, rgba(0,0,0,0.12) 132px),
+                linear-gradient(180deg, #100800 0%, #1e0f02 15%, #2a1504 30%, #1e0f02 55%, #150a01 75%, #0d0500 100%);
+            border-top: 2px solid #4a2800;
+            box-shadow: inset 0 4px 18px rgba(0,0,0,0.7), inset 0 -2px 8px rgba(0,0,0,0.5);
+        }
+        .piano-topbar {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 5px 20px 5px; border-bottom: 1px solid #1e1e1e;
+        }
+        .piano-brand-left {
+            display: flex; align-items: center; gap: 8px;
+            font-size: 0.7rem; font-weight: 800; letter-spacing: 0.24em;
+            color: var(--gold-primary); text-transform: uppercase;
+        }
+        .piano-brand-left svg { width:18px; height:18px; }
+        .piano-brand-center {
+            font-size: 0.68rem; letter-spacing: 0.3em; color: #3a3a3a;
+            text-transform: uppercase; display: flex; align-items: center; gap: 10px;
+        }
+        .piano-brand-center::before, .piano-brand-center::after {
+            content: ''; display: block; width: 40px; height: 1px;
+            background: linear-gradient(90deg, transparent, #333);
+        }
+        .piano-brand-center::after { transform: scaleX(-1); }
+        .piano-note-display {
+            font-size: 0.7rem; font-weight: 700; color: #f0d080;
+            letter-spacing: 0.08em; min-width: 80px; text-align: right; transition: opacity 0.3s;
+        }
+        .piano-keys-wrap {
+            padding: 8px 0 6px; display: flex; justify-content: center;
+            overflow: hidden; width: 100%;
+        }
+        .piano-keys { position: relative; display: inline-flex; flex-shrink: 0; }
+
+        .key { position: relative; cursor: pointer; user-select: none; }
+        .key.white {
+            width: 68px; height: 100px;
+            background: linear-gradient(180deg, #ede0c0 0%, #faf5e8 20%, #fffef8 50%, #f0e8d0 85%, #ddd0a8 100%);
+            border: 1px solid rgba(0,0,0,0.4); border-top: none;
+            border-radius: 0 0 8px 8px; z-index: 1;
+            box-shadow: inset 0 -6px 10px rgba(0,0,0,0.12), 2px 5px 12px rgba(0,0,0,0.4);
+            transition: background 0.06s, transform 0.06s, box-shadow 0.06s;
+        }
+        .key.white:hover {
+            background: linear-gradient(180deg, #f8e090 0%, #fdf0b0 30%, #fff8c8 55%, #f5d860 85%, #ddb820 100%);
+        }
+        .key.white.active {
+            background: linear-gradient(180deg, #e8b030 0%, #f8d050 30%, #fce870 55%, #e8a820 85%, #c88810 100%);
+            transform: translateY(3px);
+            box-shadow: inset 0 4px 8px rgba(0,0,0,0.2), 0 2px 4px rgba(0,0,0,0.5);
+        }
+        .key.white.active::after {
+            content:''; position:absolute; inset:0; border-radius:inherit;
+            background: radial-gradient(ellipse at 50% 20%, rgba(255,220,80,0.5), transparent 65%);
+            animation: glow 0.45s ease-out forwards;
+        }
+        .key.black {
+            width: 42px; height: 62px;
+            background: linear-gradient(180deg, #2c1a06 0%, #150d02 30%, #1e1206 60%, #0e0a02 100%);
+            border: 1px solid rgba(0,0,0,0.95); border-top: 3px solid rgba(80,50,8,0.7);
+            border-radius: 0 0 6px 6px; position: absolute; z-index: 2;
+            box-shadow: 3px 8px 18px rgba(0,0,0,0.85), inset 0 2px 4px rgba(200,150,40,0.06);
+            transition: background 0.06s, transform 0.06s, box-shadow 0.06s;
+        }
+        .key.black:hover {
+            background: linear-gradient(180deg, #5a3008 0%, #3a1e04 40%, #4a2808 70%, #2a1402 100%);
+        }
+        .key.black.active {
+            background: linear-gradient(180deg, #7a4410 0%, #5a2c08 40%, #6a3810 70%, #3a1e04 100%);
+            transform: translateY(3px);
+            box-shadow: 1px 3px 7px rgba(0,0,0,0.9), inset 0 2px 5px rgba(0,0,0,0.5);
+        }
+        .key.black.active::after {
+            content:''; position:absolute; inset:0; border-radius:inherit;
+            background: radial-gradient(ellipse at 50% 20%, rgba(255,150,30,0.4), transparent 65%);
+            animation: glow 0.45s ease-out forwards;
+        }
+        @keyframes glow { 0%{opacity:1} 100%{opacity:0} }
+        .key-note {
+            position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);
+            font-size: 11px; font-weight: 800; color: rgba(80,55,15,0.6);
+            pointer-events: none; white-space: nowrap;
+        }
+        .key.black .key-note { color: rgba(220,170,50,0.5); bottom:7px; font-size:9px; }
+
+        .piano-statusbar {
+            display: flex; justify-content: center; align-items: center; gap: 22px;
+            padding: 4px 24px 4px; font-size: 0.68rem; letter-spacing: 0.14em;
+            color: #3a3a3a; text-transform: uppercase;
+        }
+        .piano-statusbar .sep { opacity: 0.4; }
+        .piano-statusbar .val { color: var(--gold-primary); font-weight: 700; }
+        .kb-hint {
+            text-align: center; font-size: 0.6rem; letter-spacing: 0.1em;
+            color: #2a2a2a; padding-bottom: 4px; text-transform: uppercase;
         }
 
-        @keyframes drift {
-            from { transform: translateY(0); }
-            to { transform: translateY(24px); }
+        @media (max-width: 920px) {
+            .main-content { flex-direction: column; padding: 10px 16px; }
+            .hero-text { max-width: 100%; text-align: center; }
+            .hero-divider { margin: 22px auto; }
+            .hero-tagline { justify-content: center; }
+            .hero-badges { justify-content: center; }
+            .hero-stats { justify-content: center; }
+            .login-card { width: 100%; max-width: 460px; }
         }
-
         @media (max-width: 560px) {
-            .card {
-                padding: 24px 20px;
-                border-radius: 20px;
-            }
+            .key-note { display: none; }
+            .piano-brand-center { display: none; }
         }
     </style>
 </head>
 <body>
-    <video class="video-bg" autoplay muted loop playsinline>
+
+    <video class="bg-video" autoplay muted loop playsinline>
         <source src="{{ url_for('static', filename='bg.mp4') }}" type="video/mp4">
     </video>
-    <div class="backdrop"></div>
-    <div class="dust"></div>
-    <main class="layout">
-        <section class="card">
-            <h1>Pianova</h1>
-            <p class="subtext">Enter your account to continue your piano learning journey.</p>
+    <div class="bg-overlay"></div>
+
+    <div class="main-content">
+        <!-- Floating music note particles -->
+        <div class="particles">
+            <span class="particle">&#9834;</span>
+            <span class="particle">&#9835;</span>
+            <span class="particle">&#9836;</span>
+            <span class="particle">&#9837;</span>
+            <span class="particle">&#9834;</span>
+            <span class="particle">&#9835;</span>
+            <span class="particle">&#9836;</span>
+            <span class="particle">&#9834;</span>
+            <span class="particle">&#9835;</span>
+            <span class="particle">&#9836;</span>
+            <span class="particle">&#9834;</span>
+            <span class="particle">&#9835;</span>
+            <span class="particle">&#9836;</span>
+            <span class="particle">&#9837;</span>
+            <span class="particle">&#9834;</span>
+        </div>
+
+        <div class="hero-text">
+            <div class="hero-logo">
+                <div class="css-logo">
+                    <span class="logo-accent">♪</span>
+                    <span class="logo-accent">♫</span>
+                    <span class="logo-accent">♬</span>
+                    <span class="logo-accent">♭</span>
+                    <div class="logo-circle">
+                        <div class="logo-piano-circle">
+                            <img src="{{ url_for('static', filename='images_theepak/pianova_logo.png') }}" alt="Pianova Logo">
+                        </div>
+                    </div>
+                    <div class="logo-name">Pianova</div>
+                    <div class="logo-sub">Learn Piano</div>
+                </div>
+            </div>
+
+            <div class="hero-badges">
+                <span class="hero-badge">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6z"/></svg>
+                    Gamified Learning
+                </span>
+                <span class="hero-badge">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                    Interactive Lessons
+                </span>
+                <span class="hero-badge">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                    Real-time Audio
+                </span>
+            </div>
+
+            <h1>Your piano<br><em>learning</em> journey<br><span>starts here.</span></h1>
+
+            <div class="hero-divider"><span>&#9834;</span></div>
+
+            <p class="hero-desc">Learn step-by-step with interactive lessons, mini games, and real-time audio feedback.<br>Every note you play builds your skill.</p>
+
+        </div>
+
+        <div class="login-card">
+            <div class="card-logo-wrap">
+                <div class="card-logo-circle">
+                    <img src="{{ url_for('static', filename='images_theepak/pianova_logo.png') }}" alt="Pianova">
+                </div>
+            </div>
+            <p class="card-tagline">Play &nbsp;&middot;&nbsp; Learn &nbsp;&middot;&nbsp; Grow</p>
+            <p class="card-subtext">Sign in to continue your piano learning journey.</p>
 
             {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
@@ -227,23 +609,428 @@
             {% endwith %}
 
             <form method="post">
-                <div>
+                <div class="input-group">
                     <label for="username">Username</label>
-                    <input id="username" name="username" type="text" placeholder="Enter username" required>
+                    <div class="input-wrap">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+                        <input id="username" name="username" type="text" class="input-field" placeholder="Enter username" required autocomplete="username">
+                    </div>
                 </div>
-                <div>
+                <div class="input-group">
                     <label for="password">Password</label>
-                    <input id="password" name="password" type="password" placeholder="Enter password" required>
+                    <div class="input-wrap">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+                        <input id="password" name="password" type="password" class="input-field" placeholder="Enter password" required autocomplete="current-password">
+                    </div>
                 </div>
-                <button type="submit">Login</button>
+                <button class="login-btn" type="submit">Login</button>
+                <div class="forgot-row">
+                    <a href="{{ url_for('forgot_password') }}">Forgot password?</a>
+                </div>
             </form>
 
-            <p class="signup">Need an account? <a href="{{ url_for('register') }}">Create one here</a>.</p>
-            <div class="hint">
-                Demo admin: <strong>admin</strong> / <strong>admin123</strong><br>
-                Demo user: <strong>student</strong> / <strong>1234</strong>
+            <p class="signup-row">Need an account? <a href="{{ url_for('register') }}">Create one here.</a></p>
+
+        </div>
+    </div>
+
+    <!-- PLAYABLE PIANO -->
+    <div class="piano-section">
+        <div class="piano-topbar">
+            <div class="piano-brand-left">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                    <rect x="2" y="4" width="3" height="14" rx="1"/>
+                    <rect x="6" y="4" width="3" height="14" rx="1"/>
+                    <rect x="10" y="4" width="3" height="14" rx="1"/>
+                    <rect x="14" y="4" width="3" height="14" rx="1"/>
+                    <rect x="18" y="4" width="3" height="14" rx="1"/>
+                    <rect x="4" y="4" width="2" height="9" rx="0.5" fill="#0a0a0a"/>
+                    <rect x="8" y="4" width="2" height="9" rx="0.5" fill="#0a0a0a"/>
+                    <rect x="15" y="4" width="2" height="9" rx="0.5" fill="#0a0a0a"/>
+                    <rect x="19" y="4" width="2" height="9" rx="0.5" fill="#0a0a0a"/>
+                </svg>
+                PIANOVA
             </div>
-        </section>
-    </main>
+            <div class="piano-brand-center">GRAND PIANO</div>
+            <div class="piano-note-display" id="noteDisplay">&#8212;</div>
+        </div>
+        <div class="piano-keys-wrap">
+            <div class="piano-keys" id="piano"></div>
+        </div>
+        <div class="piano-statusbar">
+            <span>Now: <span class="val" id="statusNote">&#8212;</span></span>
+            <span class="sep">|</span>
+            <span>Octave: <span class="val" id="statusOctave">4</span></span>
+            <span class="sep">|</span>
+            <span>Mode: <span class="val">Western (C)</span></span>
+        </div>
+        <p class="kb-hint">Keys: A S D F G H J K L &nbsp;|&nbsp; Sharps: W E T Y U O P</p>
+    </div>
+
+    <script>
+        // 10 octaves: C0 – B9  (offsets relative to BASE_W=48, per-octave stride=336)
+        const NOTES = [
+            // ── Octave 0 ──
+            { note:'C0',  freq:16.35,  type:'white', kb:null },
+            { note:'C#0', freq:17.32,  type:'black', offset:33,   kb:null },
+            { note:'D0',  freq:18.35,  type:'white', kb:null },
+            { note:'D#0', freq:19.45,  type:'black', offset:79,   kb:null },
+            { note:'E0',  freq:20.60,  type:'white', kb:null },
+            { note:'F0',  freq:21.83,  type:'white', kb:null },
+            { note:'F#0', freq:23.12,  type:'black', offset:175,  kb:null },
+            { note:'G0',  freq:24.50,  type:'white', kb:null },
+            { note:'G#0', freq:25.96,  type:'black', offset:221,  kb:null },
+            { note:'A0',  freq:27.50,  type:'white', kb:null },
+            { note:'A#0', freq:29.14,  type:'black', offset:267,  kb:null },
+            { note:'B0',  freq:30.87,  type:'white', kb:null },
+            // ── Octave 1 ──
+            { note:'C1',  freq:32.70,  type:'white', kb:null },
+            { note:'C#1', freq:34.65,  type:'black', offset:369,  kb:null },
+            { note:'D1',  freq:36.71,  type:'white', kb:null },
+            { note:'D#1', freq:38.89,  type:'black', offset:415,  kb:null },
+            { note:'E1',  freq:41.20,  type:'white', kb:null },
+            { note:'F1',  freq:43.65,  type:'white', kb:null },
+            { note:'F#1', freq:46.25,  type:'black', offset:511,  kb:null },
+            { note:'G1',  freq:49.00,  type:'white', kb:null },
+            { note:'G#1', freq:51.91,  type:'black', offset:557,  kb:null },
+            { note:'A1',  freq:55.00,  type:'white', kb:null },
+            { note:'A#1', freq:58.27,  type:'black', offset:603,  kb:null },
+            { note:'B1',  freq:61.74,  type:'white', kb:null },
+            // ── Octave 2 ──
+            { note:'C2',  freq:65.41,  type:'white', kb:null },
+            { note:'C#2', freq:69.30,  type:'black', offset:705,  kb:null },
+            { note:'D2',  freq:73.42,  type:'white', kb:null },
+            { note:'D#2', freq:77.78,  type:'black', offset:751,  kb:null },
+            { note:'E2',  freq:82.41,  type:'white', kb:null },
+            { note:'F2',  freq:87.31,  type:'white', kb:null },
+            { note:'F#2', freq:92.50,  type:'black', offset:847,  kb:null },
+            { note:'G2',  freq:98.00,  type:'white', kb:null },
+            { note:'G#2', freq:103.83, type:'black', offset:893,  kb:null },
+            { note:'A2',  freq:110.00, type:'white', kb:null },
+            { note:'A#2', freq:116.54, type:'black', offset:939,  kb:null },
+            { note:'B2',  freq:123.47, type:'white', kb:null },
+            // ── Octave 3 ──
+            { note:'C3',  freq:130.81, type:'white', kb:null },
+            { note:'C#3', freq:138.59, type:'black', offset:1041, kb:null },
+            { note:'D3',  freq:146.83, type:'white', kb:null },
+            { note:'D#3', freq:155.56, type:'black', offset:1087, kb:null },
+            { note:'E3',  freq:164.81, type:'white', kb:null },
+            { note:'F3',  freq:174.61, type:'white', kb:null },
+            { note:'F#3', freq:185.00, type:'black', offset:1183, kb:null },
+            { note:'G3',  freq:196.00, type:'white', kb:null },
+            { note:'G#3', freq:207.65, type:'black', offset:1229, kb:null },
+            { note:'A3',  freq:220.00, type:'white', kb:null },
+            { note:'A#3', freq:233.08, type:'black', offset:1275, kb:null },
+            { note:'B3',  freq:246.94, type:'white', kb:null },
+            // ── Octave 4 (keyboard mapped) ──
+            { note:'C4',  freq:261.63, type:'white', kb:'a' },
+            { note:'C#4', freq:277.18, type:'black', offset:1377, kb:'w' },
+            { note:'D4',  freq:293.66, type:'white', kb:'s' },
+            { note:'D#4', freq:311.13, type:'black', offset:1423, kb:'e' },
+            { note:'E4',  freq:329.63, type:'white', kb:'d' },
+            { note:'F4',  freq:349.23, type:'white', kb:'f' },
+            { note:'F#4', freq:369.99, type:'black', offset:1519, kb:'t' },
+            { note:'G4',  freq:392.00, type:'white', kb:'g' },
+            { note:'G#4', freq:415.30, type:'black', offset:1565, kb:'y' },
+            { note:'A4',  freq:440.00, type:'white', kb:'h' },
+            { note:'A#4', freq:466.16, type:'black', offset:1611, kb:'u' },
+            { note:'B4',  freq:493.88, type:'white', kb:'j' },
+            // ── Octave 5 (keyboard mapped) ──
+            { note:'C5',  freq:523.25, type:'white', kb:'k' },
+            { note:'C#5', freq:554.37, type:'black', offset:1713, kb:'o' },
+            { note:'D5',  freq:587.33, type:'white', kb:'l' },
+            { note:'D#5', freq:622.25, type:'black', offset:1759, kb:'p' },
+            { note:'E5',  freq:659.25, type:'white', kb:';' },
+            { note:'F5',  freq:698.46, type:'white', kb:null },
+            { note:'F#5', freq:739.99, type:'black', offset:1855, kb:null },
+            { note:'G5',  freq:783.99, type:'white', kb:null },
+            { note:'G#5', freq:830.61, type:'black', offset:1901, kb:null },
+            { note:'A5',  freq:880.00, type:'white', kb:null },
+            { note:'A#5', freq:932.33, type:'black', offset:1947, kb:null },
+            { note:'B5',  freq:987.77, type:'white', kb:null },
+            // ── Octave 6 ──
+            { note:'C6',  freq:1046.50, type:'white', kb:null },
+            { note:'C#6', freq:1108.73, type:'black', offset:2049, kb:null },
+            { note:'D6',  freq:1174.66, type:'white', kb:null },
+            { note:'D#6', freq:1244.51, type:'black', offset:2095, kb:null },
+            { note:'E6',  freq:1318.51, type:'white', kb:null },
+            { note:'F6',  freq:1396.91, type:'white', kb:null },
+            { note:'F#6', freq:1479.98, type:'black', offset:2191, kb:null },
+            { note:'G6',  freq:1567.98, type:'white', kb:null },
+            { note:'G#6', freq:1661.22, type:'black', offset:2237, kb:null },
+            { note:'A6',  freq:1760.00, type:'white', kb:null },
+            { note:'A#6', freq:1864.66, type:'black', offset:2283, kb:null },
+            { note:'B6',  freq:1975.53, type:'white', kb:null },
+            // ── Octave 7 ──
+            { note:'C7',  freq:2093.00, type:'white', kb:null },
+            { note:'C#7', freq:2217.46, type:'black', offset:2385, kb:null },
+            { note:'D7',  freq:2349.32, type:'white', kb:null },
+            { note:'D#7', freq:2489.02, type:'black', offset:2431, kb:null },
+            { note:'E7',  freq:2637.02, type:'white', kb:null },
+            { note:'F7',  freq:2793.83, type:'white', kb:null },
+            { note:'F#7', freq:2959.96, type:'black', offset:2527, kb:null },
+            { note:'G7',  freq:3135.96, type:'white', kb:null },
+            { note:'G#7', freq:3322.44, type:'black', offset:2573, kb:null },
+            { note:'A7',  freq:3520.00, type:'white', kb:null },
+            { note:'A#7', freq:3729.31, type:'black', offset:2619, kb:null },
+            { note:'B7',  freq:3951.07, type:'white', kb:null },
+            // ── Octave 8 ──
+            { note:'C8',  freq:4186.01, type:'white', kb:null },
+            { note:'C#8', freq:4434.92, type:'black', offset:2721, kb:null },
+            { note:'D8',  freq:4698.63, type:'white', kb:null },
+            { note:'D#8', freq:4978.03, type:'black', offset:2767, kb:null },
+            { note:'E8',  freq:5274.04, type:'white', kb:null },
+            { note:'F8',  freq:5587.65, type:'white', kb:null },
+            { note:'F#8', freq:5919.91, type:'black', offset:2863, kb:null },
+            { note:'G8',  freq:6271.93, type:'white', kb:null },
+            { note:'G#8', freq:6644.88, type:'black', offset:2909, kb:null },
+            { note:'A8',  freq:7040.00, type:'white', kb:null },
+            { note:'A#8', freq:7458.62, type:'black', offset:2955, kb:null },
+            { note:'B8',  freq:7902.13, type:'white', kb:null },
+            // ── Octave 9 ──
+            { note:'C9',  freq:8372.02,  type:'white', kb:null },
+            { note:'C#9', freq:8869.84,  type:'black', offset:3057, kb:null },
+            { note:'D9',  freq:9397.27,  type:'white', kb:null },
+            { note:'D#9', freq:9956.06,  type:'black', offset:3103, kb:null },
+            { note:'E9',  freq:10548.08, type:'white', kb:null },
+            { note:'F9',  freq:11175.30, type:'white', kb:null },
+            { note:'F#9', freq:11839.82, type:'black', offset:3199, kb:null },
+            { note:'G9',  freq:12543.85, type:'white', kb:null },
+            { note:'G#9', freq:13289.75, type:'black', offset:3245, kb:null },
+            { note:'A9',  freq:14080.00, type:'white', kb:null },
+            { note:'A#9', freq:14917.24, type:'black', offset:3291, kb:null },
+            { note:'B9',  freq:15804.27, type:'white', kb:null },
+        ];
+
+        const KEY_MAP = {};
+        NOTES.forEach(n => { if (n.kb) KEY_MAP[n.kb] = n.note; });
+
+        let audioCtx = null;
+        function getCtx() {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            return audioCtx;
+        }
+
+        function playNote(freq) {
+            const ctx = getCtx();
+            const osc1 = ctx.createOscillator(), osc2 = ctx.createOscillator();
+            const gain = ctx.createGain(), filter = ctx.createBiquadFilter();
+            osc1.type = 'triangle'; osc1.frequency.setValueAtTime(freq, ctx.currentTime);
+            osc2.type = 'sine';     osc2.frequency.setValueAtTime(freq * 2.001, ctx.currentTime);
+            filter.type = 'lowpass';
+            filter.frequency.setValueAtTime(3400, ctx.currentTime);
+            filter.frequency.exponentialRampToValueAtTime(900, ctx.currentTime + 0.5);
+            gain.gain.setValueAtTime(0.001, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.5,  ctx.currentTime + 0.008);
+            gain.gain.exponentialRampToValueAtTime(0.2,  ctx.currentTime + 0.15);
+            gain.gain.exponentialRampToValueAtTime(0.08, ctx.currentTime + 0.5);
+            gain.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime + 1.5);
+            osc1.connect(filter); osc2.connect(filter); filter.connect(gain); gain.connect(ctx.destination);
+            osc1.start(); osc2.start();
+            osc1.stop(ctx.currentTime + 1.55); osc2.stop(ctx.currentTime + 1.55);
+        }
+
+        function updateDisplay(noteName) {
+            document.getElementById('noteDisplay').textContent = noteName;
+            document.getElementById('statusNote').textContent = noteName;
+            const oct = noteName.replace(/[^0-9]/g,'');
+            if (oct) document.getElementById('statusOctave').textContent = oct;
+        }
+
+        function triggerKey(noteName) {
+            const nd = NOTES.find(n => n.note === noteName);
+            if (!nd) return;
+            const el = document.querySelector('[data-note="' + noteName + '"]');
+            if (!el) return;
+            playNote(nd.freq);
+            updateDisplay(noteName.replace('#','\u266f'));
+            el.classList.remove('active');
+            void el.offsetWidth;
+            el.classList.add('active');
+            setTimeout(() => el.classList.remove('active'), 220);
+        }
+
+        const piano = document.getElementById('piano');
+        const whites = NOTES.filter(n => n.type === 'white');
+        const BASE_W = 48;
+        piano.style.cssText = 'position:relative; width:100%; height:200px;';
+
+        whites.forEach((n, i) => {
+            const k = document.createElement('div');
+            k.className = 'key white'; k.dataset.note = n.note;
+            k.style.cssText = 'position:absolute; left:' + (i * BASE_W) + 'px; top:0;';
+            k.innerHTML = '<span class="key-note">' + n.note.replace('#','\u266f') + '</span>';
+            k.addEventListener('mousedown', () => triggerKey(n.note));
+            k.addEventListener('touchstart', e => { e.preventDefault(); triggerKey(n.note); }, {passive:false});
+            piano.appendChild(k);
+        });
+
+        NOTES.filter(n => n.type === 'black').forEach(n => {
+            const k = document.createElement('div');
+            k.className = 'key black'; k.dataset.note = n.note;
+            k.style.cssText = 'left:' + n.offset + 'px; top:0;';
+            k.innerHTML = '<span class="key-note">' + n.note.replace('#','\u266f') + '</span>';
+            k.addEventListener('mousedown', e => { e.stopPropagation(); triggerKey(n.note); });
+            k.addEventListener('touchstart', e => { e.preventDefault(); e.stopPropagation(); triggerKey(n.note); }, {passive:false});
+            piano.appendChild(k);
+        });
+
+        document.addEventListener('keydown', e => {
+            if (e.repeat || document.activeElement.tagName === 'INPUT') return;
+            const n = KEY_MAP[e.key.toLowerCase()];
+            if (n) triggerKey(n);
+        });
+
+        function scalePiano() {
+            const wrap = document.querySelector('.piano-keys-wrap');
+            const availW = (wrap ? wrap.clientWidth : window.innerWidth);
+            const wk = Math.max(4, Math.floor(availW / whites.length));
+            const wh = Math.max(60, Math.round(wk * 1.47));
+            const bk = Math.round(wk * 0.62);
+            const bh = Math.round(wh * 0.62);
+            const scale = wk / BASE_W;
+            piano.style.width  = (whites.length * wk) + 'px';
+            piano.style.height = wh + 'px';
+            whites.forEach((n, i) => {
+                const el = document.querySelector('.key.white[data-note="' + n.note + '"]');
+                if (el) { el.style.left = (i * wk) + 'px'; el.style.width = wk + 'px'; el.style.height = wh + 'px'; }
+            });
+            NOTES.filter(n => n.type === 'black').forEach(n => {
+                const el = document.querySelector('.key.black[data-note="' + n.note + '"]');
+                if (el) { el.style.left = Math.round(n.offset * scale) + 'px'; el.style.width = bk + 'px'; el.style.height = bh + 'px'; }
+            });
+        }
+
+        window.addEventListener('resize', scalePiano);
+        scalePiano();
+
+        // ── Background Music (looping piano melody) ─────────────────────
+        let bgCtx = null;
+        let bgMaster = null;
+        let bgTimeout = null;
+        let bgOn = false;
+
+        // Gentle waltz-like melody in C major (frequencies in Hz, duration in beats)
+        const BPM = 72;
+        const BEAT = 60 / BPM;
+        const MELODY = [
+            // bar 1
+            {f:523.25,d:1},{f:659.25,d:0.5},{f:783.99,d:0.5},
+            {f:1046.5,d:1},{f:783.99,d:0.5},{f:659.25,d:0.5},
+            // bar 2
+            {f:587.33,d:1},{f:698.46,d:0.5},{f:880.00,d:0.5},
+            {f:1174.66,d:1},{f:880.00,d:0.5},{f:698.46,d:0.5},
+            // bar 3
+            {f:523.25,d:0.5},{f:659.25,d:0.5},{f:783.99,d:0.5},{f:1046.5,d:0.5},
+            {f:783.99,d:0.5},{f:659.25,d:0.5},{f:523.25,d:0.5},{f:493.88,d:0.5},
+            // bar 4
+            {f:440.00,d:1.5},{f:523.25,d:0.5},{f:493.88,d:1},
+        ];
+
+        // Soft pad chords underneath
+        const CHORDS = [
+            [261.63,329.63,392.00],  // C maj
+            [293.66,369.99,440.00],  // D min
+            [261.63,329.63,392.00],  // C maj
+            [220.00,261.63,329.63],  // A min
+        ];
+
+        function playNote(freq, startTime, duration) {
+            const osc = bgCtx.createOscillator();
+            const gainNode = bgCtx.createGain();
+            const filter = bgCtx.createBiquadFilter();
+
+            osc.type = 'triangle';
+            osc.frequency.value = freq;
+            filter.type = 'lowpass';
+            filter.frequency.value = 2200;
+
+            // Piano-like envelope: quick attack, short decay, soft sustain, release
+            gainNode.gain.setValueAtTime(0, startTime);
+            gainNode.gain.linearRampToValueAtTime(0.18, startTime + 0.015);
+            gainNode.gain.exponentialRampToValueAtTime(0.07, startTime + duration * 0.4 * BEAT);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, startTime + duration * BEAT - 0.05);
+
+            osc.connect(filter);
+            filter.connect(gainNode);
+            gainNode.connect(bgMaster);
+            osc.start(startTime);
+            osc.stop(startTime + duration * BEAT + 0.1);
+        }
+
+        function playChord(freqs, startTime, duration) {
+            freqs.forEach(f => {
+                const osc = bgCtx.createOscillator();
+                const g = bgCtx.createGain();
+                const flt = bgCtx.createBiquadFilter();
+                osc.type = 'sine';
+                osc.frequency.value = f;
+                flt.type = 'lowpass';
+                flt.frequency.value = 500;
+                g.gain.setValueAtTime(0, startTime);
+                g.gain.linearRampToValueAtTime(0.04, startTime + 0.2);
+                g.gain.setValueAtTime(0.04, startTime + duration * BEAT - 0.3);
+                g.gain.linearRampToValueAtTime(0.001, startTime + duration * BEAT);
+                osc.connect(flt); flt.connect(g); g.connect(bgMaster);
+                osc.start(startTime); osc.stop(startTime + duration * BEAT + 0.1);
+            });
+        }
+
+        function scheduleLoop() {
+            if (!bgOn) return;
+            let t = bgCtx.currentTime + 0.05;
+
+            // Schedule melody
+            MELODY.forEach(note => {
+                playNote(note.f, t, note.d);
+                t += note.d * BEAT;
+            });
+
+            // Schedule pad chords (one per 4 beats)
+            let ct = bgCtx.currentTime + 0.05;
+            CHORDS.forEach(chord => {
+                playChord(chord, ct, 4);
+                ct += 4 * BEAT;
+            });
+
+            const totalDuration = MELODY.reduce((s,n) => s + n.d, 0) * BEAT * 1000;
+            bgTimeout = setTimeout(scheduleLoop, totalDuration - 200);
+        }
+
+        function startBgMusic() {
+            if (bgOn) return;
+            bgCtx = new (window.AudioContext || window.webkitAudioContext)();
+            bgMaster = bgCtx.createGain();
+            // Add reverb-like effect via convolver simulation (delay)
+            const delay = bgCtx.createDelay(0.5);
+            const delayGain = bgCtx.createGain();
+            delay.delayTime.value = 0.3;
+            delayGain.gain.value = 0.15;
+            bgMaster.connect(delay);
+            delay.connect(delayGain);
+            delayGain.connect(bgCtx.destination);
+            bgMaster.connect(bgCtx.destination);
+            bgMaster.gain.setValueAtTime(0, bgCtx.currentTime);
+            bgMaster.gain.linearRampToValueAtTime(1, bgCtx.currentTime + 2);
+            bgOn = true;
+            scheduleLoop();
+        }
+
+        function stopBgMusic() {
+            if (!bgOn) return;
+            bgOn = false;
+            clearTimeout(bgTimeout);
+            bgMaster.gain.linearRampToValueAtTime(0, bgCtx.currentTime + 1.5);
+            setTimeout(() => { try { bgCtx.close(); } catch(e){} bgCtx = null; }, 1600);
+        }
+
+        // Auto-start on first interaction anywhere
+        document.addEventListener('click', function startOnce() {
+            startBgMusic();
+            document.removeEventListener('click', startOnce);
+        }, { once: true });
+    </script>
+
+
 </body>
 </html>

@@ -13,6 +13,7 @@ from templates.templates.database import (
     get_user_metrics,
     init_app as init_database_app,
     init_db,
+    reset_password,
     save_progress,
 )
 
@@ -120,6 +121,37 @@ def register():
     return render_template('register.html')
 
 
+@app.route('/forgot-password', methods=['GET', 'POST'])
+def forgot_password():
+    if request.method == 'POST':
+        username = request.form.get('username', '').strip()
+        new_password = request.form.get('new_password', '')
+        confirm_password = request.form.get('confirm_password', '')
+
+        if not username or not new_password:
+            flash('All fields are required.', 'error')
+            return render_template('forgot_password.html')
+
+        if new_password != confirm_password:
+            flash('Passwords do not match.', 'error')
+            return render_template('forgot_password.html')
+
+        if len(new_password) < 4:
+            flash('Password must be at least 4 characters.', 'error')
+            return render_template('forgot_password.html')
+
+        user = fetch_user_by_username(username)
+        if user is None:
+            flash('No account found with that username.', 'error')
+            return render_template('forgot_password.html')
+
+        reset_password(username, generate_password_hash(new_password))
+        flash('Password reset successfully. You can now log in.', 'success')
+        return redirect(url_for('login'))
+
+    return render_template('forgot_password.html')
+
+
 @app.route('/dashboard')
 @login_required
 @role_required('user')
@@ -152,23 +184,11 @@ def lessons():
 
 
 @app.route('/game', methods=['GET', 'POST'])
+@app.route('/game1', methods=['GET'])
 @login_required
 @role_required('user')
 def game():
-    message = ''
-
-    if request.method == 'POST':
-        answer = request.form.get('note')
-
-        if answer == 'C':
-            message = 'Correct! Level 2 unlocked.'
-            session['level'] = max(session.get('level', 1), 2)
-            save_progress(session['user_id'], 1, 'completed')
-            add_score(session['user_id'], 'note-match', 10)
-        else:
-            message = 'Wrong answer. Try again.'
-
-    return render_template('game.html', message=message)
+    return render_template('templates/game1.html')
 
 
 @app.route('/logout')

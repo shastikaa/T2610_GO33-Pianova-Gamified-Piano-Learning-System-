@@ -139,6 +139,15 @@ def create_user(username, password_hash, role='user'):
     db.commit()
 
 
+def reset_password(username, new_password_hash):
+    db = get_db()
+    db.execute(
+        "UPDATE users SET password = ? WHERE username = ?",
+        (new_password_hash, username),
+    )
+    db.commit()
+
+
 def save_progress(user_id, level_id, status):
     db = get_db()
     db.execute(

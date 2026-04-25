@@ -758,16 +758,32 @@
             
             // action button logic
             if (!isLocked && !isCompleted) {
-                // show "Complete Lesson" button to mark as done
+                // Play Game button → navigates to game1
+                const playBtn = document.createElement('a');
+                playBtn.className = 'btn-action btn-primary';
+                playBtn.href = '/game1';
+                playBtn.innerHTML = '🎮 Play Game';
+                playBtn.style.textDecoration = 'none';
+                rightActions.appendChild(playBtn);
+
+                // Complete button to unlock next level
                 const completeBtn = document.createElement('button');
-                completeBtn.className = 'btn-action btn-primary';
-                completeBtn.innerHTML = '🎼 Complete & Unlock Next ➤';
+                completeBtn.className = 'btn-action btn-secondary';
+                completeBtn.innerHTML = '✅ Mark Complete';
                 completeBtn.addEventListener('click', (e) => {
                     e.stopPropagation();
                     completeLesson(lessonMeta.id);
                 });
                 rightActions.appendChild(completeBtn);
             } else if (isCompleted) {
+                // Play again link
+                const playAgainBtn = document.createElement('a');
+                playAgainBtn.className = 'btn-action btn-primary';
+                playAgainBtn.href = '/game1';
+                playAgainBtn.innerHTML = '🎮 Play Again';
+                playAgainBtn.style.textDecoration = 'none';
+                rightActions.appendChild(playAgainBtn);
+
                 const doneBtn = document.createElement('button');
                 doneBtn.className = 'btn-action btn-secondary';
                 doneBtn.disabled = true;

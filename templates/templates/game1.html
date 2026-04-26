@@ -103,37 +103,40 @@
     /* main chart layout */
     .chart-panel {
       padding: 2.6rem 2.6rem 2.3rem 2.6rem;
-      background: #fffaf2;
+      background: #0a0a0a;
     }
 
     .chart-intro {
       text-align: center;
       margin-bottom: 1.4rem;
       font-weight: 500;
-      color: #6b4c2c;
+      color: #ffd700;
       font-size: 1.35rem;
+      text-shadow: 0 0 8px rgba(255,215,0,0.3);
     }
 
     .tap-note-section {
-      background: #fff5e8;
-      border: 1px solid #f1d2a4;
+      background: #0d0d0d;
+      border: 1px solid #ffd700;
       border-radius: 2rem;
       padding: 1.2rem 1rem;
       margin-bottom: 1.6rem;
+      box-shadow: 0 0 15px rgba(255, 215, 0, 0.15);
     }
 
     .tap-note-title {
       text-align: center;
       font-size: 1.2rem;
       font-weight: 700;
-      color: #5f3b20;
+      color: #ffd700;
       margin-bottom: 0.8rem;
+      text-shadow: 0 0 8px rgba(255,215,0,0.3);
     }
 
     .tap-note-subtitle {
       text-align: center;
       font-size: 0.95rem;
-      color: #7e5833;
+      color: #ccc;
       margin-bottom: 0.9rem;
     }
 
@@ -143,9 +146,10 @@
       height: 230px;
       margin: 0 auto;
       border-radius: 1.2rem;
-      background: #fffdf8;
-      border: 1px solid #ecd3af;
+      background: #0a0a0a;
+      border: 1px solid #ffd700;
       overflow: hidden;
+      box-shadow: 0 0 12px rgba(255, 215, 0, 0.2);
     }
 
     .staff-line {
@@ -153,7 +157,7 @@
       left: 88px;
       right: 26px;
       height: 2px;
-      background: #5f4a2f;
+      background: #ffd700;
       opacity: 0.9;
     }
 
@@ -168,7 +172,7 @@
       left: 22px;
       top: 46px;
       font-size: 7.2rem;
-      color: #2b2117;
+      color: #ffd700;
       line-height: 1;
     }
 
@@ -243,7 +247,7 @@
       min-height: 1.4rem;
       text-align: center;
       margin-top: 0.7rem;
-      color: #604326;
+      color: #ffd700;
       font-weight: 700;
       font-size: 0.95rem;
     }
@@ -374,23 +378,25 @@
     .match-activity {
       margin: 1rem 0 1.3rem;
       border-radius: 1.8rem;
-      background: #ead7bb;
-      border: 2px solid #c49a66;
+      background: #0d0d0d;
+      border: 2px solid #ffd700;
       padding: 1.35rem 1.2rem 1.35rem;
       position: relative;
+      box-shadow: 0 0 32px rgba(255, 215, 0, 0.08);
     }
 
     .match-title {
       font-size: 1.8rem;
       text-align: center;
       font-weight: 800;
-      color: #1f1610;
+      color: #ffd700;
       margin-bottom: 0.2rem;
+      text-shadow: 0 0 10px rgba(255,215,0,0.4);
     }
 
     .match-subtitle {
       text-align: center;
-      color: #4a2f1a;
+      color: #bbb;
       font-size: 1.08rem;
       margin-bottom: 1rem;
       font-weight: 600;
@@ -422,84 +428,141 @@
       z-index: 3;
     }
 
-    .match-row,
-    .staff-match-row {
-      min-height: 82px;
+    /* Drag-the-letter layout */
+    .drag-match-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.2rem;
+      align-items: start;
+    }
+
+    .drag-tiles-col {
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+
+    .drag-tile {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      gap: 0.6rem;
-      border-radius: 14px;
-      background: #f9eddc;
-      border: 1px solid #cfa876;
-      padding: 0.45rem 0.65rem;
-      transition: border-color 0.15s ease;
-    }
-
-    .match-row.correct,
-    .staff-match-row.correct {
-      border-color: #58a06a;
-      background: #eaf8ed;
-    }
-
-    .match-row.wrong,
-    .staff-match-row.wrong {
-      border-color: #c75935;
-      background: #ffebe4;
-    }
-
-    .match-number {
-      width: 38px;
-      height: 38px;
-      border-radius: 10px;
-      background: #0f56cf;
-      color: #fff;
-      font-weight: 800;
-      font-size: 1.3rem;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 2px 5px rgba(16, 67, 154, 0.3);
-      flex: 0 0 auto;
-    }
-
-    .match-letter {
-      flex: 1;
-      height: 56px;
+      gap: 0.7rem;
+      padding: 0.55rem 1rem;
+      background: #1e1e00;
+      border: 2px solid #ffd700;
       border-radius: 12px;
-      border: 1px solid #4ab6d8;
-      background: #9be2ea;
-      color: #124ecb;
-      font-size: 2.2rem;
+      color: #ffd700;
+      font-size: 1.9rem;
+      font-weight: 800;
+      cursor: grab;
+      user-select: none;
+      transition: transform 0.12s, box-shadow 0.12s, opacity 0.15s;
+      box-shadow: 0 0 8px rgba(255,215,0,0.3);
+      text-shadow: 0 0 6px rgba(255,215,0,0.5);
+    }
+
+    .drag-tile:hover {
+      transform: scale(1.04);
+      box-shadow: 0 0 18px rgba(255,215,0,0.7);
+    }
+
+    .drag-tile.dragging {
+      opacity: 0.5;
+      cursor: grabbing;
+    }
+
+    .drag-tile.used {
+      opacity: 0.28;
+      border-color: #555;
+      color: #555;
+      text-shadow: none;
+      box-shadow: none;
+      cursor: default;
+    }
+
+    .drag-num {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: #ffd700;
+      color: #000;
+      font-size: 1rem;
       font-weight: 800;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-    }
-
-    .match-dot {
-      width: 16px;
-      height: 16px;
-      border-radius: 50%;
-      background: #0f56cf;
-      border: 2px solid #0f56cf;
-      cursor: pointer;
       flex: 0 0 auto;
-      transition: transform 0.12s ease;
     }
 
-    .match-dot:hover {
-      transform: scale(1.08);
+    .drag-staff-col {
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
     }
 
-    .match-dot.selected {
-      background: #fff;
-      box-shadow: 0 0 0 4px rgba(29, 102, 228, 0.2);
+    .drag-drop-zone {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      border-radius: 12px;
+      padding: 0.4rem 0.6rem;
+      background: #1a1a1a;
+      border: 1.5px dashed #555;
+      transition: border-color 0.15s, background 0.15s;
+    }
+
+    .drag-drop-zone.drag-over {
+      border-color: #ffd700;
+      background: #1e1e00;
+      box-shadow: 0 0 12px rgba(255,215,0,0.4);
+    }
+
+    .drag-drop-zone.correct {
+      border-color: #2e9a4b;
+      background: #0a1f10;
+      border-style: solid;
+    }
+
+    .drag-drop-zone.wrong {
+      border-color: #c75935;
+      background: #1f0a08;
+      border-style: solid;
+    }
+
+    .drop-slot {
+      min-width: 52px;
+      height: 44px;
+      border-radius: 10px;
+      background: #111;
+      border: 1.5px solid #333;
+      color: #555;
+      font-size: 0.8rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s, color 0.15s;
+      flex: 0 0 auto;
+    }
+
+    .drop-slot.slot-correct {
+      background: #0a3d1a;
+      border-color: #2e9a4b;
+      color: #4eff82;
+      font-size: 1.5rem;
+      font-weight: 800;
+    }
+
+    .drop-slot.slot-wrong {
+      background: #3d0a08;
+      border-color: #c75935;
+      color: #ff6b52;
+      font-size: 1.5rem;
+      font-weight: 800;
     }
 
     .match-dot.locked {
       cursor: default;
-      opacity: 0.9;
+      opacity: 0.85;
     }
 
     .staff-card {
@@ -507,15 +570,16 @@
       flex: 1;
       height: 92px;
       border-radius: 10px;
-      border: 2px solid #909090;
+      border: 1.5px solid #ffd700;
       background:
-        linear-gradient(#1d1d1d, #1d1d1d) left 50px top 12px / calc(100% - 64px) 2px no-repeat,
-        linear-gradient(#1d1d1d, #1d1d1d) left 50px top 28px / calc(100% - 64px) 2px no-repeat,
-        linear-gradient(#1d1d1d, #1d1d1d) left 50px top 44px / calc(100% - 64px) 2px no-repeat,
-        linear-gradient(#1d1d1d, #1d1d1d) left 50px top 60px / calc(100% - 64px) 2px no-repeat,
-        linear-gradient(#1d1d1d, #1d1d1d) left 50px top 76px / calc(100% - 64px) 2px no-repeat,
-        #fff;
+        linear-gradient(#ffd700, #ffd700) left 50px top 12px / calc(100% - 64px) 1.5px no-repeat,
+        linear-gradient(#ffd700, #ffd700) left 50px top 28px / calc(100% - 64px) 1.5px no-repeat,
+        linear-gradient(#ffd700, #ffd700) left 50px top 44px / calc(100% - 64px) 1.5px no-repeat,
+        linear-gradient(#ffd700, #ffd700) left 50px top 60px / calc(100% - 64px) 1.5px no-repeat,
+        linear-gradient(#ffd700, #ffd700) left 50px top 76px / calc(100% - 64px) 1.5px no-repeat,
+        #0a0a0a;
       overflow: hidden;
+      box-shadow: 0 0 20px rgba(255, 215, 0, 0.4), inset 0 0 15px rgba(255, 215, 0, 0.1);
     }
 
     .staff-clef {
@@ -523,7 +587,7 @@
       left: 8px;
       top: 4px;
       font-size: 2.95rem;
-      color: #0b0b0b;
+      color: #ffd700;
       line-height: 1;
     }
 
@@ -532,8 +596,8 @@
       width: 34px;
       height: 22px;
       border-radius: 50%;
-      border: 3.5px solid #111;
-      background: #fff;
+      border: 3.5px solid #ffd700;
+      background: #111;
       left: 56%;
       transform: rotate(-20deg);
     }
@@ -547,12 +611,19 @@
     .staff-note-mini.f      { top: 1px;  }
     .staff-note-mini.e-high { top: 9px;  }
 
+    /* Space notes (F-A-C-E) */
+    .staff-note-mini.f-space { top: 57px; }
+    .staff-note-mini.a-space { top: 41px; }
+    .staff-note-mini.c-space { top: 25px; }
+    .staff-note-mini.e-space { top: 9px;  }
+
     .match-feedback {
       margin-top: 0.8rem;
       text-align: center;
-      color: #714a2a;
+      color: #ffd700;
       font-weight: 700;
       min-height: 1.3rem;
+      text-shadow: 0 0 6px rgba(255,215,0,0.3);
     }
 
     .match-actions {
@@ -562,13 +633,17 @@
     }
 
     .match-reset {
-      border: 1px solid #d4b184;
-      background: #fff;
-      color: #2f2117;
+      border: 1.5px solid #ffd700;
+      background: #1a1a00;
+      color: #ffd700;
       border-radius: 10px;
-      padding: 0.45rem 0.85rem;
+      padding: 0.45rem 1.2rem;
       font-weight: 700;
       cursor: pointer;
+      transition: background 0.15s;
+    }
+    .match-reset:hover {
+      background: #2a2a00;
     }
 
     @keyframes slotShake {
@@ -587,6 +662,50 @@
       margin: 0.5rem 0;
       border-color: #eeddbc;
     }
+
+    /* Page switching */
+    #lesson2Page {
+      display: none;
+      animation: fadeInPage 0.5s ease forwards;
+    }
+    #lesson2Page.active {
+      display: block;
+    }
+    @keyframes fadeInPage {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .lesson2-header {
+      text-align: center;
+      padding: 1.5rem 1rem 0.5rem;
+      border-bottom: 1px solid rgba(255,215,0,0.2);
+      margin-bottom: 1rem;
+    }
+    .lesson2-header h2 {
+      color: #ffd700;
+      font-size: 1.6rem;
+      font-weight: 800;
+      text-shadow: 0 0 10px rgba(255,215,0,0.5);
+      margin: 0 0 0.3rem;
+    }
+    .lesson2-header p {
+      color: #bfa040;
+      font-size: 0.9rem;
+      margin: 0;
+    }
+    .back-to-lesson1 {
+      background: transparent;
+      border: 1px solid #ffd700;
+      color: #ffd700;
+      padding: 0.4rem 1.2rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      margin-top: 0.8rem;
+      transition: background 0.2s;
+    }
+    .back-to-lesson1:hover { background: rgba(255,215,0,0.1); }
 
     .finish-area {
       display: flex;
@@ -734,22 +853,16 @@
       .match-board {
         grid-template-columns: 1fr;
       }
-      .match-letter {
-        font-size: 1.6rem;
-      }
-      .match-row,
-      .staff-match-row {
-        min-height: 78px;
-      }
       .staff-card {
         height: 78px;
         background:
-          linear-gradient(#1d1d1d, #1d1d1d) left 44px top 10px / calc(100% - 56px) 2px no-repeat,
-          linear-gradient(#1d1d1d, #1d1d1d) left 44px top 24px / calc(100% - 56px) 2px no-repeat,
-          linear-gradient(#1d1d1d, #1d1d1d) left 44px top 38px / calc(100% - 56px) 2px no-repeat,
-          linear-gradient(#1d1d1d, #1d1d1d) left 44px top 52px / calc(100% - 56px) 2px no-repeat,
-          linear-gradient(#1d1d1d, #1d1d1d) left 44px top 66px / calc(100% - 56px) 2px no-repeat,
-          #fff;
+          linear-gradient(#ffd700, #ffd700) left 44px top 10px / calc(100% - 56px) 1.5px no-repeat,
+          linear-gradient(#ffd700, #ffd700) left 44px top 24px / calc(100% - 56px) 1.5px no-repeat,
+          linear-gradient(#ffd700, #ffd700) left 44px top 38px / calc(100% - 56px) 1.5px no-repeat,
+          linear-gradient(#ffd700, #ffd700) left 44px top 52px / calc(100% - 56px) 1.5px no-repeat,
+          linear-gradient(#ffd700, #ffd700) left 44px top 66px / calc(100% - 56px) 1.5px no-repeat,
+          #0a0a0a;
+        box-shadow: 0 0 20px rgba(255, 215, 0, 0.4), inset 0 0 15px rgba(255, 215, 0, 0.1);
       }
       .staff-clef {
         font-size: 2.5rem;
@@ -758,7 +871,7 @@
       .staff-note-mini {
         width: 28px;
         height: 18px;
-        border: 3px solid #111;
+        border: 3px solid #ffd700;
         transform: rotate(-20deg);
       }
       .staff-note-mini::after { display: none; }
@@ -768,6 +881,11 @@
       .staff-note-mini.d      { top: 15px; }
       .staff-note-mini.f      { top: 1px;  }
       .staff-note-mini.e-high { top: 8px;  }
+      /* Space notes responsive */
+      .staff-note-mini.f-space { top: 50px; }
+      .staff-note-mini.a-space { top: 36px; }
+      .staff-note-mini.c-space { top: 22px; }
+      .staff-note-mini.e-space { top: 8px;  }
     }
 
     /* mini hover effect */
@@ -828,48 +946,47 @@
       <div id="tapNoteFeedback" class="tap-note-feedback">Tap any letter to display it on the staff.</div>
     </div>
 
-    <div class="match-activity" id="lineMatchGame">
-      <div class="match-title">Match each letter to its correct note</div>
-      <div class="match-subtitle">Click one blue dot on the left, then one on the right to draw a line.</div>
-      <div class="match-board">
-        <svg class="match-lines" id="matchLines"></svg>
-
-        <div class="match-column left" id="leftMatchColumn">
-          <div class="match-row" data-key="e1"><span class="match-number">1</span><span class="match-letter">E</span><span class="match-dot left" data-key="e1"></span></div>
-          <div class="match-row" data-key="g1"><span class="match-number">2</span><span class="match-letter">G</span><span class="match-dot left" data-key="g1"></span></div>
-          <div class="match-row" data-key="b1"><span class="match-number">3</span><span class="match-letter">B</span><span class="match-dot left" data-key="b1"></span></div>
-          <div class="match-row" data-key="d1"><span class="match-number">4</span><span class="match-letter">D</span><span class="match-dot left" data-key="d1"></span></div>
-          <div class="match-row" data-key="f1"><span class="match-number">5</span><span class="match-letter">F</span><span class="match-dot left" data-key="f1"></span></div>
-          <div class="match-row" data-key="e2"><span class="match-number">6</span><span class="match-letter">E</span><span class="match-dot left" data-key="e2"></span></div>
+    <div class="match-activity" id="dragMatchGame">
+      <div class="match-title">Drag each letter to its correct note</div>
+      <div class="match-subtitle">🖱️ Drag a letter tile from the left and drop it onto the matching staff card on the right.</div>
+      <div class="drag-match-layout">
+        <!-- Letter tiles bank -->
+        <div class="drag-tiles-col" id="dragTilesBank">
+          <div class="drag-tile" draggable="true" data-note="E" id="tile-e1"><span class="drag-num">1</span>E</div>
+          <div class="drag-tile" draggable="true" data-note="G" id="tile-g1"><span class="drag-num">2</span>G</div>
+          <div class="drag-tile" draggable="true" data-note="B" id="tile-b1"><span class="drag-num">3</span>B</div>
+          <div class="drag-tile" draggable="true" data-note="D" id="tile-d1"><span class="drag-num">4</span>D</div>
+          <div class="drag-tile" draggable="true" data-note="F" id="tile-f1"><span class="drag-num">5</span>F</div>
+          <div class="drag-tile" draggable="true" data-note="E" id="tile-e2"><span class="drag-num">6</span>E</div>
         </div>
-
-        <div class="match-column right" id="rightMatchColumn">
-          <div class="staff-match-row" data-key="b1"><span class="match-dot right" data-key="b1"></span><div class="staff-card"><span class="staff-clef">𝄞</span><span class="staff-note-mini b"></span></div></div>
-          <div class="staff-match-row" data-key="e2"><span class="match-dot right" data-key="e2"></span><div class="staff-card"><span class="staff-clef">𝄞</span><span class="staff-note-mini e-high"></span></div></div>
-          <div class="staff-match-row" data-key="f1"><span class="match-dot right" data-key="f1"></span><div class="staff-card"><span class="staff-clef">𝄞</span><span class="staff-note-mini f"></span></div></div>
-          <div class="staff-match-row" data-key="g1"><span class="match-dot right" data-key="g1"></span><div class="staff-card"><span class="staff-clef">𝄞</span><span class="staff-note-mini g"></span></div></div>
-          <div class="staff-match-row" data-key="d1"><span class="match-dot right" data-key="d1"></span><div class="staff-card"><span class="staff-clef">𝄞</span><span class="staff-note-mini d"></span></div></div>
-          <div class="staff-match-row" data-key="e1"><span class="match-dot right" data-key="e1"></span><div class="staff-card"><span class="staff-clef">𝄞</span><span class="staff-note-mini e-low"></span></div></div>
+        <!-- Staff drop zones -->
+        <div class="drag-staff-col" id="dragStaffCol">
+          <div class="drag-drop-zone" data-accept="B"><div class="staff-card"><span class="staff-clef">𝄞</span><span class="staff-note-mini b"></span></div><div class="drop-slot" data-accept="B">Drop here</div></div>
+          <div class="drag-drop-zone" data-accept="E"><div class="staff-card"><span class="staff-clef">𝄞</span><span class="staff-note-mini e-high"></span></div><div class="drop-slot" data-accept="E">Drop here</div></div>
+          <div class="drag-drop-zone" data-accept="F"><div class="staff-card"><span class="staff-clef">𝄞</span><span class="staff-note-mini f"></span></div><div class="drop-slot" data-accept="F">Drop here</div></div>
+          <div class="drag-drop-zone" data-accept="G"><div class="staff-card"><span class="staff-clef">𝄞</span><span class="staff-note-mini g"></span></div><div class="drop-slot" data-accept="G">Drop here</div></div>
+          <div class="drag-drop-zone" data-accept="D"><div class="staff-card"><span class="staff-clef">𝄞</span><span class="staff-note-mini d"></span></div><div class="drop-slot" data-accept="D">Drop here</div></div>
+          <div class="drag-drop-zone" data-accept="E"><div class="staff-card"><span class="staff-clef">𝄞</span><span class="staff-note-mini e-low"></span></div><div class="drop-slot" data-accept="E">Drop here</div></div>
         </div>
       </div>
-      <div class="match-feedback" id="matchFeedback">Matches: 0/6 correct</div>
+      <div class="match-feedback" id="matchFeedback">Drag all 6 tiles to the correct staff cards.</div>
       <div class="match-actions">
-        <button class="match-reset" id="resetMatchGame" type="button">Reset Matching</button>
+        <button class="match-reset" id="resetMatchGame" type="button">Reset</button>
       </div>
     </div>
 
     <!-- GABCDE / general note row: the original image has "GABCDE" text between clefs, we show it clearly -->
-    <div style="background: #faeedb; border-radius: 2rem; padding: 1rem 1rem; margin: 0.5rem 0 1rem 0; text-align: center; border: 1px solid #ffd9a5;">
-      <div style="font-weight: 800; font-size: 1rem; color:#5c371c;">🎶 MASTER THE MUSICAL ALPHABET 🎶</div>
+    <div style="background: #0d0d0d; border-radius: 2rem; padding: 1rem 1rem; margin: 0.5rem 0 1rem 0; text-align: center; border: 1px solid rgba(255,215,0,0.2);">
+      <div style="font-weight: 800; font-size: 1rem; color:#ffd700; text-shadow: 0 0 8px rgba(255,215,0,0.4);">🎶 MASTER THE MUSICAL ALPHABET 🎶</div>
       <div class="notes-row" style="justify-content: center; gap: 0.9rem; margin-top: 8px;">
-        <div class="note-bubble" style="background:#ffdaaa;">G</div>
-        <div class="note-bubble" style="background:#ffdaaa;">A</div>
-        <div class="note-bubble" style="background:#ffdaaa;">B</div>
-        <div class="note-bubble" style="background:#ffdaaa;">C</div>
-        <div class="note-bubble" style="background:#ffdaaa;">D</div>
-        <div class="note-bubble" style="background:#ffdaaa;">E</div>
+        <div class="note-bubble" style="background:#1e1e00; color:#ffd700; border:1px solid #ffd700;">G</div>
+        <div class="note-bubble" style="background:#1e1e00; color:#ffd700; border:1px solid #ffd700;">A</div>
+        <div class="note-bubble" style="background:#1e1e00; color:#ffd700; border:1px solid #ffd700;">B</div>
+        <div class="note-bubble" style="background:#1e1e00; color:#ffd700; border:1px solid #ffd700;">C</div>
+        <div class="note-bubble" style="background:#1e1e00; color:#ffd700; border:1px solid #ffd700;">D</div>
+        <div class="note-bubble" style="background:#1e1e00; color:#ffd700; border:1px solid #ffd700;">E</div>
       </div>
-      <div style="font-size: 0.75rem; margin-top: 6px;">(GABCDE - essential pitch sequence)</div>
+      <div style="font-size: 0.75rem; margin-top: 6px; color:#bfa040;">(GABCDE - essential pitch sequence)</div>
     </div>
 
     <!-- finish level interactive area with gamified toast -->
@@ -878,6 +995,45 @@
     </div>
     <div id="feedbackMsg" class="feedback-toast"></div>
   </div>
+  <!-- END PAGE 1 chart-panel -->
+
+  <!-- PAGE 2: Lesson 2 (hidden until Finish is clicked) -->
+  <div id="lesson2Page">
+    <div class="chart-panel">
+      <div class="lesson2-header">
+        <h2>🎵 Lesson 2: The Spaces — F A C E</h2>
+        <p>The spaces between the treble clef lines spell <strong style="color:#ffd700;">F-A-C-E</strong>. Drag each tile to the correct space on the staff!</p>
+        <button class="back-to-lesson1" id="backToLesson1Btn">← Back to Lesson 1</button>
+      </div>
+
+      <!-- Lesson 2: Drag F-A-C-E notes (spaces) -->
+      <div class="match-activity" id="dragMatchGame2">
+        <div class="match-title">Drag notes on the SPACES (F-A-C-E)</div>
+        <div class="match-subtitle">🖱️ Spaces spell F-A-C-E. Drag a letter tile and drop it onto the matching staff card.</div>
+        <div class="drag-match-layout">
+          <!-- Letter tiles bank -->
+          <div class="drag-tiles-col" id="dragTilesBank2">
+            <div class="drag-tile" draggable="true" data-note="F" id="tile2-f1"><span class="drag-num">1</span>F</div>
+            <div class="drag-tile" draggable="true" data-note="A" id="tile2-a1"><span class="drag-num">2</span>A</div>
+            <div class="drag-tile" draggable="true" data-note="C" id="tile2-c1"><span class="drag-num">3</span>C</div>
+            <div class="drag-tile" draggable="true" data-note="E" id="tile2-e1"><span class="drag-num">4</span>E</div>
+          </div>
+          <!-- Staff drop zones -->
+          <div class="drag-staff-col" id="dragStaffCol2">
+            <div class="drag-drop-zone" data-accept="F"><div class="staff-card"><span class="staff-clef">𝄞</span><span class="staff-note-mini f-space"></span></div><div class="drop-slot" data-accept="F">Drop here</div></div>
+            <div class="drag-drop-zone" data-accept="A"><div class="staff-card"><span class="staff-clef">𝄞</span><span class="staff-note-mini a-space"></span></div><div class="drop-slot" data-accept="A">Drop here</div></div>
+            <div class="drag-drop-zone" data-accept="C"><div class="staff-card"><span class="staff-clef">𝄞</span><span class="staff-note-mini c-space"></span></div><div class="drop-slot" data-accept="C">Drop here</div></div>
+            <div class="drag-drop-zone" data-accept="E"><div class="staff-card"><span class="staff-clef">𝄞</span><span class="staff-note-mini e-space"></span></div><div class="drop-slot" data-accept="E">Drop here</div></div>
+          </div>
+        </div>
+        <div class="match-feedback" id="matchFeedback2">Drag all 4 tiles to the correct staff cards.</div>
+        <div class="match-actions">
+          <button class="match-reset" id="resetMatchGame2" type="button">Reset</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- END PAGE 2 -->
 
   <!-- playful piano decoration -->
   <div class="piano-deco">
@@ -989,7 +1145,13 @@
 
     function finishLevelAction() {
       if (levelCompleted) {
-        showRewardMessage("🎉 Level already mastered! Try the next lesson soon! 🎉", false);
+        // Switch to page 2
+        document.querySelector('.chart-panel').style.display = 'none';
+        const lesson2Page = document.getElementById('lesson2Page');
+        if (lesson2Page) {
+          lesson2Page.classList.add('active');
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
         return;
       }
       // Gamified completion: show big success, add confetti, XP gain animation
@@ -1038,13 +1200,24 @@
         levelSpan.innerHTML = '🏅 LEVEL MASTER · PIANO LEGEND 🏅';
       }
 
-      showRewardMessage("✨✨ AMAZING! LEVEL COMPLETE! You've mastered Treble & Bass Clef! ✨✨ +350 XP", false);
+      showRewardMessage("✨✨ AMAZING! LESSON 1 COMPLETE! You've mastered E-G-B-D-F! Click again for Lesson 2! ✨✨ +350 XP", false);
       
       // change finish button style to show completed
       finishButton.style.background = "#8fbc8f";
       finishButton.style.boxShadow = "0 4px 0 #4a6e3b";
-      finishButton.innerHTML = "🏁 LEVEL MASTERED 🏁";
-      finishButton.disabled = false; // still clickable but with different message
+      finishButton.innerHTML = "▶ Go to Lesson 2";
+      finishButton.disabled = false;
+      
+      // Switch to page 2 after celebration delay
+      setTimeout(() => {
+        document.querySelector('.chart-panel').style.display = 'none';
+        const lesson2Page = document.getElementById('lesson2Page');
+        if (lesson2Page) {
+          lesson2Page.classList.add('active');
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      }, 3000);
+      
       // add extra mini notes animation
       const noteElements = document.querySelectorAll('.note-bubble');
       noteElements.forEach((note, idx) => {
@@ -1057,6 +1230,16 @@
     }
 
     finishButton.addEventListener('click', finishLevelAction);
+
+    // Back to Lesson 1 button
+    const backBtn = document.getElementById('backToLesson1Btn');
+    if (backBtn) {
+      backBtn.addEventListener('click', () => {
+        document.getElementById('lesson2Page').classList.remove('active');
+        document.querySelector('.chart-panel').style.display = '';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    }
 
     // bonus: optional hovering mnemonic reinforce
     const mnemonics = document.querySelectorAll('.mnemonic');
@@ -1078,208 +1261,193 @@
       }, 3000);
     }, 500);
 
-    // Line matching game like worksheet style
-    const lineGame = document.getElementById('lineMatchGame');
-    if (lineGame) {
-      const svg = document.getElementById('matchLines');
+    // Drag-the-letter matching game
+    const dragGame = document.getElementById('dragMatchGame');
+    if (dragGame) {
       const feedback = document.getElementById('matchFeedback');
       const resetBtn = document.getElementById('resetMatchGame');
-      const leftDots = [...lineGame.querySelectorAll('.match-dot.left')];
-      const rightDots = [...lineGame.querySelectorAll('.match-dot.right')];
-      const connections = [];
-      let selectedLeftDot = null;
-      let activeDrag = null;
+      const tiles = [...dragGame.querySelectorAll('.drag-tile')];
+      const zones = [...dragGame.querySelectorAll('.drag-drop-zone')];
+      let draggedTile = null;
+      let droppedCount = 0;
 
-      function dotCenter(dot) {
-        const boardRect = lineGame.querySelector('.match-board').getBoundingClientRect();
-        const rect = dot.getBoundingClientRect();
-        return {
-          x: rect.left - boardRect.left + rect.width / 2,
-          y: rect.top - boardRect.top + rect.height / 2,
-        };
-      }
+      // Track which tiles have been used (each tile can only be dropped once)
+      const usedTiles = new Set();
 
-      function renderLines() {
-        if (!svg) return;
-        svg.innerHTML = '';
-        connections.forEach((conn) => {
-          const left = lineGame.querySelector(`.match-dot.left[data-key='${conn.leftKey}']`);
-          const right = lineGame.querySelector(`.match-dot.right[data-key='${conn.rightKey}']`);
-          if (!left || !right) return;
-          const a = dotCenter(left);
-          const b = dotCenter(right);
-          const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-          line.setAttribute('x1', String(a.x));
-          line.setAttribute('y1', String(a.y));
-          line.setAttribute('x2', String(b.x));
-          line.setAttribute('y2', String(b.y));
-          line.setAttribute('stroke', conn.correct ? '#2e9a4b' : '#c24830');
-          line.setAttribute('stroke-width', '3');
-          line.setAttribute('stroke-linecap', 'round');
-          svg.appendChild(line);
+      tiles.forEach((tile) => {
+        tile.addEventListener('dragstart', (e) => {
+          if (usedTiles.has(tile.id)) { e.preventDefault(); return; }
+          draggedTile = tile;
+          tile.classList.add('dragging');
+          e.dataTransfer.effectAllowed = 'move';
+          e.dataTransfer.setData('text/plain', tile.dataset.note);
+        });
+        tile.addEventListener('dragend', () => {
+          tile.classList.remove('dragging');
+        });
+      });
+
+      zones.forEach((zone) => {
+        const slot = zone.querySelector('.drop-slot');
+
+        zone.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          e.dataTransfer.dropEffect = 'move';
+          if (!zone.classList.contains('filled')) zone.classList.add('drag-over');
         });
 
-        if (activeDrag && activeDrag.fromDot) {
-          const a = dotCenter(activeDrag.fromDot);
-          const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-          line.setAttribute('x1', String(a.x));
-          line.setAttribute('y1', String(a.y));
-          line.setAttribute('x2', String(activeDrag.currentX));
-          line.setAttribute('y2', String(activeDrag.currentY));
-          line.setAttribute('stroke', '#1d66e4');
-          line.setAttribute('stroke-width', '3');
-          line.setAttribute('stroke-linecap', 'round');
-          line.setAttribute('stroke-dasharray', '6 4');
-          svg.appendChild(line);
-        }
-      }
+        zone.addEventListener('dragleave', () => {
+          zone.classList.remove('drag-over');
+        });
 
-      function getBoardPointFromClient(clientX, clientY) {
-        const boardRect = lineGame.querySelector('.match-board').getBoundingClientRect();
-        return {
-          x: clientX - boardRect.left,
-          y: clientY - boardRect.top,
-        };
-      }
+        zone.addEventListener('drop', (e) => {
+          e.preventDefault();
+          zone.classList.remove('drag-over');
+          if (!draggedTile || zone.classList.contains('filled')) return;
 
-      function getRightDotFromPoint(clientX, clientY) {
-        const el = document.elementFromPoint(clientX, clientY);
-        if (!el) return null;
-        if (el.classList?.contains('match-dot') && el.classList.contains('right')) {
-          return el;
-        }
-        return el.closest?.('.match-dot.right') || null;
-      }
+          const tileNote = draggedTile.dataset.note;
+          const zoneAccept = zone.dataset.accept;
+          const correct = tileNote === zoneAccept;
 
-      function finalizeConnection(leftDot, rightDot) {
-        if (!leftDot || !rightDot) return;
-        if (leftDot.classList.contains('locked') || rightDot.classList.contains('locked')) return;
+          // Place tile label into the slot
+          slot.textContent = tileNote;
+          slot.classList.add(correct ? 'slot-correct' : 'slot-wrong');
+          zone.classList.add('filled', correct ? 'correct' : 'wrong');
 
-        const leftKey = leftDot.dataset.key;
-        const rightKey = rightDot.dataset.key;
-        const correct = leftKey === rightKey;
+          // Mark tile as used and dim it
+          usedTiles.add(draggedTile.id);
+          draggedTile.classList.add('used');
+          draggedTile.setAttribute('draggable', 'false');
 
-        connections.push({ leftKey, rightKey, correct });
+          droppedCount++;
+          updateDragFeedback();
+          draggedTile = null;
+        });
+      });
 
-        leftDot.classList.add('locked');
-        leftDot.classList.remove('selected');
-        rightDot.classList.add('locked');
-
-        const leftRow = leftDot.closest('.match-row');
-        const rightRow = rightDot.closest('.staff-match-row');
-        if (leftRow) leftRow.classList.add(correct ? 'correct' : 'wrong');
-        if (rightRow) rightRow.classList.add(correct ? 'correct' : 'wrong');
-
-        selectedLeftDot = null;
-        renderLines();
-        updateMatchFeedback();
-      }
-
-      function endDrag(clientX, clientY) {
-        if (!activeDrag || !activeDrag.fromDot) return;
-        const targetRightDot = getRightDotFromPoint(clientX, clientY);
-        const fromDot = activeDrag.fromDot;
-        activeDrag = null;
-        if (targetRightDot) {
-          finalizeConnection(fromDot, targetRightDot);
+      function updateDragFeedback() {
+        const correctCount = dragGame.querySelectorAll('.drop-slot.slot-correct').length;
+        if (droppedCount < 6) {
+          if (feedback) feedback.textContent = `Dropped: ${droppedCount}/6 — Correct: ${correctCount}`;
+        } else if (correctCount === 6) {
+          if (feedback) feedback.textContent = '🎉 Perfect! All 6 correct!';
+          showRewardMessage('Perfect drag & drop. Excellent work!', false);
         } else {
-          fromDot.classList.remove('selected');
-          selectedLeftDot = null;
-          renderLines();
+          if (feedback) feedback.textContent = `Done: ${correctCount}/6 correct. Press Reset to retry.`;
+          showRewardMessage('Some are wrong. Try again!', true);
         }
       }
 
-      function updateMatchFeedback() {
-        const total = connections.length;
-        const correct = connections.filter((c) => c.correct).length;
-        if (feedback) {
-          if (total < 6) {
-            feedback.textContent = `Matches: ${correct}/6 correct`;
-          } else if (correct === 6) {
-            feedback.textContent = 'Perfect! All matches are correct.';
-            showRewardMessage('Perfect matching. Excellent work!', false);
-          } else {
-            feedback.textContent = `Done: ${correct}/6 correct. Press Reset Matching to retry.`;
-            showRewardMessage('Some matches are wrong. Try again to improve score.', true);
-          }
+      function resetDragGame() {
+        droppedCount = 0;
+        usedTiles.clear();
+        draggedTile = null;
+        tiles.forEach((t) => {
+          t.classList.remove('used', 'dragging');
+          t.setAttribute('draggable', 'true');
+        });
+        zones.forEach((z) => {
+          z.classList.remove('filled', 'correct', 'wrong', 'drag-over');
+          const slot = z.querySelector('.drop-slot');
+          if (slot) { slot.textContent = 'Drop here'; slot.className = 'drop-slot'; }
+        });
+        if (feedback) feedback.textContent = 'Drag all 6 tiles to the correct staff cards.';
+      }
+
+      if (resetBtn) resetBtn.addEventListener('click', resetDragGame);
+    }
+
+    // Lesson 2: Drag-the-letter matching game for F-A-C-E (spaces)
+    const dragGame2 = document.getElementById('dragMatchGame2');
+    if (dragGame2) {
+      const feedback2 = document.getElementById('matchFeedback2');
+      const resetBtn2 = document.getElementById('resetMatchGame2');
+      const tiles2 = [...dragGame2.querySelectorAll('.drag-tile')];
+      const zones2 = [...dragGame2.querySelectorAll('.drag-drop-zone')];
+      let draggedTile2 = null;
+      let droppedCount2 = 0;
+
+      const usedTiles2 = new Set();
+
+      tiles2.forEach((tile) => {
+        tile.addEventListener('dragstart', (e) => {
+          if (usedTiles2.has(tile.id)) { e.preventDefault(); return; }
+          draggedTile2 = tile;
+          tile.classList.add('dragging');
+          e.dataTransfer.effectAllowed = 'move';
+          e.dataTransfer.setData('text/plain', tile.dataset.note);
+        });
+        tile.addEventListener('dragend', () => {
+          tile.classList.remove('dragging');
+        });
+      });
+
+      zones2.forEach((zone) => {
+        const slot = zone.querySelector('.drop-slot');
+
+        zone.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          e.dataTransfer.dropEffect = 'move';
+          if (!zone.classList.contains('filled')) zone.classList.add('drag-over');
+        });
+
+        zone.addEventListener('dragleave', () => {
+          zone.classList.remove('drag-over');
+        });
+
+        zone.addEventListener('drop', (e) => {
+          e.preventDefault();
+          zone.classList.remove('drag-over');
+          if (!draggedTile2 || zone.classList.contains('filled')) return;
+
+          const tileNote = draggedTile2.dataset.note;
+          const zoneAccept = zone.dataset.accept;
+          const correct = tileNote === zoneAccept;
+
+          slot.textContent = tileNote;
+          slot.classList.add(correct ? 'slot-correct' : 'slot-wrong');
+          zone.classList.add('filled', correct ? 'correct' : 'wrong');
+
+          usedTiles2.add(draggedTile2.id);
+          draggedTile2.classList.add('used');
+          draggedTile2.setAttribute('draggable', 'false');
+
+          droppedCount2++;
+          updateDragFeedback2();
+          draggedTile2 = null;
+        });
+      });
+
+      function updateDragFeedback2() {
+        const correctCount = dragGame2.querySelectorAll('.drop-slot.slot-correct').length;
+        if (droppedCount2 < 4) {
+          if (feedback2) feedback2.textContent = `Dropped: ${droppedCount2}/4 — Correct: ${correctCount}`;
+        } else if (correctCount === 4) {
+          if (feedback2) feedback2.textContent = '🎉 Perfect! All 4 correct!';
+          showRewardMessage('Perfect! You mastered the spaces F-A-C-E!', false);
+        } else {
+          if (feedback2) feedback2.textContent = `Done: ${correctCount}/4 correct. Press Reset to retry.`;
+          showRewardMessage('Some are wrong. Try again!', true);
         }
       }
 
-      function resetMatchingGame() {
-        connections.length = 0;
-        selectedLeftDot = null;
-        activeDrag = null;
-        leftDots.forEach((dot) => dot.classList.remove('selected', 'locked'));
-        rightDots.forEach((dot) => dot.classList.remove('locked'));
-        lineGame.querySelectorAll('.match-row, .staff-match-row').forEach((row) => {
-          row.classList.remove('correct', 'wrong');
+      function resetDragGame2() {
+        droppedCount2 = 0;
+        usedTiles2.clear();
+        draggedTile2 = null;
+        tiles2.forEach((t) => {
+          t.classList.remove('used', 'dragging');
+          t.setAttribute('draggable', 'true');
         });
-        if (feedback) feedback.textContent = 'Matches: 0/6 correct';
-        renderLines();
+        zones2.forEach((z) => {
+          z.classList.remove('filled', 'correct', 'wrong', 'drag-over');
+          const slot = z.querySelector('.drop-slot');
+          if (slot) { slot.textContent = 'Drop here'; slot.className = 'drop-slot'; }
+        });
+        if (feedback2) feedback2.textContent = 'Drag all 4 tiles to the correct staff cards.';
       }
 
-      leftDots.forEach((dot) => {
-        dot.addEventListener('click', () => {
-          if (dot.classList.contains('locked')) return;
-          leftDots.forEach((d) => d.classList.remove('selected'));
-          selectedLeftDot = dot;
-          dot.classList.add('selected');
-        });
-
-        dot.addEventListener('pointerdown', (event) => {
-          if (dot.classList.contains('locked')) return;
-          event.preventDefault();
-          leftDots.forEach((d) => d.classList.remove('selected'));
-          selectedLeftDot = dot;
-          dot.classList.add('selected');
-          const p = getBoardPointFromClient(event.clientX, event.clientY);
-          activeDrag = {
-            fromDot: dot,
-            pointerId: event.pointerId,
-            currentX: p.x,
-            currentY: p.y,
-          };
-          renderLines();
-        });
-      });
-
-      rightDots.forEach((rightDot) => {
-        rightDot.addEventListener('click', () => {
-          if (!selectedLeftDot) return;
-          finalizeConnection(selectedLeftDot, rightDot);
-        });
-      });
-
-      window.addEventListener('pointermove', (event) => {
-        if (!activeDrag) return;
-        if (activeDrag.pointerId !== event.pointerId) return;
-        const p = getBoardPointFromClient(event.clientX, event.clientY);
-        activeDrag.currentX = p.x;
-        activeDrag.currentY = p.y;
-        renderLines();
-      });
-
-      window.addEventListener('pointerup', (event) => {
-        if (!activeDrag) return;
-        if (activeDrag.pointerId !== event.pointerId) return;
-        endDrag(event.clientX, event.clientY);
-      });
-
-      window.addEventListener('pointercancel', (event) => {
-        if (!activeDrag) return;
-        if (activeDrag.pointerId !== event.pointerId) return;
-        const fromDot = activeDrag.fromDot;
-        activeDrag = null;
-        if (fromDot) fromDot.classList.remove('selected');
-        selectedLeftDot = null;
-        renderLines();
-      });
-
-      window.addEventListener('resize', renderLines);
-      if (resetBtn) {
-        resetBtn.addEventListener('click', resetMatchingGame);
-      }
-      renderLines();
+      if (resetBtn2) resetBtn2.addEventListener('click', resetDragGame2);
     }
 
     // Tap letter boxes to show matching note on the staff

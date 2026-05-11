@@ -713,12 +713,13 @@
                 statusClass = 'unlocked-badge';
                 statusIcon = '✔️';
             } else if (isAvailable) {
-                statusText = '✨ Ready · Start Lesson';
-                statusClass = 'start-badge';
-                statusIcon = '🎵';
+                // No status chip for available lessons (Start Lesson chip removed)
+                statusText = '';
+                statusClass = '';
+                statusIcon = '';
             } else {
-                statusText = 'Available';
-                statusClass = 'start-badge';
+                statusText = '';
+                statusClass = '';
             }
             
             // create card
@@ -751,10 +752,12 @@
             rightActions.style.alignItems = 'center';
             rightActions.style.gap = '12px';
             
-            const statusChip = document.createElement('div');
-            statusChip.className = `status-chip ${statusClass}`;
-            statusChip.innerHTML = `${statusIcon} ${statusText}`;
-            rightActions.appendChild(statusChip);
+            if (statusText) {
+                const statusChip = document.createElement('div');
+                statusChip.className = `status-chip ${statusClass}`;
+                statusChip.innerHTML = `${statusIcon} ${statusText}`;
+                rightActions.appendChild(statusChip);
+            }
             
             // action button logic
             if (!isLocked && !isCompleted) {

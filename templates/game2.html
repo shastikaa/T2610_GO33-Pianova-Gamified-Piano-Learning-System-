@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pianova Pro</title>
+    <style>
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #1a1a1a;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .container {
+            text-align: center;
+            background: #2d2d2d;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+            width: 700px;
+        }
+
+        .shake { animation: shake 0.3s; }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            75% { transform: translateX(8px); }
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .logo { margin: 0; font-size: 28px; color: gold; }
+        .progress { font-size: 20px; font-weight: bold; }
+
+        #staff {
+            background: #eee;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.2);
+        }
+
+        .piano {
+            display: flex;
+            justify-content: center;
+            position: relative;
+            height: 200px;
+            margin-top: 20px;
+            background: #111;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .key {
+            width: 50px;
+            height: 180px;
+            background: white;
+            border: 1px solid #999;
+            border-radius: 0 0 5px 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding-bottom: 10px;
+            color: #333;
+            font-size: 14px;
+            font-weight: bold;
+            z-index: 1;
+            transition: background 0.1s;
+        }
+
+        .key.black {
+            width: 34px;
+            height: 110px;
+            background: #222;
+            color: white;
+            margin-left: -17px;
+            margin-right: -17px;
+            z-index: 2;
+            border: 1px solid #000;
+        }
+
+        .key:active { background: #ccc; }
+        .key.black:active { background: #444; }
+
+        .hint { color: #aaa; margin-top: 10px; font-style: italic; }
+
+        /* === ADDED: Modal UI === */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+        }
+
+        .modal-content {
+            background: #2d2d2d;
+            padding: 25px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .modal button {
+            margin: 10px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container" id="game-container">
+    <div class="header">
+        <h1 class="logo">🎹 Pianova</h1>
+        <!-- UPDATED (added lives) -->
+        <div class="progress">
+            Score: <span id="score">0</span> | Lives: <span id="lives">3</span>
+        </div>
+    </div>
+
+    <h2 id="instruction">Identify the note on the staff</h2>
+    <canvas id="staff" width="600" height="180"></canvas>
+
+    <div class="piano" id="piano"></div>
+    <p class="hint">Click the piano key that matches the staff!</p>
+</div>
+
+<!-- === ADDED: Modal === -->
+<div class="modal" id="modal">
+    <div class="modal-content">
+        <h2 id="modal-text"></h2>
+        <button onclick="restartGame()">Restart</button>
+        <button onclick="goHome()">Home</button>
+    </div>
+</div>
+
+<script>
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const frequencies = {
+        "C": 261.63, "C#": 277.18, "D": 293.66, "D#": 311.13,
+        "E": 329.63, "F": 349.23, "F#": 369.99, "G": 392.00,
+        "G#": 415.30, "A": 440.00, "A#": 466.16, "B": 493.88, "C2": 523.25
+    };
+
+    function playNote(note) {
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(frequencies[note], audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 1);
+    }
+
+    const pianoLayout = [
+        { note: "C", color: "white" }, { note: "C#", color: "black" },
+        { note: "D", color: "white" }, { note: "D#", color: "black" },
+        { note: "E", color: "white" }, { note: "F", color: "white" },
+        { note: "F#", color: "black" }, { note: "G", color: "white" },
+        { note: "G#", color: "black" }, { note: "A", color: "white" },
+        { note: "A#", color: "black" }, { note: "B", color: "white" },
+        { note: "C2", color: "white", label: "C" }
+    ];
+
+    const staffPos = {
+    "C": 138,   // Ledger line below
+    "C#": 138,  // C with Sharp sign
+    "D": 130,   // Below the first line
+    "D#": 130,  // D with Sharp sign
+    "E": 122,   // On the first line
+    "F": 114,   // First space
+    "F#": 114,  // F with Sharp sign
+    "G": 106,   // Second line
+    "G#": 106,  // G with Sharp sign
+    "A": 98,    // Second space
+    "A#": 98,   // A with Sharp sign
+    "B": 90,    // Third line
+    "C2": 82    // Third space
+};
+
+    let currentNote = "";
+    let score = 0;
+
+    // === ADDED ===
+    let lives = 5;
+    const maxScore = 10;
+
+    function drawStaff(note) {
+        const canvas = document.getElementById("staff");
+        const ctx = canvas.getContext("2d");
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        ctx.strokeStyle = "#333";
+        ctx.lineWidth = 2;
+        for (let i = 0; i < 5; i++) {
+            let y = 60 + i * 16;
+            ctx.beginPath();
+            ctx.moveTo(50, y);
+            ctx.lineTo(550, y);
+            ctx.stroke();
+        }
+
+        ctx.font = "70px serif";
+        ctx.fillStyle = "#333";
+        ctx.fillText("𝄞", 60, 130);
+
+        const y = staffPos[note];
+
+        if (note.includes("#")) {
+            ctx.font = "24px serif";
+            ctx.fillText("♯", 270, y + 8);
+        }
+
+        if (note === "C" || note === "C#") {
+            ctx.beginPath();
+            ctx.moveTo(280, 138);
+            ctx.lineTo(320, 138);
+            ctx.stroke();
+        }
+
+        ctx.beginPath();
+        ctx.ellipse(300, y, 9, 7, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.moveTo(308, y);
+        ctx.lineTo(308, y - 45);
+        ctx.stroke();
+    }
+
+    function handleInput(note) {
+        playNote(note);
+
+        if (note === currentNote) {
+            score++;
+            document.getElementById("score").innerText = score;
+
+            // WIN
+            if (score >= maxScore) {
+                showModal("🎉 You Passed!");
+                return;
+            }
+
+            document.getElementById("instruction").innerText = "Excellent! Next one...";
+            document.getElementById("instruction").style.color = "gold";
+            setTimeout(newQuestion, 500);
+
+        } else {
+            lives--;
+            document.getElementById("lives").innerText = lives;
+
+            if (lives <= 0) {
+                showModal("❌ You Failed!");
+                return;
+            }
+
+            document.getElementById("game-container").classList.add("shake");
+            document.getElementById("instruction").innerText = `Wrong! That was ${currentNote}`;
+            document.getElementById("instruction").style.color = "#ff4444";
+
+            setTimeout(() => {
+                document.getElementById("game-container").classList.remove("shake");
+                newQuestion();
+            }, 1000);
+        }
+    }
+
+    function showModal(text) {
+        document.getElementById("modal-text").innerText = text;
+        document.getElementById("modal").style.display = "flex";
+    }
+
+    function restartGame() {
+        score = 0;
+        lives = 5;
+        document.getElementById("score").innerText = score;
+        document.getElementById("lives").innerText = lives;
+        document.getElementById("modal").style.display = "none";
+        newQuestion();
+    }
+
+    function goHome() {
+        location.reload();
+    }
+
+    function newQuestion() {
+        const keys = Object.keys(staffPos);
+        currentNote = keys[Math.floor(Math.random() * keys.length)];
+        drawStaff(currentNote);
+    }
+
+    function init() {
+        const piano = document.getElementById("piano");
+        pianoLayout.forEach(item => {
+            const div = document.createElement("div");
+            div.className = `key ${item.color}`;
+            div.innerHTML = `<span>${item.label || item.note}</span>`;
+            div.onclick = () => handleInput(item.note);
+            piano.appendChild(div);
+        });
+        newQuestion();
+    }
+
+    window.onload = init;
+</script>
+</body>
+</html>

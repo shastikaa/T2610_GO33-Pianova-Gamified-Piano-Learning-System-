@@ -191,6 +191,13 @@ def game():
     return render_template('templates/game1.html')
 
 
+@app.route('/game2', methods=['GET'])
+@login_required
+@role_required('user')
+def game2():
+    return render_template('game2.html')
+
+
 @app.route('/logout')
 def logout():
     session.clear()

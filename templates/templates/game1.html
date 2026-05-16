@@ -2756,6 +2756,29 @@
       if (resetBtn4) resetBtn4.addEventListener('click', resetDragGame4);
     }
   })();
+
+  const practiceSessionStartedAt = Date.now();
+  let practiceSessionSent = false;
+
+  function sendPracticeSession() {
+    if (practiceSessionSent) return;
+    practiceSessionSent = true;
+    const durationSeconds = Math.max(1, Math.round((Date.now() - practiceSessionStartedAt) / 1000));
+    const payload = JSON.stringify({ game_type: 'game1', duration_seconds: durationSeconds });
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon('/api/log-practice-session', new Blob([payload], { type: 'application/json' }));
+      return;
+    }
+    fetch('/api/log-practice-session', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: payload,
+      keepalive: true,
+    }).catch(() => {});
+  }
+
+  window.addEventListener('pagehide', sendPracticeSession);
+  window.addEventListener('beforeunload', sendPracticeSession);
 </script>
 </body>
 </html>

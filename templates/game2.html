@@ -261,6 +261,7 @@
 
             // WIN
             if (score >= maxScore) {
+                saveGameResult(score, true);
                 showModal("🎉 You Passed!");
                 return;
             }
@@ -274,6 +275,7 @@
             document.getElementById("lives").innerText = lives;
 
             if (lives <= 0) {
+                saveGameResult(score, false);
                 showModal("❌ You Failed!");
                 return;
             }
@@ -287,6 +289,14 @@
                 newQuestion();
             }, 1000);
         }
+    }
+
+    function saveGameResult(finalScore, passed) {
+        fetch('/api/save-game2', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ score: finalScore, passed: passed })
+        }).catch(console.error);
     }
 
     function showModal(text) {
@@ -326,6 +336,29 @@
     }
 
     window.onload = init;
+
+    const practiceSessionStartedAt = Date.now();
+    let practiceSessionSent = false;
+
+    function sendPracticeSession() {
+        if (practiceSessionSent) return;
+        practiceSessionSent = true;
+        const durationSeconds = Math.max(1, Math.round((Date.now() - practiceSessionStartedAt) / 1000));
+        const payload = JSON.stringify({ game_type: 'game2', duration_seconds: durationSeconds });
+        if (navigator.sendBeacon) {
+            navigator.sendBeacon('/api/log-practice-session', new Blob([payload], { type: 'application/json' }));
+            return;
+        }
+        fetch('/api/log-practice-session', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: payload,
+            keepalive: true,
+        }).catch(() => {});
+    }
+
+    window.addEventListener('pagehide', sendPracticeSession);
+    window.addEventListener('beforeunload', sendPracticeSession);
 </script>
 </body>
 </html>

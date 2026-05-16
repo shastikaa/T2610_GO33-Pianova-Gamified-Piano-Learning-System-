@@ -6,10 +6,13 @@ from werkzeug.security import check_password_hash, generate_password_hash
 
 from templates.templates.database import (
     add_score,
+    add_practice_session,
     create_user,
     fetch_user_by_username,
     get_all_accounts,
     get_admin_metrics,
+    get_recent_progress,
+    get_recent_scores,
     get_user_metrics,
     init_app as init_database_app,
     init_db,
@@ -59,6 +62,118 @@ def role_required(expected_role):
         return wrapped_view
 
     return decorator
+
+
+def build_progress_chart(metrics):
+    labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+    completed_lessons = int(metrics.get('completed_lessons', 0))
+    total_score = int(metrics.get('score_total', 0))
+    current_level = int(metrics.get('current_level', 1))
+
+    progress_ratio = min(completed_lessons / 12.0, 1.0)
+    score_ratio = min(total_score / 200.0, 1.0)
+    level_ratio = min(max(current_level - 1, 0) / 3.0, 1.0)
+    overall_progress = (progress_ratio * 0.52) + (score_ratio * 0.28) + (level_ratio * 0.20)
+
+    shape = [0.22, 0.46, 0.34, 0.58, 0.82, 0.60, 0.40]
+    points = []
+
+    for index, label in enumerate(labels):
+        day_factor = index / 6.0
+        wave = shape[index]
+        value = 16 + (overall_progress * 64) + (completed_lessons * day_factor * 2.1) + (current_level * 2.5)
+        value = value * wave
+        value = max(12, min(92, round(value)))
+        points.append({'label': label, 'value': value})
+
+    return points
+
+
+def build_progress_chart_geometry(points, width=860, height=220, left=40, top=28, right=40, bottom=26):
+    if not points:
+        return {'path': '', 'fill_path': '', 'dots': []}
+
+    chart_width = width - left - right
+    chart_height = height - top - bottom
+    step = chart_width / (len(points) - 1 if len(points) > 1 else 1)
+
+    dots = []
+    path_parts = []
+    fill_parts = []
+
+    for index, point in enumerate(points):
+        x = left + (step * index)
+        y = top + (chart_height * (1 - (point['value'] / 100.0)))
+        dots.append({
+            'label': point['label'],
+            'value': point['value'],
+            'x': round(x, 1),
+            'y': round(y, 1),
+        })
+
+    for index, dot in enumerate(dots):
+        if index == 0:
+            path_parts.append(f"M {dot['x']} {dot['y']}")
+            fill_parts.append(f"M {dot['x']} {height - bottom}")
+            fill_parts.append(f"L {dot['x']} {dot['y']}")
+        else:
+            previous = dots[index - 1]
+            mid_x = round((previous['x'] + dot['x']) / 2, 1)
+            path_parts.append(f"C {mid_x} {previous['y']}, {mid_x} {dot['y']}, {dot['x']} {dot['y']}")
+            fill_parts.append(f"C {mid_x} {previous['y']}, {mid_x} {dot['y']}, {dot['x']} {dot['y']}")
+
+    fill_parts.append(f"L {dots[-1]['x']} {height - bottom}")
+    fill_parts.append(f"L {dots[0]['x']} {height - bottom}")
+    fill_parts.append('Z')
+
+    return {
+        'path': ' '.join(path_parts),
+        'fill_path': ' '.join(fill_parts),
+        'dots': dots,
+    }
+
+
+def format_practice_time(metrics):
+    total_seconds = int(metrics.get('practice_seconds', 0))
+    hours, remainder = divmod(total_seconds, 3600)
+    minutes = remainder // 60
+    if hours:
+        return f'{hours}h {minutes}m'
+    return f'{minutes}m'
+
+
+def build_next_lesson_card(current_level):
+    lessons = {
+        1: {
+            'label': 'Lesson 1',
+            'title': 'Getting Started',
+            'description': 'Learn the basics of music notes and finger position.',
+            'button_text': 'Continue',
+        },
+        2: {
+            'label': 'Lesson 2',
+            'title': 'Basic Notes',
+            'description': 'Practice simple melodies and note recognition.',
+            'button_text': 'Continue',
+        },
+        3: {
+            'label': 'Lesson 3',
+            'title': 'Chords',
+            'description': 'Build chords and strengthen your hand coordination.',
+            'button_text': 'Continue',
+        },
+        4: {
+            'label': 'Lesson 4',
+            'title': 'Advanced Practice',
+            'description': 'Push your speed and accuracy with harder patterns.',
+            'button_text': 'Continue',
+        },
+    }
+    return lessons.get(current_level, lessons[4])
+
+
+def practice_href_for_level(current_level):
+    return url_for('game2') if current_level >= 2 else url_for('game')
 
 
 @app.route('/')
@@ -156,10 +271,16 @@ def forgot_password():
 @login_required
 @role_required('user')
 def user_dashboard():
+    metrics = get_user_metrics(session['user_id'], session.get('level', 1))
+    current_level = int(metrics.get('current_level', 1))
     return render_template(
         'user_dashboard.html',
         username=session['user'],
-        metrics=get_user_metrics(session['user_id'], session.get('level', 1)),
+        metrics=metrics,
+        progress_chart=build_progress_chart_geometry(build_progress_chart(metrics)),
+        practice_time=format_practice_time(metrics),
+        practice_href=practice_href_for_level(current_level),
+        next_lesson=build_next_lesson_card(current_level),
     )
 
 
@@ -172,6 +293,8 @@ def admin_dashboard():
         username=session['user'],
         metrics=get_admin_metrics(),
         accounts=get_all_accounts(),
+        recent_scores=get_recent_scores(),
+        recent_progress=get_recent_progress(),
     )
 
 
@@ -196,6 +319,39 @@ def game():
 @role_required('user')
 def game2():
     return render_template('game2.html')
+
+
+@app.route('/api/save-game2', methods=['POST'])
+@login_required
+def save_game2():
+    data = request.get_json(silent=True) or {}
+    score = int(data.get('score', 0))
+    passed = bool(data.get('passed', False))
+    user_id = session['user_id']
+
+    add_score(user_id, 'game2', score)
+    if passed:
+        save_progress(user_id, 2, 'completed')
+
+    return {'status': 'ok'}
+
+
+@app.route('/api/log-practice-session', methods=['POST'])
+@login_required
+@role_required('user')
+def log_practice_session():
+    data = request.get_json(silent=True) or {}
+    game_type = str(data.get('game_type', 'practice'))[:32]
+    try:
+        duration_seconds = int(float(data.get('duration_seconds', 0)))
+    except (TypeError, ValueError):
+        duration_seconds = 0
+
+    duration_seconds = max(0, min(duration_seconds, 24 * 60 * 60))
+    if duration_seconds > 0:
+        add_practice_session(session['user_id'], game_type, duration_seconds)
+
+    return {'status': 'ok'}
 
 
 @app.route('/logout')

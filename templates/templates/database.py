@@ -142,6 +142,18 @@ def init_db(app):
         )
         """
     )
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS practice_sessions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            game_type TEXT NOT NULL,
+            duration_seconds INTEGER NOT NULL,
+            started_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (user_id) REFERENCES users(id)
+        )
+        """
+    )
 
     seed_user(cursor, 'admin', 'admin123', 'admin')
     seed_user(cursor, 'student', '1234', 'user')
@@ -208,6 +220,18 @@ def add_score(user_id, game_type, score):
     db.commit()
 
 
+def add_practice_session(user_id, game_type, duration_seconds):
+    db = get_db()
+    db.execute(
+        """
+        INSERT INTO practice_sessions (user_id, game_type, duration_seconds)
+        VALUES (?, ?, ?)
+        """,
+        (user_id, game_type, duration_seconds),
+    )
+    db.commit()
+
+
 def get_admin_metrics():
     db = get_db()
     total_users = db.execute("SELECT COUNT(*) FROM users WHERE role = 'user'").fetchone()[0]
@@ -234,6 +258,41 @@ def get_all_accounts():
     ).fetchall()
 
 
+def get_recent_scores(limit=25):
+    return get_db().execute(
+        """
+        SELECT
+            s.id,
+            u.username,
+            s.game_type,
+            s.score
+        FROM scores s
+        JOIN users u ON u.id = s.user_id
+        ORDER BY s.id DESC
+        LIMIT ?
+        """,
+        (limit,),
+    ).fetchall()
+
+
+def get_recent_progress(limit=25):
+    return get_db().execute(
+        """
+        SELECT
+            p.id,
+            u.username,
+            l.level_name,
+            p.status
+        FROM progress p
+        JOIN users u ON u.id = p.user_id
+        JOIN levels l ON l.id = p.level_id
+        ORDER BY p.id DESC
+        LIMIT ?
+        """,
+        (limit,),
+    ).fetchall()
+
+
 def get_user_metrics(user_id, current_level):
     db = get_db()
     score_total = db.execute(
@@ -244,10 +303,15 @@ def get_user_metrics(user_id, current_level):
         "SELECT COUNT(*) FROM progress WHERE user_id = ? AND status = 'completed'",
         (user_id,),
     ).fetchone()[0]
+    practice_seconds = db.execute(
+        "SELECT COALESCE(SUM(duration_seconds), 0) FROM practice_sessions WHERE user_id = ?",
+        (user_id,),
+    ).fetchone()[0]
     return {
         'score_total': score_total,
         'completed_lessons': completed,
         'current_level': current_level,
+        'practice_seconds': practice_seconds,
     }
 
 

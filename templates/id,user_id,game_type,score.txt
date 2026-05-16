@@ -1,0 +1,17 @@
+id,user_id,game_type,score
+13,3,note-match,10
+12,3,note-match,10
+11,3,note-match,10
+10,3,note-match,10
+9,3,note-match,10
+8,3,note-match,10
+7,3,note-match,10
+6,3,note-match,10
+5,3,note-match,10
+4,3,note-match,10
+3,3,note-match,10
+2,3,note-match,10
+1,3,note-match,10
+
+id,user_id,level_id,status
+1,3,1,completed

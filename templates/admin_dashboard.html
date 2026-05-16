@@ -178,6 +178,68 @@
                 </table>
             </div>
         </section>
+
+        <section class="panel" style="margin-top: 16px;">
+            <h2>Recent score records</h2>
+            <p>Latest game scores saved by users.</p>
+            <div class="account-table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Username</th>
+                            <th>Game</th>
+                            <th>Score</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in recent_scores %}
+                            <tr>
+                                <td>{{ row.id }}</td>
+                                <td>{{ row.username }}</td>
+                                <td>{{ row.game_type }}</td>
+                                <td>{{ row.score }}</td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="4">No score records found.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="panel" style="margin-top: 16px;">
+            <h2>Recent progress records</h2>
+            <p>Latest level completion status updates.</p>
+            <div class="account-table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Username</th>
+                            <th>Level</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in recent_progress %}
+                            <tr>
+                                <td>{{ row.id }}</td>
+                                <td>{{ row.username }}</td>
+                                <td>{{ row.level_name }}</td>
+                                <td>{{ row.status }}</td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="4">No progress records found.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
     </main>
 </body>
 </html>

@@ -3,107 +3,926 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Dashboard</title>
+    <title>Pianova Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #f6efe2;
-            --panel: #ffffff;
-            --accent: #2f6f54;
-            --accent-soft: #dbe9df;
-            --text: #2a241e;
-            --muted: #6c6256;
+            --bg: #000000;
+            --page: #000000;
+            --panel: #1a1a1a;
+            --panel-soft: #242424;
+            --sidebar: #fdb913;
+            --sidebar-soft: #fcc833;
+            --text: #ffffff;
+            --muted: #b0b0b0;
+            --gold: #fdb913;
+            --gold-2: #fec933;
+            --orange: #ff6b35;
+            --blue: #4a90e2;
+            --green: #52c41a;
+            --purple: #9b59b6;
+            --shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
         }
         * { box-sizing: border-box; }
+        html, body { min-height: 100%; }
         body {
             margin: 0;
-            min-height: 100vh;
-            font-family: "Segoe UI", sans-serif;
-            background: linear-gradient(180deg, #20160f 0%, #473425 20%, var(--bg) 20%, var(--bg) 100%);
+            font-family: "Poppins", "Segoe UI", sans-serif;
+            background:
+                radial-gradient(circle at 18% 10%, rgba(253, 185, 19, 0.08), transparent 18%),
+                radial-gradient(circle at 86% 8%, rgba(253, 185, 19, 0.04), transparent 16%),
+                #000000;
             color: var(--text);
+            overflow-x: hidden;
+            overflow-y: auto;
         }
-        .shell { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 32px 0 48px; }
-        .hero {
-            background: rgba(18, 12, 8, 0.82);
-            color: #f8ecdd;
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background-image:
+                radial-gradient(circle at 24px 24px, rgba(255,255,255,0.16) 0 2px, transparent 2px),
+                radial-gradient(circle at 72px 72px, rgba(255,255,255,0.1) 0 1px, transparent 1px);
+            background-size: 96px 96px;
+            opacity: 0.35;
+        }
+        .shell {
+            width: min(1550px, calc(100% - 28px));
+            margin: 0 auto;
+            padding: 10px 0 16px;
+            min-height: 100vh;
+        }
+        .frame {
+            display: grid;
+            grid-template-columns: 240px minmax(0, 1fr);
+            gap: 14px;
+            align-items: start;
+        }
+        .sidebar {
+            position: sticky;
+            top: 10px;
+            height: calc(100vh - 20px);
             border-radius: 28px;
-            padding: 28px;
-            margin-bottom: 24px;
+            background: linear-gradient(180deg, #fdb913, #fcc833);
+            color: #1a1a1a;
+            box-shadow: 0 8px 24px rgba(253, 185, 19, 0.2);
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.3);
         }
-        .hero a, .actions a {
-            display: inline-block;
+        .brand {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+        }
+        .brand-mark {
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
+            display: grid;
+            place-items: center;
+            background: linear-gradient(145deg, #1a1a1a, #2a2a2a);
+            color: #fdb913;
+            font-size: 1.35rem;
+            font-weight: 800;
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.2);
+        }
+        .brand h1 {
+            margin: 0;
+            font-family: "Cinzel", serif;
+            font-size: 1.65rem;
+            letter-spacing: 0.08em;
+            color: #1a1a1a;
+            line-height: 1;
+        }
+        .brand p {
+            margin: 4px 0 0;
+            color: rgba(26, 26, 26, 0.72);
+            font-size: 0.84rem;
+        }
+        .nav {
+            display: grid;
+            gap: 8px;
+        }
+        .nav a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
             text-decoration: none;
-            color: inherit;
-            margin-right: 12px;
-            margin-top: 12px;
-            padding: 12px 18px;
+            color: #1a1a1a;
+            padding: 13px 14px;
+            border-radius: 16px;
+            font-weight: 700;
+            transition: 0.15s ease;
+            border: 1px solid transparent;
+        }
+        .nav a:hover,
+        .nav a.active {
+            background: rgba(26, 26, 26, 0.15);
+            border-color: rgba(26, 26, 26, 0.3);
+        }
+        .nav .icon {
+            width: 20px;
+            text-align: center;
+            color: #1a1a1a;
+        }
+        .sidebar-art {
+            margin-top: auto;
+            border-radius: 24px;
+            min-height: 260px;
+            position: relative;
+            background:
+                radial-gradient(circle at 25% 22%, rgba(255, 255, 255, 0.2), transparent 16%),
+                linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.04));
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            overflow: hidden;
+        }
+        .girl-scene {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+        .sidebar-art .notes {
+            position: absolute;
+            inset: 0;
+            font-size: 1.6rem;
+            color: #1a1a1a;
+        }
+        .sidebar-art .notes span { position: absolute; }
+        .sidebar-art .notes span:nth-child(1) { left: 20px; top: 22px; }
+        .sidebar-art .notes span:nth-child(2) { left: 94px; top: 70px; color: #5ec4ff; }
+        .sidebar-art .notes span:nth-child(3) { right: 26px; top: 24px; color: #ff7ea8; }
+        .sidebar-art .notes span:nth-child(4) { right: 18px; bottom: 44px; color: #8f63ff; }
+        .logout-link {
+            margin-top: 2px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: rgba(26, 26, 26, 0.88);
+            font-weight: 600;
+            padding: 10px 6px 0;
+        }
+        .content {
+            display: grid;
+            gap: 12px;
+            min-width: 0;
+        }
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 12px;
+            padding: 2px 2px 0;
+        }
+        .topbar .circle,
+        .topbar .avatar {
+            width: 42px;
+            height: 42px;
             border-radius: 999px;
+            background: #fdb913;
+            border: 1px solid rgba(253, 185, 19, 0.4);
+            display: grid;
+            place-items: center;
+            box-shadow: 0 4px 12px rgba(253, 185, 19, 0.2);
+        }
+        .topbar .circle { color: #1a1a1a; }
+        .topbar .avatar {
+            font-weight: 800;
+            color: #1a1a1a;
+            background: linear-gradient(145deg, #fdb913, #fcc833);
+        }
+        .topbar .user {
+            color: #1a1a1a;
             font-weight: 700;
         }
-        .primary { background: #d8b470; color: #23180e; }
-        .secondary { background: rgba(255, 255, 255, 0.12); color: #f8ecdd; }
-        .grid {
+        .hero {
+            background: linear-gradient(135deg, #1a1a1a 0%, #252525 100%);
+            color: #ffffff;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            padding: 28px 32px;
+            border: 1px solid rgba(255, 215, 0, 0.15);
+        }
+        .hero-inner {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 16px;
-            margin-bottom: 24px;
+            grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
+            gap: 18px;
+            align-items: center;
         }
-        .card {
-            background: var(--panel);
-            border-radius: 22px;
-            padding: 22px;
-            box-shadow: 0 14px 30px rgba(0, 0, 0, 0.08);
+        .hero-copy h2 {
+            margin: 0;
+            font-size: clamp(1.9rem, 3vw, 3rem);
+            line-height: 0.98;
+            font-family: "Cinzel", serif;
+            color: #ffffff;
         }
-        .card span { color: var(--muted); display: block; margin-bottom: 10px; }
-        .card strong { font-size: 2rem; }
-        .actions {
-            background: var(--panel);
-            border-radius: 24px;
-            padding: 24px;
-            box-shadow: 0 14px 30px rgba(0, 0, 0, 0.08);
+        .hero-copy h2 .name {
+            display: block;
+            color: #ffd700;
+            font-size: clamp(2.6rem, 4vw, 4.2rem);
+            margin-top: 8px;
         }
-        .actions a { background: var(--accent-soft); color: var(--accent); }
-        .video-bg {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            object-fit: cover;
-            z-index: -1;
+        .hero-copy p {
+            margin: 8px 0 0;
+            color: rgba(255, 200, 100, 0.95);
+            font-size: 0.98rem;
+        }
+        .hero-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 18px;
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            border-radius: 14px;
+            text-decoration: none;
+            font-weight: 800;
+            padding: 16px 18px;
+            border: 1px solid transparent;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #ff6b35, #ff5a1f);
+            color: #ffffff;
+            min-width: 190px;
+            box-shadow: 0 6px 16px rgba(255, 107, 53, 0.4);
+            border: none;
+        }
+        .btn-secondary {
+            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+            border-color: #9b59b6;
+            color: #ffffff;
+            min-width: 120px;
+            box-shadow: 0 6px 16px rgba(155, 89, 182, 0.3);
+        }
+        .hero-art {
+            position: relative;
+            min-height: 280px;
+            border-radius: 28px;
+            overflow: hidden;
+            background:
+                radial-gradient(circle at 64% 18%, rgba(255, 220, 146, 0.25), transparent 14%),
+                radial-gradient(circle at 70% 40%, rgba(255, 198, 72, 0.12), transparent 16%),
+                linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01));
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .hero-art .portrait {
+            position: absolute;
+            right: 16px;
+            bottom: 0;
+            width: 260px;
+            height: 240px;
+            border-radius: 42% 58% 26% 74% / 45% 35% 65% 55%;
+            background:
+                radial-gradient(circle at 56% 26%, #f8d8b3 0 13px, transparent 14px),
+                radial-gradient(circle at 48% 44%, #3d2a1b 0 5px, transparent 6px),
+                radial-gradient(circle at 63% 44%, #3d2a1b 0 5px, transparent 6px),
+                radial-gradient(circle at 54% 56%, #ea6b56 0 7px, transparent 8px),
+                radial-gradient(circle at 52% 12%, #9b4d1f 0 52px, transparent 54px),
+                radial-gradient(circle at 56% 70%, #4f88d9 0 52px, transparent 54px),
+                linear-gradient(180deg, #f4c9a4, #f0b37b 50%, transparent 50%);
+            box-shadow: inset 0 -18px 0 rgba(255,255,255,0.08);
+        }
+        .hero-art .keyboard {
+            position: absolute;
+            right: 110px;
+            bottom: 26px;
+            width: 210px;
+            height: 60px;
+            transform: skewX(-18deg) rotate(-10deg);
+            border-radius: 12px;
+            background: linear-gradient(180deg, #3d2618, #130d09);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.25);
+        }
+        .hero-art .keyboard::before {
+            content: "";
+            position: absolute;
+            inset: 7px;
+            border-radius: 8px;
+            background: repeating-linear-gradient(90deg, #fffaf1 0 9px, #141010 9px 18px);
+        }
+        .hero-art .sparkle {
+            position: absolute;
+            color: #ffd95d;
+            font-size: 1.2rem;
+            text-shadow: 0 0 10px rgba(255,217,93,0.35);
+        }
+        .hero-art .sparkle:nth-child(3) { left: 22px; top: 32px; }
+        .hero-art .sparkle:nth-child(4) { left: 92px; top: 86px; color: #ff7eb5; }
+        .hero-art .sparkle:nth-child(5) { right: 122px; top: 44px; color: #43c6ff; }
+        .hero-art .sparkle:nth-child(6) { right: 88px; top: 112px; color: #8a5cff; }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 12px;
+        }
+        .stat-card {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 18px 20px;
+            display: grid;
+            grid-template-columns: 58px minmax(0, 1fr);
+            gap: 14px;
+            align-items: center;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(0, 0, 0, 0.06);
+        }
+        .stat-icon {
+            width: 58px;
+            height: 58px;
+            border-radius: 14px;
+            display: grid;
+            place-items: center;
+            font-size: 1.55rem;
+            color: #fff;
+        }
+        .stat-card.orange .stat-icon { background: #ff6b35; }
+        .stat-card.blue .stat-icon { background: #4a90e2; }
+        .stat-card.green .stat-icon { background: #52c41a; }
+        .stat-card h3 {
+            margin: 0 0 4px;
+            font-size: 0.92rem;
+            color: #aaaaaa;
+            font-weight: 600;
+        }
+        .stat-card strong {
+            display: block;
+            font-size: 1.95rem;
+            line-height: 1;
+            color: #1a1a1a;
+        }
+        .stat-note {
+            margin-top: 6px;
+            font-size: 0.85rem;
+            color: #ddaa44;
+        }
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1.4fr) minmax(320px, 0.78fr);
+            gap: 12px;
+            align-items: stretch;
+        }
+        .panel {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 18px 20px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(0, 0, 0, 0.06);
+        }
+        .panel-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+        .panel-header h3 {
+            margin: 0;
+            font-size: 1.2rem;
+            color: #1a1a1a;
+        }
+        .panel-subtle {
+            margin: 4px 0 0;
+            color: #888888;
+            font-size: 0.9rem;
+        }
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 14px;
+            border-radius: 12px;
+            background: rgba(253, 185, 19, 0.15);
+            border: 1px solid rgba(253, 185, 19, 0.3);
+            color: #ffd700;
+            font-size: 0.85rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            white-space: nowrap;
+        }
+        .progress-graph {
+            height: 220px;
+            border-radius: 12px;
+            background: linear-gradient(180deg, #ffffff, #f8f8f8);
+            padding: 14px 16px 10px;
+            overflow: hidden;
+            position: relative;
+        }
+        .progress-graph svg {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+        .axis-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+            color: #aaaaaa;
+            font-size: 0.78rem;
+            padding: 0 8px;
+        }
+        .mini-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+            margin-top: 12px;
+        }
+        .mini-card {
+            background: #ffffff;
+            border-radius: 14px;
+            padding: 16px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            min-height: 92px;
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+        .mini-card:nth-child(2) { background: #ffffff; }
+        .mini-badge {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: grid;
+            place-items: center;
+            font-size: 1.35rem;
+            color: #fff;
+            flex: 0 0 auto;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        .mini-card:first-child .mini-badge { background: #9b59b6; }
+        .mini-card:nth-child(2) .mini-badge { background: #52c41a; }
+        .mini-card span {
+            display: block;
+            color: #888888;
+            font-size: 0.9rem;
+            margin-bottom: 2px;
+        }
+        .mini-card strong {
+            display: block;
+            color: #1a1a1a;
+            font-size: 1.6rem;
+            line-height: 1.1;
+        }
+        .mini-foot {
+            margin-top: 4px;
+            color: #ff9900;
+            font-size: 0.78rem;
+        }
+        .right-stack {
+            display: grid;
+            grid-template-rows: auto auto;
+            gap: 12px;
+        }
+        .next-lesson {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 18px 20px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(0, 0, 0, 0.06);
+        }
+        .next-lesson .title-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .next-lesson .title-row h3 {
+            margin: 0;
+            font-size: 1.15rem;
+            color: #1a1a1a;
+        }
+        .star-mark {
+            color: #ffcf2b;
+            font-size: 1.6rem;
+        }
+        .lesson-card-mini {
+            display: grid;
+            grid-template-columns: 86px minmax(0, 1fr);
+            gap: 14px;
+            align-items: center;
+            background: #ffffff;
+            border-radius: 14px;
+            padding: 14px;
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+        .lesson-art {
+            height: 86px;
+            border-radius: 12px;
+            background:
+                radial-gradient(circle at 30% 32%, rgba(255,255,255,0.45), transparent 14%),
+                linear-gradient(180deg, #f8d4a8, #d9a04b);
+            position: relative;
+            overflow: hidden;
+        }
+        .lesson-art::before {
+            content: "";
+            position: absolute;
+            left: 10px;
+            bottom: 14px;
+            width: 62px;
+            height: 10px;
+            border-radius: 5px;
+            background: #253b8a;
+            box-shadow: 18px 0 0 #fff, 36px 0 0 #253b8a;
+            transform: rotate(-14deg);
+        }
+        .lesson-art::after {
+            content: "♪";
+            position: absolute;
+            right: 8px;
+            top: 8px;
+            color: #fff;
+            font-size: 1.4rem;
+        }
+        .lesson-kicker {
+            color: #ff6b35;
+            font-size: 0.84rem;
+            font-weight: 700;
+        }
+        .lesson-title-mini {
+            font-size: 1.12rem;
+            font-weight: 800;
+            color: #1a1a1a;
+            margin: 2px 0 4px;
+        }
+        .lesson-desc {
+            color: #888888;
+            font-size: 0.9rem;
+            line-height: 1.35;
+            margin: 0 0 10px;
+        }
+        .continue-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 100%;
+            padding: 12px 16px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #ff6b35, #ff5a1f);
+            color: #fff;
+            text-decoration: none;
+            font-weight: 800;
+            box-shadow: 0 4px 12px rgba(255, 107, 53, 0.25);
+            border: none;
+        }
+        .quick-actions {
+            background: #fffef0;
+            border-radius: 16px;
+            padding: 18px 20px;
+            border: 1px solid rgba(253, 185, 19, 0.15);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+        }
+        .quick-actions h3 {
+            margin: 0 0 12px;
+            font-size: 1.15rem;
+            color: #1a1a1a;
+        }
+        .quick-list {
+            display: grid;
+            gap: 10px;
+        }
+        .action-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            text-decoration: none;
+            color: inherit;
+            padding: 13px 14px;
+            border-radius: 14px;
+            background: #fffdf5;
+            border: 1px solid rgba(253, 185, 19, 0.2);
+            transition: 0.15s ease;
+        }
+        .action-row:hover {
+            background: #fffef0;
+        }
+        .action-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .glyph {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: grid;
+            place-items: center;
+            background: #f5f5f5;
+            font-size: 1.25rem;
+        }
+        .action-row strong {
+            display: block;
+            font-size: 0.98rem;
+            color: #1a1a1a;
+        }
+        .action-row small {
+            color: #888888;
+            display: block;
+            margin-top: 2px;
+            font-size: 0.8rem;
+        }
+        .action-arrow {
+            color: #ff6b35;
+            font-size: 1.2rem;
+            font-weight: 800;
+        }
+        .quote {
+            background: linear-gradient(135deg, #fdb913, #fcc833);
+            border-radius: 16px;
+            padding: 14px 18px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            justify-content: space-between;
+            box-shadow: 0 4px 16px rgba(253, 185, 19, 0.2);
+        }
+        .quote .left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .quote-mark {
+            color: #ffcf23;
+            font-size: 2.2rem;
+            line-height: 1;
+        }
+        .quote p {
+            margin: 0;
+            font-weight: 600;
+            color: #1a1a1a;
+            font-size: 0.95rem;
+        }
+        .signature {
+            color: #8b5b00;
+            font-family: "Cinzel", serif;
+            font-size: 0.9rem;
+            letter-spacing: 0.08em;
+        }
+        @media (max-width: 1220px) {
+            .frame {
+                grid-template-columns: 1fr;
+            }
+            .sidebar {
+                position: relative;
+                height: auto;
+            }
+            .sidebar-art { min-height: 180px; }
+        }
+        @media (max-width: 920px) {
+            .stats,
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            .hero-inner {
+                grid-template-columns: 1fr;
+            }
+            .hero-art {
+                min-height: 220px;
+            }
+            .mini-grid {
+                grid-template-columns: 1fr;
+            }
+            .right-stack {
+                grid-template-rows: auto auto;
+            }
+        }
+        @media (max-width: 520px) {
+            .shell { width: min(100% - 16px, 1550px); }
+            .hero,
+            .panel,
+            .stat-card,
+            .next-lesson,
+            .quick-actions,
+            .quote {
+                border-radius: 18px;
+            }
+            .hero-copy h2 .name {
+                font-size: 2.2rem;
+            }
+            .btn-primary,
+            .btn-secondary {
+                width: 100%;
+            }
         }
     </style>
 </head>
 <body>
-    <video class="video-bg" autoplay muted loop playsinline>
-        <source src="{{ url_for('static', filename='bg.mp4') }}" type="video/mp4">
-    </video>
     <main class="shell">
-        <section class="hero">
-            <h1>Welcome, {{ username }}</h1>
-            <p>Your account is now using the SQLite database. Login, progress, and scores are stored in Pianova.</p>
-            <a class="primary" href="{{ url_for('lessons') }}">Open lessons</a>
-            <a class="secondary" href="{{ url_for('logout') }}">Logout</a>
-        </section>
+        <div class="frame">
+            <aside class="sidebar">
+                <div class="brand">
+                    <div class="brand-mark">♪</div>
+                    <div>
+                        <h1>PIANOVA</h1>
+                        <p>Play. Learn. Grow.</p>
+                    </div>
+                </div>
 
-        <section class="grid">
-            <article class="card">
-                <span>Completed lessons</span>
-                <strong>{{ metrics.completed_lessons }}</strong>
-            </article>
-            <article class="card">
-                <span>Total score</span>
-                <strong>{{ metrics.score_total }}</strong>
-            </article>
-            <article class="card">
-                <span>Current level</span>
-                <strong>{{ metrics.current_level }}</strong>
-            </article>
-        </section>
+                <nav class="nav" aria-label="Primary">
+                    <a class="active" href="{{ url_for('user_dashboard') }}"><span class="icon">🏠</span>Dashboard</a>
+                    <a href="{{ url_for('lessons') }}"><span class="icon">📖</span>Lessons</a>
+                    <a href="{{ practice_href }}"><span class="icon">🎹</span>Practice</a>
+                    <a href="#scores"><span class="icon">🏅</span>Scores</a>
+                    <a href="#progress"><span class="icon">📈</span>Progress</a>
+                    <a href="{{ url_for('logout') }}"><span class="icon">⚙</span>Settings</a>
+                </nav>
 
-        <section class="actions">
-            <h2>Quick actions</h2>
-            <p>Use these pages to test the merged user flow.</p>
-            <a href="{{ url_for('game') }}">Play note game</a>
-            <a href="{{ url_for('lessons') }}">Lesson page</a>
-        </section>
+                <div class="sidebar-art" aria-hidden="true">
+                    <div class="notes">
+                        <span>♪</span>
+                        <span>♫</span>
+                        <span>♬</span>
+                        <span>♪</span>
+                    </div>
+                    <img src="https://static.vecteezy.com/system/resources/previews/019/850/262/large_2x/back-of-a-girl-playing-piano-cartoon-free-vector.jpg" alt="Girl playing piano" style="max-width: 100%; height: auto; border-radius: 8px; object-fit: cover;" />
+                </div>
+
+                <a class="logout-link" href="{{ url_for('logout') }}">⤴ Logout</a>
+            </aside>
+
+            <section class="content">
+                <div class="topbar">
+                    <div class="circle">🔔</div>
+                    <div class="avatar">{{ username[:1]|upper }}</div>
+                    <div class="user">{{ username }}</div>
+                    <div style="font-weight:800;color:#4a311a;">▾</div>
+                </div>
+
+                <section class="hero">
+                    <div class="hero-inner">
+                        <div class="hero-copy">
+                            <h2>
+                                Hi there,
+                                <span class="name">{{ username }}! 👋</span>
+                            </h2>
+                            <p>Let's make beautiful music today!</p>
+                            <div class="hero-actions">
+                                <a class="btn btn-primary" href="{{ lessons_card_url if lessons_card_url is defined else url_for('lessons') }}">▶ Continue Lesson</a>
+                                <a class="btn btn-secondary" href="{{ practice_href }}">🎹 Practice</a>
+                            </div>
+                        </div>
+
+                        <div class="hero-art" aria-hidden="true">
+                            <div class="sparkle">♪</div>
+                            <div class="sparkle">♫</div>
+                            <div class="sparkle">♬</div>
+                            <div class="sparkle">♪</div>
+                            <img src="https://thumbs.dreamstime.com/b/cute-cartoon-girl-playing-piano-bokeh-lights-background-336131688.jpg" alt="Girl playing piano" style="max-width: 100%; height: auto; border-radius: 12px; object-fit: cover;" />
+                        </div>
+                    </div>
+                </section>
+
+                <section class="stats">
+                    <article class="stat-card orange">
+                        <div class="stat-icon">📖</div>
+                        <div>
+                            <h3>Lessons Completed</h3>
+                            <strong>{{ metrics.completed_lessons }}</strong>
+                            <div class="stat-note">Keep it up! ✨</div>
+                        </div>
+                    </article>
+                    <article class="stat-card blue">
+                        <div class="stat-icon">⭐</div>
+                        <div>
+                            <h3>Total Score</h3>
+                            <strong>{{ metrics.score_total }}</strong>
+                            <div class="stat-note">Great progress! 🎉</div>
+                        </div>
+                    </article>
+                    <article class="stat-card green">
+                        <div class="stat-icon">👑</div>
+                        <div>
+                            <h3>Current Level</h3>
+                            <strong>{{ metrics.current_level }}</strong>
+                            <div class="stat-note">
+                                {% if metrics.current_level <= 1 %}Beginner 🎵{% elif metrics.current_level == 2 %}Young Pianist 🎵{% elif metrics.current_level == 3 %}Intermediate 🎶{% else %}Advanced 🌟{% endif %}
+                            </div>
+                        </div>
+                    </article>
+                </section>
+
+                <div class="dashboard-grid" id="progress">
+                    <section class="panel">
+                        <div class="panel-header">
+                            <div>
+                                <h3>Your Progress</h3>
+                                <p class="panel-subtle">See how you're improving every day!</p>
+                            </div>
+                            <div class="chip">This Week ▾</div>
+                        </div>
+
+                        <div class="progress-graph" aria-label="Weekly progress chart">
+                            <svg viewBox="0 0 900 240" role="img" aria-hidden="true" preserveAspectRatio="none">
+                                <defs>
+                                    <linearGradient id="lineGlow" x1="0" x2="0" y1="0" y2="1">
+                                        <stop offset="0%" stop-color="#f0b51c" stop-opacity="0.4"/>
+                                        <stop offset="100%" stop-color="#f0b51c" stop-opacity="0.02"/>
+                                    </linearGradient>
+                                </defs>
+                                <path d="{{ progress_chart.fill_path }}" fill="url(#lineGlow)"></path>
+                                <path d="{{ progress_chart.path }}" fill="none" stroke="#f0b51c" stroke-width="4" stroke-linecap="round"></path>
+                                <g fill="#f0b51c" stroke="#ffe7a3" stroke-width="3">
+                                    {% for point in progress_chart.dots %}
+                                    <circle cx="{{ point.x }}" cy="{{ point.y }}" r="7" />
+                                    {% endfor %}
+                                </g>
+                            </svg>
+                        </div>
+                        <div class="axis-labels">
+                            {% for point in progress_chart.dots %}
+                            <span>{{ point.label }}</span>
+                            {% endfor %}
+                        </div>
+
+                        <div class="mini-grid">
+                            <article class="mini-card">
+                                <div class="mini-badge">🕒</div>
+                                <div>
+                                    <span>Practice Time</span>
+                                    <strong>{{ practice_time }}</strong>
+                                    <div class="mini-foot">This Week</div>
+                                </div>
+                            </article>
+                            <article class="mini-card">
+                                <div class="mini-badge">🎯</div>
+                                <div>
+                                    <span>Lessons Completed</span>
+                                    <strong>{{ metrics.completed_lessons }}</strong>
+                                    <div class="mini-foot">This Week</div>
+                                </div>
+                            </article>
+                        </div>
+                    </section>
+
+                    <div class="right-stack">
+                        <section class="next-lesson">
+                            <div class="title-row">
+                                <h3>Next Lesson</h3>
+                                <div class="star-mark">⭐</div>
+                            </div>
+                            <div class="lesson-card-mini">
+                                <div class="lesson-art" aria-hidden="true"></div>
+                                <div>
+                                    <div class="lesson-kicker">{{ next_lesson.label }}</div>
+                                    <div class="lesson-title-mini">{{ next_lesson.title }}</div>
+                                    <p class="lesson-desc">{{ next_lesson.description }}</p>
+                                    <a class="continue-btn" href="{{ lessons_card_url if lessons_card_url is defined else url_for('lessons') }}">{{ next_lesson.button_text }}</a>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section class="quick-actions">
+                            <h3>Quick Actions</h3>
+                            <div class="quick-list">
+                                <a class="action-row" href="{{ practice_href }}">
+                                    <div class="action-left">
+                                        <div class="glyph">🎹</div>
+                                        <div>
+                                            <strong>Practice Mode</strong>
+                                            <small>Free practice session</small>
+                                        </div>
+                                    </div>
+                                    <div class="action-arrow">›</div>
+                                </a>
+
+                                <a class="action-row" href="{{ url_for('lessons') }}">
+                                    <div class="action-left">
+                                        <div class="glyph">📖</div>
+                                        <div>
+                                            <strong>Browse Lessons</strong>
+                                            <small>Explore all lessons</small>
+                                        </div>
+                                    </div>
+                                    <div class="action-arrow">›</div>
+                                </a>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+
+                <div class="quote" id="scores">
+                    <div class="left">
+                        <div class="quote-mark">❝</div>
+                        <p>Consistency is the key to becoming a great pianist.</p>
+                    </div>
+                    <div class="signature">PIANOVA</div>
+                </div>
+            </section>
+        </div>
     </main>
 </body>
 </html>

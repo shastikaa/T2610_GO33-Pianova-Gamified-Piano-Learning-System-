@@ -27,6 +27,53 @@ def init_app(app):
     app.teardown_appcontext(close_db)
 
 
+def seed_levels(cursor):
+    levels = [
+        (1, 'Level 1', 'Basic Notes'),
+        (2, 'Level 2', 'Simple Melody'),
+        (3, 'Level 3', 'Intermediate'),
+        (4, 'Level 4', 'Final Challenge'),
+    ]
+    cursor.executemany(
+        """
+        INSERT INTO levels (id, level_name, description)
+        VALUES (?, ?, ?)
+        ON CONFLICT(id) DO UPDATE SET
+            level_name = excluded.level_name,
+            description = excluded.description
+        """,
+        levels,
+    )
+
+
+def seed_tasks(cursor):
+    tasks = [
+        (1, 1, 'Identify the note C', 'C'),
+        (2, 1, 'Identify the note D', 'D'),
+        (3, 1, 'Identify the note E', 'E'),
+        (4, 2, 'Play Mary Had a Little Lamb intro', 'E D C D E E E'),
+        (5, 2, 'Play Twinkle Twinkle first phrase', 'C C G G A A G'),
+        (6, 2, 'Play Happy Birthday opening', 'C C D C F E'),
+        (7, 3, 'Build the C major chord', 'C E G'),
+        (8, 3, 'Build the G major chord', 'G B D'),
+        (9, 3, 'Build the A minor chord', 'A C E'),
+        (10, 4, 'Play C major scale both hands', 'C D E F G A B C'),
+        (11, 4, 'Play arpeggio C-E-G-C', 'C E G C'),
+        (12, 4, 'Perform progression I-V-vi-IV in C', 'C G Am F'),
+    ]
+    cursor.executemany(
+        """
+        INSERT INTO tasks (id, level_id, task_name, correct_answer)
+        VALUES (?, ?, ?, ?)
+        ON CONFLICT(id) DO UPDATE SET
+            level_id = excluded.level_id,
+            task_name = excluded.task_name,
+            correct_answer = excluded.correct_answer
+        """,
+        tasks,
+    )
+
+
 def init_db(app):
     db = sqlite3.connect(_database_path(app))
     cursor = db.cursor()
@@ -95,20 +142,23 @@ def init_db(app):
         )
         """
     )
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS practice_sessions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            game_type TEXT NOT NULL,
+            duration_seconds INTEGER NOT NULL,
+            started_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (user_id) REFERENCES users(id)
+        )
+        """
+    )
 
     seed_user(cursor, 'admin', 'admin123', 'admin')
     seed_user(cursor, 'student', '1234', 'user')
-
-    levels = [
-        (1, 'Level 1', 'Basic Notes'),
-        (2, 'Level 2', 'Simple Melody'),
-        (3, 'Level 3', 'Intermediate'),
-        (4, 'Level 4', 'Final Challenge'),
-    ]
-    cursor.executemany(
-        "INSERT OR IGNORE INTO levels (id, level_name, description) VALUES (?, ?, ?)",
-        levels,
-    )
+    seed_levels(cursor)
+    seed_tasks(cursor)
 
     db.commit()
     db.close()
@@ -139,6 +189,15 @@ def create_user(username, password_hash, role='user'):
     db.commit()
 
 
+def reset_password(username, new_password_hash):
+    db = get_db()
+    db.execute(
+        "UPDATE users SET password = ? WHERE username = ?",
+        (new_password_hash, username),
+    )
+    db.commit()
+
+
 def save_progress(user_id, level_id, status):
     db = get_db()
     db.execute(
@@ -157,6 +216,18 @@ def add_score(user_id, game_type, score):
     db.execute(
         "INSERT INTO scores (user_id, game_type, score) VALUES (?, ?, ?)",
         (user_id, game_type, score),
+    )
+    db.commit()
+
+
+def add_practice_session(user_id, game_type, duration_seconds):
+    db = get_db()
+    db.execute(
+        """
+        INSERT INTO practice_sessions (user_id, game_type, duration_seconds)
+        VALUES (?, ?, ?)
+        """,
+        (user_id, game_type, duration_seconds),
     )
     db.commit()
 
@@ -181,6 +252,47 @@ def get_admin_metrics():
     }
 
 
+def get_all_accounts():
+    return get_db().execute(
+        "SELECT id, username, password, role FROM users ORDER BY id DESC"
+    ).fetchall()
+
+
+def get_recent_scores(limit=25):
+    return get_db().execute(
+        """
+        SELECT
+            s.id,
+            u.username,
+            s.game_type,
+            s.score
+        FROM scores s
+        JOIN users u ON u.id = s.user_id
+        ORDER BY s.id DESC
+        LIMIT ?
+        """,
+        (limit,),
+    ).fetchall()
+
+
+def get_recent_progress(limit=25):
+    return get_db().execute(
+        """
+        SELECT
+            p.id,
+            u.username,
+            l.level_name,
+            p.status
+        FROM progress p
+        JOIN users u ON u.id = p.user_id
+        JOIN levels l ON l.id = p.level_id
+        ORDER BY p.id DESC
+        LIMIT ?
+        """,
+        (limit,),
+    ).fetchall()
+
+
 def get_user_metrics(user_id, current_level):
     db = get_db()
     score_total = db.execute(
@@ -191,10 +303,15 @@ def get_user_metrics(user_id, current_level):
         "SELECT COUNT(*) FROM progress WHERE user_id = ? AND status = 'completed'",
         (user_id,),
     ).fetchone()[0]
+    practice_seconds = db.execute(
+        "SELECT COALESCE(SUM(duration_seconds), 0) FROM practice_sessions WHERE user_id = ?",
+        (user_id,),
+    ).fetchone()[0]
     return {
         'score_total': score_total,
         'completed_lessons': completed,
         'current_level': current_level,
+        'practice_seconds': practice_seconds,
     }
 
 

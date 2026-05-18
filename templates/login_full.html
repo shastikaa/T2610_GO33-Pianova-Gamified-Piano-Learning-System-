@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pianova | Login</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Bebas+Neue&family=Inter:wght@300;400;600;700&family=Dancing+Script:wght@700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Bebas+Neue&family=Inter:wght@300;400;600;700&display=swap');
 
         :root {
             --bg-black: #0a0a0a;
@@ -23,7 +23,7 @@
         html { height: 100%; overflow: hidden; }
 
         body {
-            background-color: #0a0a0a;
+            background-color: #20365c;
             color: #f5eedc;
             height: 100vh;
             display: flex;
@@ -38,12 +38,12 @@
             width: 100%; height: 100%;
             object-fit: cover;
             filter: brightness(0.3) saturate(0.8);
-            opacity: 0.15; z-index: 0;
+            opacity: 0.04; z-index: 0;
         }
         .bg-overlay {
             position: fixed; inset: 0;
-            background: radial-gradient(ellipse at 50% 0%, rgba(212,175,55,0.15) 0%, transparent 60%),
-                        linear-gradient(180deg, #0a0a0a 0%, #000000 50%, #0a0a0a 100%);
+            background: radial-gradient(ellipse at 50% 0%, rgba(248,203,91,0.25) 0%, transparent 56%),
+                        linear-gradient(180deg, #28477a 0%, #233f6b 46%, #1b3257 100%);
             z-index: 1;
         }
 
@@ -54,8 +54,8 @@
             min-height: 0;
             display: flex;
             align-items: center;
-            justify-content: flex-start;
-            padding: 10px 6% 16px 8%;
+            justify-content: center;
+            padding: 16px 6%;
             gap: 30px;
             overflow: hidden;
         }
@@ -64,59 +64,48 @@
         .particles { position: absolute; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
         .particle {
             position: absolute;
-            color: rgba(212,175,55,0.18);
+            color: rgba(212,175,55,0.08);
             font-size: 1.4rem;
             user-select: none;
-            animation: flyNote linear infinite;
+            animation: floatParticle linear infinite;
         }
-        .particle:nth-child(1)  { left:4%;  animation-duration:12s; animation-delay:0s;    font-size:1.6rem; color:rgba(255,215,0,0.35); }
-        .particle:nth-child(2)  { left:13%; animation-duration:16s; animation-delay:2s;    font-size:1.1rem; color:rgba(212,175,55,0.25); }
-        .particle:nth-child(3)  { left:22%; animation-duration:10s; animation-delay:5s;    font-size:2rem;   color:rgba(255,215,0,0.3); }
-        .particle:nth-child(4)  { left:33%; animation-duration:18s; animation-delay:1s;    font-size:1.3rem; color:rgba(212,175,55,0.22); }
-        .particle:nth-child(5)  { left:45%; animation-duration:14s; animation-delay:7s;    font-size:1.8rem; color:rgba(255,215,0,0.38); }
-        .particle:nth-child(6)  { left:55%; animation-duration:11s; animation-delay:3.5s;  font-size:1rem;   color:rgba(212,175,55,0.2); }
-        .particle:nth-child(7)  { left:65%; animation-duration:17s; animation-delay:0.5s;  font-size:2.2rem; color:rgba(255,215,0,0.32); }
-        .particle:nth-child(8)  { left:74%; animation-duration:13s; animation-delay:9s;    font-size:1.4rem; color:rgba(212,175,55,0.28); }
-        .particle:nth-child(9)  { left:83%; animation-duration:15s; animation-delay:4s;    font-size:1.7rem; color:rgba(255,215,0,0.35); }
-        .particle:nth-child(10) { left:91%; animation-duration:9s;  animation-delay:6s;    font-size:1.2rem; color:rgba(212,175,55,0.22); }
-        .particle:nth-child(11) { left:8%;  animation-duration:20s; animation-delay:11s;   font-size:1.5rem; color:rgba(255,215,0,0.3); }
-        .particle:nth-child(12) { left:49%; animation-duration:13s; animation-delay:8s;    font-size:1.9rem; color:rgba(212,175,55,0.35); }
-        .particle:nth-child(13) { left:38%; animation-duration:11s; animation-delay:13s;   font-size:1.1rem; color:rgba(255,215,0,0.25); }
-        .particle:nth-child(14) { left:70%; animation-duration:16s; animation-delay:2.5s;  font-size:2rem;   color:rgba(212,175,55,0.28); }
-        .particle:nth-child(15) { left:58%; animation-duration:8s;  animation-delay:10s;   font-size:1.3rem; color:rgba(255,215,0,0.4); }
-        @keyframes flyNote {
-            0%   { transform: translateY(110vh) translateX(0) rotate(-10deg) scale(0.7); opacity:0; }
-            8%   { opacity: 1; }
-            25%  { transform: translateY(75vh)  translateX(18px)  rotate(8deg)  scale(1.05); }
-            50%  { transform: translateY(50vh)  translateX(-14px) rotate(-6deg) scale(1); }
-            75%  { transform: translateY(25vh)  translateX(20px)  rotate(10deg) scale(1.1); filter: drop-shadow(0 0 6px rgba(255,215,0,0.7)); }
-            92%  { opacity: 0.8; }
-            100% { transform: translateY(-12vh) translateX(-10px) rotate(-15deg) scale(0.8); opacity:0; }
+        .particle:nth-child(1)  { left:5%;  animation-duration:18s; animation-delay:0s;   font-size:1.2rem; }
+        .particle:nth-child(2)  { left:15%; animation-duration:22s; animation-delay:3s;   font-size:1.6rem; }
+        .particle:nth-child(3)  { left:28%; animation-duration:16s; animation-delay:7s;   font-size:1rem; }
+        .particle:nth-child(4)  { left:42%; animation-duration:24s; animation-delay:1s;   font-size:1.8rem; }
+        .particle:nth-child(5)  { left:56%; animation-duration:20s; animation-delay:5s;   font-size:1.3rem; }
+        .particle:nth-child(6)  { left:68%; animation-duration:19s; animation-delay:9s;   font-size:1.1rem; }
+        .particle:nth-child(7)  { left:78%; animation-duration:25s; animation-delay:2s;   font-size:1.5rem; }
+        .particle:nth-child(8)  { left:88%; animation-duration:17s; animation-delay:6s;   font-size:0.9rem; }
+        .particle:nth-child(9)  { left:93%; animation-duration:21s; animation-delay:11s;  font-size:1.4rem; }
+        .particle:nth-child(10) { left:35%; animation-duration:23s; animation-delay:4s;   font-size:1.2rem; }
+        @keyframes floatParticle {
+            0%   { transform: translateY(110vh) rotate(0deg); opacity:0; }
+            5%   { opacity: 1; }
+            95%  { opacity: 0.5; }
+            100% { transform: translateY(-10vh) rotate(360deg); opacity:0; }
         }
 
         /* Hero left */
         .hero-text {
-            flex: 1; max-width: 560px;
+            flex: 1; max-width: 600px;
             position: relative; z-index: 2;
-            display: flex; flex-direction: column; gap: 0;
-            align-self: flex-start;
-            padding-top: 0;
         }
 
         /* Logo */
-        .hero-logo { margin-top: 10px; margin-bottom: 18px; position: relative; display: inline-block; }
+        .hero-logo { margin-bottom: 10px; position: relative; display: inline-block; }
         .css-logo {
             position: relative;
             display: inline-flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 18px;
+            gap: 6px;
         }
 
         .logo-circle {
             position: relative;
-            width: 130px; height: 130px;
+            width: 100px; height: 100px;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -180,7 +169,7 @@
 
         /* Brand name */
         .logo-name {
-            font-family: 'Dancing Script', cursive;
+            font-family: 'Bebas Neue', sans-serif;
             font-size: 2.6rem; font-weight: 700; letter-spacing: 0.08em; line-height: 1;
             position: relative; z-index: 3; text-align: center; text-transform: uppercase;
             background: linear-gradient(135deg, #d4af37 0%, #f5e070 20%, #ffd700 40%, #fff8dc 50%, #ffd700 60%, #f5e070 80%, #d4af37 100%);
@@ -203,7 +192,6 @@
             color: rgba(212,175,55,0.75); font-weight: 600;
             position: relative; z-index: 3;
             filter: drop-shadow(0 0 4px rgba(212,175,55,0.2));
-            margin-left: 18px;
         }
 
         /* Orbiting accents */
@@ -227,12 +215,12 @@
         }
 
         /* Badges */
-        .hero-badges { display:flex; gap:6px; flex-wrap:nowrap; margin-bottom:18px; }
+        .hero-badges { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px; }
         .hero-badge {
             display:flex; align-items:center; gap:8px;
             background: linear-gradient(135deg, rgba(212,175,55,0.12), rgba(212,175,55,0.04));
             border: 1.5px solid rgba(212,175,55,0.35);
-            border-radius: 50px; padding: 7px 12px;
+            border-radius: 50px; padding: 8px 18px;
             font-size: 0.7rem; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase;
             color: rgba(212,175,55,0.9);
             animation: badgeGlow 3s ease-in-out infinite;
@@ -248,7 +236,7 @@
 
         .hero-tagline {
             font-size: 0.72rem; letter-spacing: 0.35em; color: rgba(212,175,55,0.65);
-            text-transform: uppercase; margin-top: 22px; margin-bottom: 28px;
+            text-transform: uppercase; margin-bottom: 8px;
             display: flex; align-items: center; gap: 14px; font-weight: 600;
         }
         .hero-tagline::before, .hero-tagline::after {
@@ -260,10 +248,10 @@
         /* Heading */
         .hero-text h1 {
             font-family: 'Playfair Display', serif;
-            font-size: clamp(1.6rem, 2.5vw, 2.4rem); line-height: 1.25; font-weight: 400;
+            font-size: clamp(1.5rem, 2.5vw, 2.2rem); line-height: 1.15; font-weight: 400;
             color: #f5eedc;
             text-shadow: 0 2px 50px rgba(0,0,0,0.9), 0 0 30px rgba(212,175,55,0.2);
-            margin-bottom: 14px;
+            margin-bottom: 10px;
         }
         .hero-text h1 em { font-style: italic; color: #e8d48a; filter: drop-shadow(0 0 8px rgba(212,175,55,0.3)); }
         .hero-text h1 span {
@@ -273,7 +261,7 @@
         }
 
         .hero-divider {
-            display: flex; align-items: center; gap: 14px; margin: 6px 0;
+            display: flex; align-items: center; gap: 14px; margin: 10px 0;
         }
         .hero-divider::before {
             content: ''; flex: 1; height: 1.5px;
@@ -286,10 +274,10 @@
         .hero-divider span { color: var(--gold-primary); font-size: 1.2rem; }
 
         .hero-desc {
-            color: rgba(210,195,160,0.8); font-size: 0.9rem; line-height: 1.8; letter-spacing: 0.02em;
+            color: rgba(210,195,160,0.8); font-size: 0.88rem; line-height: 1.5; letter-spacing: 0.02em;
         }
 
-        .hero-stats { display:flex; gap:22px; margin-top:18px; flex-wrap:wrap; }
+        .hero-stats { display:flex; gap:18px; margin-top:10px; flex-wrap:wrap; }
         .hero-stat { border-left: 2px solid rgba(212,175,55,0.35); padding-left: 14px; }
         .hero-stat .num {
             font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 700;
@@ -302,16 +290,15 @@
 
         /* Login Card */
         .login-card {
-            background: var(--card-bg); padding: 20px 40px; border-radius: 20px;
-            width: 520px; flex-shrink: 0;
-            margin-left: auto; margin-right: 6%;
+            background: var(--card-bg); padding: 20px 32px; border-radius: 20px;
+            width: 420px; flex-shrink: 0;
             border: 1px solid var(--border-color);
             box-shadow: 0 25px 60px rgba(0,0,0,0.6), inset 0 0 0 1px rgba(255,220,120,0.04);
         }
-        .card-logo-wrap { text-align: center; margin-bottom: 14px; display: flex; justify-content: center; }
+        .card-logo-wrap { text-align: center; margin-bottom: 10px; display: flex; justify-content: center; }
         .card-logo-circle {
             position: relative;
-            width: 160px; height: 160px;
+            width: 110px; height: 110px;
             border-radius: 12px;
             border: 3px solid rgba(212,175,55,0.65);
             box-shadow: 0 0 60px rgba(212,175,55,0.4), 0 0 120px rgba(212,175,55,0.2),
@@ -352,11 +339,8 @@
             50%      { box-shadow: 0 0 90px rgba(212,175,55,0.6), 0 0 160px rgba(212,175,55,0.3), inset 0 0 60px rgba(212,175,55,0.18), 0 20px 60px rgba(0,0,0,1); }
         }
         .card-tagline {
-            text-align: center; font-size: 0.78rem; letter-spacing: 0.28em;
-            color: #ffd700; text-transform: uppercase; margin-bottom: 8px;
-            font-weight: 800;
-            text-shadow: 0 0 8px rgba(255,215,0,0.9), 0 0 20px rgba(212,175,55,0.8), 0 0 40px rgba(212,175,55,0.5);
-            filter: drop-shadow(0 0 6px rgba(255,215,0,0.7));
+            text-align: center; font-size: 0.62rem; letter-spacing: 0.26em;
+            color: #6a5818; text-transform: uppercase; margin-bottom: 6px;
         }
         .card-subtext {
             text-align: center; color: var(--text-gray); font-size: 0.82rem; line-height: 1.4; margin-bottom: 14px;
@@ -537,18 +521,13 @@
             <span class="particle">&#9834;</span>
             <span class="particle">&#9835;</span>
             <span class="particle">&#9836;</span>
-            <span class="particle">&#9837;</span>
             <span class="particle">&#9834;</span>
             <span class="particle">&#9835;</span>
-            <span class="particle">&#9836;</span>
             <span class="particle">&#9834;</span>
+            <span class="particle">&#9836;</span>
             <span class="particle">&#9835;</span>
-            <span class="particle">&#9836;</span>
             <span class="particle">&#9834;</span>
-            <span class="particle">&#9835;</span>
             <span class="particle">&#9836;</span>
-            <span class="particle">&#9837;</span>
-            <span class="particle">&#9834;</span>
         </div>
 
         <div class="hero-text">
@@ -575,7 +554,7 @@
                 </span>
                 <span class="hero-badge">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-                    Interactive Lessons
+                    10 Octaves
                 </span>
                 <span class="hero-badge">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
@@ -583,12 +562,19 @@
                 </span>
             </div>
 
+            <p class="hero-tagline">Play &nbsp;&middot;&nbsp; Learn &nbsp;&middot;&nbsp; Grow</p>
+
             <h1>Your piano<br><em>learning</em> journey<br><span>starts here.</span></h1>
 
             <div class="hero-divider"><span>&#9834;</span></div>
 
-            <p class="hero-desc">Learn step-by-step with interactive lessons, mini games, and real-time audio feedback.<br>Every note you play builds your skill.</p>
+            <p class="hero-desc">Master the keys. Discover the music.<br>Every note is a step forward.</p>
 
+            <div class="hero-stats">
+                <div class="hero-stat"><div class="num">10</div><div class="lbl">Octaves</div></div>
+                <div class="hero-stat"><div class="num">70</div><div class="lbl">Piano Keys</div></div>
+                <div class="hero-stat"><div class="num">∞</div><div class="lbl">Possibilities</div></div>
+            </div>
         </div>
 
         <div class="login-card">
@@ -903,134 +889,6 @@
 
         window.addEventListener('resize', scalePiano);
         scalePiano();
-
-        // ── Background Music (looping piano melody) ─────────────────────
-        let bgCtx = null;
-        let bgMaster = null;
-        let bgTimeout = null;
-        let bgOn = false;
-
-        // Gentle waltz-like melody in C major (frequencies in Hz, duration in beats)
-        const BPM = 72;
-        const BEAT = 60 / BPM;
-        const MELODY = [
-            // bar 1
-            {f:523.25,d:1},{f:659.25,d:0.5},{f:783.99,d:0.5},
-            {f:1046.5,d:1},{f:783.99,d:0.5},{f:659.25,d:0.5},
-            // bar 2
-            {f:587.33,d:1},{f:698.46,d:0.5},{f:880.00,d:0.5},
-            {f:1174.66,d:1},{f:880.00,d:0.5},{f:698.46,d:0.5},
-            // bar 3
-            {f:523.25,d:0.5},{f:659.25,d:0.5},{f:783.99,d:0.5},{f:1046.5,d:0.5},
-            {f:783.99,d:0.5},{f:659.25,d:0.5},{f:523.25,d:0.5},{f:493.88,d:0.5},
-            // bar 4
-            {f:440.00,d:1.5},{f:523.25,d:0.5},{f:493.88,d:1},
-        ];
-
-        // Soft pad chords underneath
-        const CHORDS = [
-            [261.63,329.63,392.00],  // C maj
-            [293.66,369.99,440.00],  // D min
-            [261.63,329.63,392.00],  // C maj
-            [220.00,261.63,329.63],  // A min
-        ];
-
-        function playNote(freq, startTime, duration) {
-            const osc = bgCtx.createOscillator();
-            const gainNode = bgCtx.createGain();
-            const filter = bgCtx.createBiquadFilter();
-
-            osc.type = 'triangle';
-            osc.frequency.value = freq;
-            filter.type = 'lowpass';
-            filter.frequency.value = 2200;
-
-            // Piano-like envelope: quick attack, short decay, soft sustain, release
-            gainNode.gain.setValueAtTime(0, startTime);
-            gainNode.gain.linearRampToValueAtTime(0.18, startTime + 0.015);
-            gainNode.gain.exponentialRampToValueAtTime(0.07, startTime + duration * 0.4 * BEAT);
-            gainNode.gain.exponentialRampToValueAtTime(0.001, startTime + duration * BEAT - 0.05);
-
-            osc.connect(filter);
-            filter.connect(gainNode);
-            gainNode.connect(bgMaster);
-            osc.start(startTime);
-            osc.stop(startTime + duration * BEAT + 0.1);
-        }
-
-        function playChord(freqs, startTime, duration) {
-            freqs.forEach(f => {
-                const osc = bgCtx.createOscillator();
-                const g = bgCtx.createGain();
-                const flt = bgCtx.createBiquadFilter();
-                osc.type = 'sine';
-                osc.frequency.value = f;
-                flt.type = 'lowpass';
-                flt.frequency.value = 500;
-                g.gain.setValueAtTime(0, startTime);
-                g.gain.linearRampToValueAtTime(0.04, startTime + 0.2);
-                g.gain.setValueAtTime(0.04, startTime + duration * BEAT - 0.3);
-                g.gain.linearRampToValueAtTime(0.001, startTime + duration * BEAT);
-                osc.connect(flt); flt.connect(g); g.connect(bgMaster);
-                osc.start(startTime); osc.stop(startTime + duration * BEAT + 0.1);
-            });
-        }
-
-        function scheduleLoop() {
-            if (!bgOn) return;
-            let t = bgCtx.currentTime + 0.05;
-
-            // Schedule melody
-            MELODY.forEach(note => {
-                playNote(note.f, t, note.d);
-                t += note.d * BEAT;
-            });
-
-            // Schedule pad chords (one per 4 beats)
-            let ct = bgCtx.currentTime + 0.05;
-            CHORDS.forEach(chord => {
-                playChord(chord, ct, 4);
-                ct += 4 * BEAT;
-            });
-
-            const totalDuration = MELODY.reduce((s,n) => s + n.d, 0) * BEAT * 1000;
-            bgTimeout = setTimeout(scheduleLoop, totalDuration - 200);
-        }
-
-        function startBgMusic() {
-            if (bgOn) return;
-            bgCtx = new (window.AudioContext || window.webkitAudioContext)();
-            bgMaster = bgCtx.createGain();
-            // Add reverb-like effect via convolver simulation (delay)
-            const delay = bgCtx.createDelay(0.5);
-            const delayGain = bgCtx.createGain();
-            delay.delayTime.value = 0.3;
-            delayGain.gain.value = 0.15;
-            bgMaster.connect(delay);
-            delay.connect(delayGain);
-            delayGain.connect(bgCtx.destination);
-            bgMaster.connect(bgCtx.destination);
-            bgMaster.gain.setValueAtTime(0, bgCtx.currentTime);
-            bgMaster.gain.linearRampToValueAtTime(1, bgCtx.currentTime + 2);
-            bgOn = true;
-            scheduleLoop();
-        }
-
-        function stopBgMusic() {
-            if (!bgOn) return;
-            bgOn = false;
-            clearTimeout(bgTimeout);
-            bgMaster.gain.linearRampToValueAtTime(0, bgCtx.currentTime + 1.5);
-            setTimeout(() => { try { bgCtx.close(); } catch(e){} bgCtx = null; }, 1600);
-        }
-
-        // Auto-start on first interaction anywhere
-        document.addEventListener('click', function startOnce() {
-            startBgMusic();
-            document.removeEventListener('click', startOnce);
-        }, { once: true });
     </script>
-
-
 </body>
 </html>

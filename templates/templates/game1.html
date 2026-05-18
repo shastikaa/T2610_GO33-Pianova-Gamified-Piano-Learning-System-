@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
   <title>LearnTheNotes | Gamified Piano Learning</title>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=Sora:wght@600;700;800&display=swap');
+
     * {
       margin: 0;
       padding: 0;
@@ -204,6 +206,14 @@
       top: -30px;
       background: #222;
       border-radius: 2px;
+    }
+
+    .staff-note-dot[data-note='E']::after,
+    .staff-note-dot[data-note='G']::after,
+    .staff-note-dot[data-note='B']::after {
+      left: -3px;
+      right: auto;
+      top: 18px;
     }
 
     .staff-note-dot[data-note='E'] { left: 190px; top: 144px; }
@@ -664,11 +674,15 @@
     }
 
     /* Page switching */
-    #lesson2Page {
+    #lesson2Page,
+    #lesson3Page,
+    #lesson4Page {
       display: none;
       animation: fadeInPage 0.5s ease forwards;
     }
-    #lesson2Page.active {
+    #lesson2Page.active,
+    #lesson3Page.active,
+    #lesson4Page.active {
       display: block;
     }
     @keyframes fadeInPage {
@@ -694,7 +708,9 @@
       font-size: 0.9rem;
       margin: 0;
     }
-    .back-to-lesson1 {
+    .back-to-lesson1,
+    .back-to-lesson2,
+    .back-to-lesson3 {
       background: transparent;
       border: 1px solid #ffd700;
       color: #ffd700;
@@ -705,7 +721,379 @@
       margin-top: 0.8rem;
       transition: background 0.2s;
     }
-    .back-to-lesson1:hover { background: rgba(255,215,0,0.1); }
+    .back-to-lesson1:hover,
+    .back-to-lesson2:hover,
+    .back-to-lesson3:hover { background: rgba(255,215,0,0.1); }
+
+    .lesson-next-wrap {
+      display: flex;
+      justify-content: center;
+      margin-top: 1rem;
+      margin-bottom: 0.3rem;
+    }
+
+    .lesson-next-btn {
+      border: none;
+      background: #f5a65b;
+      color: #2a1c12;
+      border-radius: 18px;
+      padding: 0.75rem 1.4rem;
+      font-size: 1rem;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 4px 0 #8b4b1f;
+      transition: transform 0.12s, box-shadow 0.12s;
+    }
+
+    .lesson-next-btn:active {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 #8b4b1f;
+    }
+
+    .lesson-next-feedback {
+      text-align: center;
+      color: #ffd700;
+      font-weight: 700;
+      min-height: 1.4rem;
+      margin-top: 0.45rem;
+    }
+
+    .basic-complete-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(2, 4, 8, 0.88);
+      backdrop-filter: blur(6px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 10020;
+      padding: 1rem;
+    }
+
+    .basic-complete-overlay.active {
+      display: flex;
+      animation: fadeInPage 0.35s ease;
+    }
+
+    .basic-complete-card {
+      width: min(980px, 100%);
+      border-radius: 36px;
+      border: 2px solid rgba(255, 214, 112, 0.95);
+      background:
+        radial-gradient(circle at 50% 12%, rgba(255, 205, 94, 0.2), transparent 38%),
+        radial-gradient(circle at 18% 10%, rgba(255, 205, 94, 0.08), transparent 30%),
+        radial-gradient(circle at 85% 9%, rgba(255, 205, 94, 0.08), transparent 30%),
+        linear-gradient(160deg, rgba(9, 10, 14, 0.99), rgba(2, 4, 8, 0.99));
+      box-shadow: 0 34px 72px rgba(0, 0, 0, 0.62), 0 0 40px rgba(255, 199, 84, 0.22);
+      padding: 1.3rem 1.5rem 1.45rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .basic-complete-card::before,
+    .basic-complete-card::after {
+      content: '';
+      position: absolute;
+      pointer-events: none;
+      border: 2px solid rgba(255, 214, 112, 0.62);
+      width: 115px;
+      height: 115px;
+      transform: rotate(45deg);
+    }
+
+    .basic-complete-card::before {
+      left: -46px;
+      top: -52px;
+    }
+
+    .basic-complete-card::after {
+      right: -46px;
+      bottom: -52px;
+    }
+
+    .basic-complete-top {
+      margin-top: 0.05rem;
+      font-size: 5.2rem;
+      line-height: 1;
+      color: #ffd97f;
+      text-shadow: 0 0 34px rgba(255, 198, 84, 0.35);
+      position: relative;
+    }
+
+    .basic-complete-top::before,
+    .basic-complete-top::after {
+      content: '✦';
+      position: absolute;
+      top: 22px;
+      font-size: 1.1rem;
+      color: #ffd67d;
+      opacity: 0.75;
+    }
+
+    .basic-complete-top::before { left: calc(50% - 135px); }
+    .basic-complete-top::after { right: calc(50% - 135px); }
+
+    .basic-level-kicker {
+      margin-top: 0.2rem;
+      color: #f2ddab;
+      letter-spacing: 4px;
+      font-weight: 800;
+      font-size: 0.95rem;
+      text-transform: uppercase;
+    }
+
+    .basic-complete-title {
+      font-family: 'Sora', 'Manrope', sans-serif;
+      margin-top: 0.22rem;
+      font-size: clamp(2.8rem, 8vw, 5.2rem);
+      line-height: 1;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      background: linear-gradient(180deg, #fff3c8 0%, #ffe58d 28%, #ffc652 68%, #ba7415 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: 0 0 28px rgba(255, 196, 84, 0.32);
+    }
+
+    .basic-divider {
+      width: min(500px, 90%);
+      margin: 0.5rem auto 0.8rem;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255, 214, 112, 0.88), transparent);
+      position: relative;
+    }
+
+    .basic-divider::before,
+    .basic-divider::after {
+      content: '◆';
+      position: absolute;
+      top: -10px;
+      color: rgba(255, 214, 112, 0.9);
+      font-size: 0.8rem;
+    }
+
+    .basic-divider::before { left: 12%; }
+    .basic-divider::after { right: 12%; }
+
+    .basic-complete-card p {
+      color: #f2f6ff;
+      font-size: 1.08rem;
+      margin-bottom: 0.95rem;
+    }
+
+    .basic-complete-badges {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(120px, 1fr));
+      gap: 0.85rem;
+      margin: 0.2rem 0 1.15rem;
+    }
+
+    .basic-complete-badge {
+      border-radius: 18px;
+      padding: 0.68rem 0.5rem 0.52rem;
+      background:
+        linear-gradient(160deg, rgba(18, 20, 26, 0.98), rgba(7, 9, 14, 0.98));
+      border: 1px solid rgba(255, 214, 112, 0.72);
+      color: #f7dd9b;
+      font-weight: 700;
+      font-size: 0.95rem;
+      min-height: 148px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      box-shadow: inset 0 0 0 1px rgba(255, 215, 119, 0.08), 0 0 16px rgba(255, 195, 83, 0.08);
+      line-height: 1.2;
+      text-transform: uppercase;
+    }
+
+    .basic-complete-badge::before {
+      content: '';
+      position: absolute;
+      left: 14px;
+      right: 14px;
+      top: 46px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255, 214, 112, 0.45), transparent);
+    }
+
+    .basic-complete-badge .badge-icon {
+      font-size: 2.55rem;
+      line-height: 1;
+      margin-bottom: 0.55rem;
+      filter: drop-shadow(0 0 6px rgba(255, 194, 80, 0.3));
+    }
+
+    .basic-complete-badge .badge-check {
+      position: absolute;
+      right: -8px;
+      top: -8px;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: linear-gradient(180deg, #ffe28f, #ffbe4c);
+      color: #2a1706;
+      font-size: 1rem;
+      font-weight: 900;
+      display: grid;
+      place-items: center;
+      box-shadow: 0 0 0 2px rgba(9, 11, 17, 0.95), 0 0 10px rgba(255, 200, 88, 0.24);
+    }
+
+    .basic-complete-badge .badge-stars {
+      margin-top: 0.5rem;
+      font-size: 0.78rem;
+      letter-spacing: 3px;
+      color: #ffd67f;
+      opacity: 0.95;
+    }
+
+    .basic-complete-actions {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-top: 0.35rem;
+    }
+
+    .basic-complete-actions button,
+    .basic-complete-actions a {
+      border-radius: 999px;
+      padding: 0.9rem 1.55rem;
+      font-weight: 800;
+      cursor: pointer;
+      text-decoration: none;
+      letter-spacing: 0.6px;
+      font-size: 1rem;
+      min-width: 350px;
+      text-transform: uppercase;
+      text-align: center;
+      transition: transform 0.12s ease, filter 0.12s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.7rem;
+    }
+
+    .basic-complete-actions button:hover,
+    .basic-complete-actions a:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.05);
+    }
+
+    .basic-action-primary {
+      border: 1px solid rgba(255, 212, 108, 0.95);
+      background: linear-gradient(140deg, #ffe089, #f7b73f 55%, #c98517);
+      color: #1f140a;
+      box-shadow: 0 7px 0 #775014, 0 0 22px rgba(255, 198, 84, 0.2);
+    }
+
+    .basic-action-secondary {
+      border: 1px solid rgba(255, 212, 108, 0.8);
+      background: linear-gradient(160deg, #12161f, #090d14);
+      color: #e6c87f;
+      box-shadow: 0 7px 0 #0e0e0e;
+    }
+
+    .basic-btn-chip {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      display: inline-grid;
+      place-items: center;
+      font-size: 1rem;
+      font-weight: 900;
+      background: rgba(12, 14, 20, 0.86);
+      color: #ffcf66;
+      border: 1px solid rgba(255, 212, 108, 0.6);
+    }
+
+    @media (max-width: 780px) {
+      .basic-complete-card {
+        border-radius: 22px;
+        padding: 1rem 0.85rem 1.1rem;
+      }
+
+      .basic-complete-top {
+        font-size: 3.5rem;
+      }
+
+      .basic-level-kicker {
+        font-size: 0.82rem;
+        letter-spacing: 2.5px;
+      }
+
+      .basic-complete-title {
+        font-size: clamp(2rem, 11vw, 3.2rem);
+      }
+
+      .basic-complete-card p {
+        font-size: 0.95rem;
+      }
+
+      .basic-complete-badges {
+        grid-template-columns: repeat(2, minmax(130px, 1fr));
+      }
+
+      .basic-complete-actions button,
+      .basic-complete-actions a {
+        min-width: 235px;
+        font-size: 0.92rem;
+      }
+    }
+
+    .staff-note-dot.bass-dot::after {
+      left: -3px;
+      right: auto;
+      top: 18px;
+    }
+
+    .staff-note-dot.bass-dot[data-bnote='G']::after,
+    .staff-note-dot.bass-dot[data-bnote='B']::after {
+      left: auto;
+      right: -3px;
+      top: -30px;
+    }
+
+    .staff-note-dot.bass-dot[data-bnote='G'] { left: 190px; top: 144px; }
+    .staff-note-dot.bass-dot[data-bnote='B'] { left: 270px; top: 122px; }
+    .staff-note-dot.bass-dot[data-bnote='D'] { left: 350px; top: 100px; }
+    .staff-note-dot.bass-dot[data-bnote='F'] { left: 430px; top: 78px; }
+    .staff-note-dot.bass-dot[data-bnote='A'] { left: 510px; top: 56px; }
+
+    .staff-note-dot.bass-space-dot[data-bsnote='A'] { left: 190px; top: 133px; }
+    .staff-note-dot.bass-space-dot[data-bsnote='C'] { left: 270px; top: 111px; }
+    .staff-note-dot.bass-space-dot[data-bsnote='E'] { left: 350px; top: 89px; }
+    .staff-note-dot.bass-space-dot[data-bsnote='G'] { left: 430px; top: 67px; }
+    .staff-note-dot.bass-space-dot[data-bsnote='B'] { left: 510px; top: 45px; }
+
+    .staff-note-dot.bass-space-dot[data-bsnote='E']::after,
+    .staff-note-dot.bass-space-dot[data-bsnote='G']::after,
+    .staff-note-dot.bass-space-dot[data-bsnote='B']::after {
+      left: -3px;
+      right: auto;
+      top: 18px;
+    }
+
+    .staff-note-mini.bass-g { top: 65px; }
+    .staff-note-mini.bass-b { top: 49px; }
+    .staff-note-mini.bass-d { top: 33px; }
+    .staff-note-mini.bass-f { top: 17px; }
+    .staff-note-mini.bass-a { top: 1px; }
+
+    .staff-note-mini.bass-a-space { top: 57px; }
+    .staff-note-mini.bass-c-space { top: 41px; }
+    .staff-note-mini.bass-e-space { top: 25px; }
+    .staff-note-mini.bass-g-space { top: 9px; }
+    .staff-note-mini.bass-b-space {
+      top: -2px;
+      width: 30px;
+      height: 20px;
+    }
 
     .finish-area {
       display: flex;
@@ -821,11 +1209,35 @@
         height: 28px;
         top: -24px;
       }
+      .staff-note-dot[data-note='E']::after,
+      .staff-note-dot[data-note='G']::after,
+      .staff-note-dot[data-note='B']::after {
+        left: -3px;
+        right: auto;
+        top: 14px;
+      }
       .staff-note-dot[data-note='E'] { left: 150px; top: 121px; }
       .staff-note-dot[data-note='G'] { left: 200px; top: 103px; }
       .staff-note-dot[data-note='B'] { left: 250px; top: 85px; }
       .staff-note-dot[data-note='D'] { left: 300px; top: 67px; }
       .staff-note-dot[data-note='F'] { left: 350px; top: 49px; }
+      .staff-note-dot.bass-dot[data-bnote='G'] { left: 150px; top: 121px; }
+      .staff-note-dot.bass-dot[data-bnote='B'] { left: 200px; top: 103px; }
+      .staff-note-dot.bass-dot[data-bnote='D'] { left: 250px; top: 85px; }
+      .staff-note-dot.bass-dot[data-bnote='F'] { left: 300px; top: 67px; }
+      .staff-note-dot.bass-dot[data-bnote='A'] { left: 350px; top: 49px; }
+      .staff-note-dot.bass-space-dot[data-bsnote='A'] { left: 150px; top: 112px; }
+      .staff-note-dot.bass-space-dot[data-bsnote='C'] { left: 200px; top: 94px; }
+      .staff-note-dot.bass-space-dot[data-bsnote='E'] { left: 250px; top: 76px; }
+      .staff-note-dot.bass-space-dot[data-bsnote='G'] { left: 300px; top: 58px; }
+      .staff-note-dot.bass-space-dot[data-bsnote='B'] { left: 350px; top: 40px; }
+      .staff-note-dot.bass-space-dot[data-bsnote='E']::after,
+      .staff-note-dot.bass-space-dot[data-bsnote='G']::after,
+      .staff-note-dot.bass-space-dot[data-bsnote='B']::after {
+        left: -3px;
+        right: auto;
+        top: 14px;
+      }
       .tap-note-btn {
         width: 52px;
         height: 52px;
@@ -886,6 +1298,11 @@
       .staff-note-mini.a-space { top: 36px; }
       .staff-note-mini.c-space { top: 22px; }
       .staff-note-mini.e-space { top: 8px;  }
+      .staff-note-mini.bass-b-space {
+        top: -1px;
+        width: 26px;
+        height: 16px;
+      }
     }
 
     /* mini hover effect */
@@ -897,6 +1314,248 @@
 
     .glow-text {
       text-shadow: 0 0 2px #ffbe76;
+    }
+
+    /* Visual refresh overrides */
+    :root {
+      --bg-night: #070b12;
+      --bg-deep: #0e1622;
+      --card-base: #0c111a;
+      --card-alt: #111927;
+      --gold-1: #ffe7a8;
+      --gold-2: #ffc768;
+      --gold-3: #ff9f43;
+      --ink: #21170f;
+      --cyan-1: #89f0ff;
+      --cyan-2: #30bbff;
+      --mint: #6df9c4;
+      --neon-outline: rgba(88, 207, 255, 0.6);
+    }
+
+    body {
+      background:
+        radial-gradient(circle at 14% 14%, rgba(255, 180, 67, 0.2), transparent 32%),
+        radial-gradient(circle at 85% 10%, rgba(95, 180, 255, 0.16), transparent 35%),
+        linear-gradient(165deg, var(--bg-night) 0%, var(--bg-deep) 48%, #05090f 100%);
+      font-family: 'Manrope', 'Segoe UI', sans-serif;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    body::before,
+    body::after {
+      content: '';
+      position: fixed;
+      width: 280px;
+      height: 280px;
+      border-radius: 50%;
+      filter: blur(42px);
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    body::before {
+      left: -60px;
+      top: -80px;
+      background: rgba(255, 176, 77, 0.2);
+    }
+
+    body::after {
+      right: -70px;
+      bottom: -90px;
+      background: rgba(90, 180, 255, 0.18);
+    }
+
+    .game-container {
+      position: relative;
+      z-index: 1;
+      background: linear-gradient(180deg, rgba(18, 25, 37, 0.98), rgba(11, 16, 26, 0.98));
+      border: 1px solid rgba(255, 224, 143, 0.35);
+      box-shadow: 0 34px 65px rgba(0, 0, 0, 0.58), 0 0 0 1px rgba(255, 224, 143, 0.14), 0 0 24px rgba(67, 170, 255, 0.14);
+    }
+
+    .game-container::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 3.5rem;
+      padding: 1px;
+      pointer-events: none;
+      background: linear-gradient(130deg, rgba(255, 226, 146, 0.55), rgba(83, 196, 255, 0.45), rgba(255, 180, 96, 0.55));
+      -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      opacity: 0.8;
+      animation: neonEdgePulse 4.8s ease-in-out infinite;
+    }
+
+    .lesson-header {
+      background:
+        radial-gradient(circle at 8% 20%, rgba(255, 196, 106, 0.22), transparent 30%),
+        radial-gradient(circle at 82% 16%, rgba(87, 171, 255, 0.24), transparent 34%),
+        linear-gradient(125deg, #211421, #1b2434 58%, #121b2a);
+      border-bottom: 1px solid rgba(255, 224, 143, 0.45);
+      box-shadow: inset 0 -8px 24px rgba(0, 0, 0, 0.32);
+    }
+
+    h1 {
+      font-family: 'Sora', 'Manrope', sans-serif;
+      letter-spacing: 0.8px;
+      background: linear-gradient(130deg, var(--gold-1), var(--gold-2) 58%, var(--gold-3));
+      -webkit-background-clip: text;
+      background-clip: text;
+      text-shadow: 0 0 22px rgba(255, 185, 90, 0.3);
+    }
+
+    .gamified-badge {
+      font-family: 'Sora', 'Manrope', sans-serif;
+      background: linear-gradient(130deg, #ffd583, #ffb85d);
+      color: #221710;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.34), inset 0 -2px 0 rgba(0, 0, 0, 0.2);
+    }
+
+    .level-progress {
+      background: linear-gradient(140deg, rgba(10, 16, 24, 0.82), rgba(17, 24, 36, 0.92));
+      border: 1px solid rgba(255, 224, 143, 0.35);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+
+    .xp-points {
+      background: linear-gradient(130deg, #3e2a1d, #6a4022);
+      color: #ffd998;
+    }
+
+    .chart-panel {
+      background:
+        linear-gradient(160deg, #070b13 0%, #0b111c 55%, #080d17 100%);
+      animation: panelRise 0.55s ease;
+    }
+
+    .chart-intro {
+      font-family: 'Sora', 'Manrope', sans-serif;
+      color: #ffe39a;
+      letter-spacing: 0.3px;
+    }
+
+    .tap-note-section,
+    .match-activity {
+      background: linear-gradient(160deg, rgba(17, 24, 35, 0.96), rgba(11, 16, 24, 0.96));
+      border-color: rgba(255, 219, 130, 0.75);
+      box-shadow: 0 14px 28px rgba(0, 0, 0, 0.42), inset 0 0 0 1px rgba(255, 225, 150, 0.08), 0 0 22px rgba(57, 184, 255, 0.08);
+    }
+
+    .tap-note-title,
+    .match-title,
+    .lesson2-header h2 {
+      font-family: 'Sora', 'Manrope', sans-serif;
+      color: #ffdc8b;
+    }
+
+    .tap-note-subtitle,
+    .match-subtitle,
+    .lesson2-header p {
+      color: #d3d8e4;
+    }
+
+    .staff-board,
+    .staff-card {
+      background-color: #090f19;
+      box-shadow: 0 0 0 1px rgba(255, 219, 130, 0.2), 0 12px 22px rgba(0, 0, 0, 0.34);
+    }
+
+    .tap-note-btn {
+      background: linear-gradient(145deg, var(--cyan-1), var(--cyan-2));
+      color: #032956;
+      border: 1px solid rgba(122, 233, 255, 0.95);
+      box-shadow: 0 8px 16px rgba(38, 142, 214, 0.28), 0 0 14px rgba(90, 213, 255, 0.25);
+    }
+
+    .tap-note-btn:hover {
+      transform: translateY(-3px) scale(1.03);
+      box-shadow: 0 12px 18px rgba(39, 143, 214, 0.38);
+    }
+
+    .tap-note-btn.active {
+      background: linear-gradient(145deg, #abf8ff, #6ac7ff);
+      box-shadow: 0 0 0 3px rgba(87, 199, 255, 0.24), 0 8px 16px rgba(50, 149, 215, 0.35);
+    }
+
+    .drag-tile {
+      background: linear-gradient(132deg, #1f2939, #182130 62%, #131c2a);
+      border: 1.5px solid rgba(255, 225, 150, 0.75);
+      color: #ffe39d;
+      box-shadow: 0 10px 14px rgba(0, 0, 0, 0.34);
+    }
+
+    .drag-num {
+      background: linear-gradient(145deg, #ffe39f, #ffbf62);
+      color: #33210f;
+    }
+
+    .drag-drop-zone {
+      background: rgba(15, 22, 33, 0.86);
+      border-color: rgba(255, 225, 150, 0.28);
+    }
+
+    .drag-drop-zone.drag-over {
+      border-color: rgba(122, 233, 255, 0.85);
+      background: rgba(22, 34, 49, 0.92);
+      box-shadow: 0 0 0 1px rgba(122, 233, 255, 0.35), 0 0 20px rgba(63, 182, 255, 0.28), 0 0 32px rgba(63, 182, 255, 0.16);
+    }
+
+    .finish-btn,
+    .lesson-next-btn {
+      background: linear-gradient(135deg, #ffd78e, #ffb861 58%, #f3984b);
+      color: var(--ink);
+      box-shadow: 0 10px 0 #8a4d20, 0 15px 28px rgba(0, 0, 0, 0.32), 0 0 22px rgba(255, 197, 102, 0.24);
+      text-transform: uppercase;
+      letter-spacing: 1.4px;
+    }
+
+    .finish-btn:hover,
+    .lesson-next-btn:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.06);
+    }
+
+    .feedback-toast,
+    .lesson-next-feedback,
+    .match-feedback,
+    .tap-note-feedback {
+      color: #ffe39d;
+    }
+
+    .back-to-lesson1,
+    .back-to-lesson2,
+    .back-to-lesson3,
+    .match-reset {
+      background: rgba(17, 27, 42, 0.88);
+      border-color: rgba(255, 225, 150, 0.78);
+      color: #ffe39d;
+    }
+
+    .piano-deco {
+      background: linear-gradient(135deg, #1b202e, #111a29);
+      border-top-color: rgba(255, 225, 150, 0.65);
+    }
+
+    .key {
+      background: linear-gradient(180deg, #fcf7ec, #ded7c8);
+    }
+
+    .key.black {
+      background: linear-gradient(180deg, #2d3441, #171f2f);
+    }
+
+    @keyframes panelRise {
+      from { opacity: 0; transform: translateY(18px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes neonEdgePulse {
+      0%, 100% { opacity: 0.55; filter: saturate(1); }
+      50% { opacity: 0.95; filter: saturate(1.2); }
     }
   </style>
 </head>
@@ -913,7 +1572,7 @@
     </div>
   </div>
 
-  <div class="chart-panel">
+  <div class="chart-panel" id="lesson1Page">
     <!-- Chart description as shown in brief: "This chart shows the notes on the Treble Clef and Bass Clef." -->
     <div class="chart-intro">
       🎼 This chart shows the notes on the Treble Clef and Bass Clef. 🎼
@@ -991,7 +1650,7 @@
 
     <!-- finish level interactive area with gamified toast -->
     <div class="finish-area">
-      <button class="finish-btn" id="finishLevelBtn">🏆 FINISH LEVEL 🏆</button>
+      <button class="finish-btn" id="finishLevelBtn">🏆 FINISH LESSON 1 🏆</button>
     </div>
     <div id="feedbackMsg" class="feedback-toast"></div>
   </div>
@@ -1030,10 +1689,174 @@
         <div class="match-actions">
           <button class="match-reset" id="resetMatchGame2" type="button">Reset</button>
         </div>
+
+        <div class="lesson-next-wrap">
+          <button class="lesson-next-btn" id="finishLesson2Btn" type="button">🏁 FINISH LESSON 2</button>
+        </div>
+        <div class="lesson-next-feedback" id="lesson2FeedbackMsg"></div>
       </div>
     </div>
   </div>
   <!-- END PAGE 2 -->
+
+  <!-- PAGE 3: Lesson 3 Bass Clef -->
+  <div id="lesson3Page">
+    <div class="chart-panel">
+      <div class="lesson2-header">
+        <h2>🎼 Lesson 3: Bass Clef Lines — G B D F A</h2>
+        <p>Bass clef lines spell <strong style="color:#ffd700;">G-B-D-F-A</strong>. Learn by tapping and dragging each letter to the matching line note.</p>
+        <button class="back-to-lesson2" id="backToLesson2Btn">← Back to Lesson 2</button>
+      </div>
+
+      <div class="tap-note-section">
+        <div class="tap-note-title">Lesson 3: Tap The Letter Box To Show The Bass Note</div>
+        <div class="tap-note-subtitle">Great Big Dogs Fight Animals (Bass Lines: G B D F A)</div>
+        <div class="staff-board" aria-label="Bass note staff visual">
+          <div class="staff-line l1"></div>
+          <div class="staff-line l2"></div>
+          <div class="staff-line l3"></div>
+          <div class="staff-line l4"></div>
+          <div class="staff-line l5"></div>
+          <div class="treble-clef-visual">𝄢</div>
+
+          <div class="staff-note-dot bass-dot" data-bnote="G"></div>
+          <div class="staff-note-dot bass-dot" data-bnote="B"></div>
+          <div class="staff-note-dot bass-dot" data-bnote="D"></div>
+          <div class="staff-note-dot bass-dot" data-bnote="F"></div>
+          <div class="staff-note-dot bass-dot" data-bnote="A"></div>
+        </div>
+        <div class="tap-note-boxes">
+          <button class="tap-note-btn bass-tap-note-btn" type="button" data-bnote="G">G</button>
+          <button class="tap-note-btn bass-tap-note-btn" type="button" data-bnote="B">B</button>
+          <button class="tap-note-btn bass-tap-note-btn" type="button" data-bnote="D">D</button>
+          <button class="tap-note-btn bass-tap-note-btn" type="button" data-bnote="F">F</button>
+          <button class="tap-note-btn bass-tap-note-btn" type="button" data-bnote="A">A</button>
+        </div>
+        <div id="tapBassFeedback" class="tap-note-feedback">Tap any letter to display it on the bass staff.</div>
+      </div>
+
+      <div class="match-activity" id="dragMatchGame3">
+        <div class="match-title">Drag each letter to its Bass Clef line note</div>
+        <div class="match-subtitle">🖱️ Drag a bass letter tile and drop it on the matching line note.</div>
+        <div class="drag-match-layout">
+          <div class="drag-tiles-col" id="dragTilesBank3">
+            <div class="drag-tile" draggable="true" data-note="G" id="tile3-g1"><span class="drag-num">1</span>G</div>
+            <div class="drag-tile" draggable="true" data-note="B" id="tile3-b1"><span class="drag-num">2</span>B</div>
+            <div class="drag-tile" draggable="true" data-note="D" id="tile3-d1"><span class="drag-num">3</span>D</div>
+            <div class="drag-tile" draggable="true" data-note="F" id="tile3-f1"><span class="drag-num">4</span>F</div>
+            <div class="drag-tile" draggable="true" data-note="A" id="tile3-a1"><span class="drag-num">5</span>A</div>
+          </div>
+
+          <div class="drag-staff-col" id="dragStaffCol3">
+            <div class="drag-drop-zone" data-accept="A"><div class="staff-card"><span class="staff-clef">𝄢</span><span class="staff-note-mini bass-a"></span></div><div class="drop-slot" data-accept="A">Drop here</div></div>
+            <div class="drag-drop-zone" data-accept="F"><div class="staff-card"><span class="staff-clef">𝄢</span><span class="staff-note-mini bass-f"></span></div><div class="drop-slot" data-accept="F">Drop here</div></div>
+            <div class="drag-drop-zone" data-accept="D"><div class="staff-card"><span class="staff-clef">𝄢</span><span class="staff-note-mini bass-d"></span></div><div class="drop-slot" data-accept="D">Drop here</div></div>
+            <div class="drag-drop-zone" data-accept="B"><div class="staff-card"><span class="staff-clef">𝄢</span><span class="staff-note-mini bass-b"></span></div><div class="drop-slot" data-accept="B">Drop here</div></div>
+            <div class="drag-drop-zone" data-accept="G"><div class="staff-card"><span class="staff-clef">𝄢</span><span class="staff-note-mini bass-g"></span></div><div class="drop-slot" data-accept="G">Drop here</div></div>
+          </div>
+        </div>
+        <div class="match-feedback" id="matchFeedback3">Drag all 5 tiles to the correct bass staff cards.</div>
+        <div class="match-actions">
+          <button class="match-reset" id="resetMatchGame3" type="button">Reset</button>
+        </div>
+
+        <div class="lesson-next-wrap">
+          <button class="lesson-next-btn" id="finishLesson3Btn" type="button">🏁 FINISH LESSON 3</button>
+        </div>
+        <div class="lesson-next-feedback" id="lesson3FeedbackMsg"></div>
+      </div>
+    </div>
+  </div>
+  <!-- END PAGE 3 -->
+
+  <!-- PAGE 4: Lesson 4 Bass Clef Spaces -->
+  <div id="lesson4Page">
+    <div class="chart-panel">
+      <div class="lesson2-header">
+        <h2>🎼 Lesson 4: Bass Clef Spaces — A C E G (+ B)</h2>
+        <p>Bass clef spaces spell <strong style="color:#ffd700;">A-C-E-G</strong>. This lesson also includes a bonus <strong style="color:#ffd700;">B</strong> note challenge.</p>
+        <button class="back-to-lesson3" id="backToLesson3Btn">← Back to Lesson 3</button>
+      </div>
+
+      <div class="tap-note-section">
+        <div class="tap-note-title">Lesson 4: Tap The Letter Box To Show Bass Space Notes</div>
+        <div class="tap-note-subtitle">All Cows Eat Grass + B (Bass Space Practice)</div>
+        <div class="staff-board" aria-label="Bass space note staff visual">
+          <div class="staff-line l1"></div>
+          <div class="staff-line l2"></div>
+          <div class="staff-line l3"></div>
+          <div class="staff-line l4"></div>
+          <div class="staff-line l5"></div>
+          <div class="treble-clef-visual">𝄢</div>
+
+          <div class="staff-note-dot bass-space-dot" data-bsnote="A"></div>
+          <div class="staff-note-dot bass-space-dot" data-bsnote="C"></div>
+          <div class="staff-note-dot bass-space-dot" data-bsnote="E"></div>
+          <div class="staff-note-dot bass-space-dot" data-bsnote="G"></div>
+          <div class="staff-note-dot bass-space-dot" data-bsnote="B"></div>
+        </div>
+        <div class="tap-note-boxes">
+          <button class="tap-note-btn bass-space-tap-note-btn" type="button" data-bsnote="A">A</button>
+          <button class="tap-note-btn bass-space-tap-note-btn" type="button" data-bsnote="C">C</button>
+          <button class="tap-note-btn bass-space-tap-note-btn" type="button" data-bsnote="E">E</button>
+          <button class="tap-note-btn bass-space-tap-note-btn" type="button" data-bsnote="G">G</button>
+          <button class="tap-note-btn bass-space-tap-note-btn" type="button" data-bsnote="B">B</button>
+        </div>
+        <div id="tapBassSpaceFeedback" class="tap-note-feedback">Tap any letter to display it on the bass staff spaces.</div>
+      </div>
+
+      <div class="match-activity" id="dragMatchGame4">
+        <div class="match-title">Drag each letter to its Bass Clef space note</div>
+        <div class="match-subtitle">🖱️ Drag each space-note tile to the correct bass clef space card.</div>
+        <div class="drag-match-layout">
+          <div class="drag-tiles-col" id="dragTilesBank4">
+            <div class="drag-tile" draggable="true" data-note="A" id="tile4-a1"><span class="drag-num">1</span>A</div>
+            <div class="drag-tile" draggable="true" data-note="C" id="tile4-c1"><span class="drag-num">2</span>C</div>
+            <div class="drag-tile" draggable="true" data-note="E" id="tile4-e1"><span class="drag-num">3</span>E</div>
+            <div class="drag-tile" draggable="true" data-note="G" id="tile4-g1"><span class="drag-num">4</span>G</div>
+            <div class="drag-tile" draggable="true" data-note="B" id="tile4-b1"><span class="drag-num">5</span>B</div>
+          </div>
+
+          <div class="drag-staff-col" id="dragStaffCol4">
+            <div class="drag-drop-zone" data-accept="B"><div class="staff-card"><span class="staff-clef">𝄢</span><span class="staff-note-mini bass-b-space"></span></div><div class="drop-slot" data-accept="B">Drop here</div></div>
+            <div class="drag-drop-zone" data-accept="G"><div class="staff-card"><span class="staff-clef">𝄢</span><span class="staff-note-mini bass-g-space"></span></div><div class="drop-slot" data-accept="G">Drop here</div></div>
+            <div class="drag-drop-zone" data-accept="E"><div class="staff-card"><span class="staff-clef">𝄢</span><span class="staff-note-mini bass-e-space"></span></div><div class="drop-slot" data-accept="E">Drop here</div></div>
+            <div class="drag-drop-zone" data-accept="C"><div class="staff-card"><span class="staff-clef">𝄢</span><span class="staff-note-mini bass-c-space"></span></div><div class="drop-slot" data-accept="C">Drop here</div></div>
+            <div class="drag-drop-zone" data-accept="A"><div class="staff-card"><span class="staff-clef">𝄢</span><span class="staff-note-mini bass-a-space"></span></div><div class="drop-slot" data-accept="A">Drop here</div></div>
+          </div>
+        </div>
+        <div class="match-feedback" id="matchFeedback4">Drag all 5 tiles to the correct bass space staff cards.</div>
+        <div class="match-actions">
+          <button class="match-reset" id="resetMatchGame4" type="button">Reset</button>
+        </div>
+        <div class="lesson-next-wrap">
+          <button class="lesson-next-btn" id="finishLesson4Btn" type="button">🏁 FINISH LESSON 4</button>
+        </div>
+        <div class="lesson-next-feedback" id="lesson4FeedbackMsg"></div>
+      </div>
+    </div>
+  </div>
+  <!-- END PAGE 4 -->
+
+  <div class="basic-complete-overlay" id="basicCompleteOverlay" aria-hidden="true">
+    <div class="basic-complete-card">
+      <div class="basic-complete-top">🏆</div>
+      <div class="basic-level-kicker">BASIC LEVEL</div>
+      <div class="basic-complete-title">COMPLETE!</div>
+      <div class="basic-divider"></div>
+      <p>You completed all 4 core lessons and mastered the note-reading foundation.</p>
+      <div class="basic-complete-badges">
+        <span class="basic-complete-badge"><span class="badge-check">✓</span><span class="badge-icon">𝄞</span>Treble<br>Lines<span class="badge-stars">★★★</span></span>
+        <span class="basic-complete-badge"><span class="badge-check">✓</span><span class="badge-icon">𝄞</span>Treble<br>Spaces<span class="badge-stars">★★★</span></span>
+        <span class="basic-complete-badge"><span class="badge-check">✓</span><span class="badge-icon">𝄢</span>Bass<br>Lines<span class="badge-stars">★★★</span></span>
+        <span class="basic-complete-badge"><span class="badge-check">✓</span><span class="badge-icon">𝄢</span>Bass<br>Spaces<span class="badge-stars">★★★</span></span>
+      </div>
+      <div class="basic-complete-actions">
+        <a class="basic-action-primary" href="/lessons"><span class="basic-btn-chip">🚀</span> Continue Practice <span class="basic-btn-chip">›</span></a>
+        <a class="basic-action-secondary" href="/lessons"><span class="basic-btn-chip">‹</span> Back To Lessons</a>
+      </div>
+    </div>
+  </div>
 
   <!-- playful piano decoration -->
   <div class="piano-deco">
@@ -1120,6 +1943,38 @@
       }
     }
 
+    function playHooraySound() {
+      // richer short fanfare for major milestone completion
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const now = audioCtx.currentTime;
+        const notes = [523.25, 659.25, 783.99, 1046.5];
+
+        notes.forEach((freq, index) => {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.value = freq;
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+
+          const start = now + index * 0.11;
+          gain.gain.setValueAtTime(0.0001, start);
+          gain.gain.exponentialRampToValueAtTime(0.24, start + 0.018);
+          gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.24);
+
+          osc.start(start);
+          osc.stop(start + 0.26);
+        });
+
+        if (audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+      } catch (e) {
+        console.log('hooray audio not supported');
+      }
+    }
+
     function showRewardMessage(message, isError = false) {
       feedbackDiv.style.transition = '0.2s';
       if (isError) {
@@ -1143,50 +1998,79 @@
       }, 2500);
     }
 
+    const lesson1Page = document.getElementById('lesson1Page');
+    const lesson2Page = document.getElementById('lesson2Page');
+    const lesson3Page = document.getElementById('lesson3Page');
+    const lesson4Page = document.getElementById('lesson4Page');
+
+    function switchToLesson2() {
+      if (lesson1Page) lesson1Page.style.display = 'none';
+      if (lesson3Page) lesson3Page.classList.remove('active');
+      if (lesson2Page) lesson2Page.classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function switchToLesson3() {
+      if (lesson1Page) lesson1Page.style.display = 'none';
+      if (lesson2Page) lesson2Page.classList.remove('active');
+      if (lesson4Page) lesson4Page.classList.remove('active');
+      if (lesson3Page) lesson3Page.classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function switchToLesson4() {
+      if (lesson1Page) lesson1Page.style.display = 'none';
+      if (lesson2Page) lesson2Page.classList.remove('active');
+      if (lesson3Page) lesson3Page.classList.remove('active');
+      if (lesson4Page) lesson4Page.classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function grantXp(points) {
+      const xpSpan = document.querySelector('.xp-points');
+      if (!xpSpan) return;
+
+      let currentXP = parseInt(xpSpan.innerText.match(/\d+/)?.[0] || 2450);
+      const newXP = currentXP + points;
+      xpSpan.innerHTML = `🎯 ${newXP} XP`;
+
+      const plusBadge = document.createElement('span');
+      plusBadge.innerText = `+${points} XP!`;
+      plusBadge.style.position = 'relative';
+      plusBadge.style.left = '10px';
+      plusBadge.style.fontWeight = 'bold';
+      plusBadge.style.color = '#ffd966';
+      plusBadge.style.fontSize = '0.8rem';
+      plusBadge.style.animation = 'fadeOutUp 1s forwards';
+      xpSpan.appendChild(plusBadge);
+
+      if (!document.querySelector('#xpFadeStyle')) {
+        const styleXp = document.createElement('style');
+        styleXp.id = 'xpFadeStyle';
+        styleXp.textContent = `
+          @keyframes fadeOutUp {
+            0% { opacity: 1; transform: translateY(0px); }
+            100% { opacity: 0; transform: translateY(-20px); }
+          }
+        `;
+        document.head.appendChild(styleXp);
+      }
+
+      setTimeout(() => {
+        if (plusBadge) plusBadge.remove();
+      }, 1000);
+    }
+
     function finishLevelAction() {
       if (levelCompleted) {
         // Switch to page 2
-        document.querySelector('.chart-panel').style.display = 'none';
-        const lesson2Page = document.getElementById('lesson2Page');
-        if (lesson2Page) {
-          lesson2Page.classList.add('active');
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
+        switchToLesson2();
         return;
       }
       // Gamified completion: show big success, add confetti, XP gain animation
       levelCompleted = true;
       // add visual XP pop
-      const xpSpan = document.querySelector('.xp-points');
-      if (xpSpan) {
-        let currentXP = parseInt(xpSpan.innerText.match(/\d+/)?.[0] || 2450);
-        const newXP = currentXP + 350;
-        xpSpan.innerHTML = `🎯 ${newXP} XP`;
-        // animate plus badge
-        const plusBadge = document.createElement('span');
-        plusBadge.innerText = '+350 XP!';
-        plusBadge.style.position = 'relative';
-        plusBadge.style.left = '10px';
-        plusBadge.style.fontWeight = 'bold';
-        plusBadge.style.color = '#ffd966';
-        plusBadge.style.fontSize = '0.8rem';
-        plusBadge.style.animation = 'fadeOutUp 1s forwards';
-        xpSpan.appendChild(plusBadge);
-        if (!document.querySelector('#xpFadeStyle')) {
-          const styleXp = document.createElement('style');
-          styleXp.id = 'xpFadeStyle';
-          styleXp.textContent = `
-            @keyframes fadeOutUp {
-              0% { opacity: 1; transform: translateY(0px); }
-              100% { opacity: 0; transform: translateY(-20px); }
-            }
-          `;
-          document.head.appendChild(styleXp);
-        }
-        setTimeout(() => {
-          if (plusBadge) plusBadge.remove();
-        }, 1000);
-      }
+      grantXp(350);
 
       // trigger confetti explosion
       createConfetti();
@@ -1210,12 +2094,7 @@
       
       // Switch to page 2 after celebration delay
       setTimeout(() => {
-        document.querySelector('.chart-panel').style.display = 'none';
-        const lesson2Page = document.getElementById('lesson2Page');
-        if (lesson2Page) {
-          lesson2Page.classList.add('active');
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
+        switchToLesson2();
       }, 3000);
       
       // add extra mini notes animation
@@ -1235,9 +2114,177 @@
     const backBtn = document.getElementById('backToLesson1Btn');
     if (backBtn) {
       backBtn.addEventListener('click', () => {
-        document.getElementById('lesson2Page').classList.remove('active');
-        document.querySelector('.chart-panel').style.display = '';
+        if (lesson2Page) lesson2Page.classList.remove('active');
+        if (lesson1Page) lesson1Page.style.display = '';
         window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    }
+
+    const finishLesson2Btn = document.getElementById('finishLesson2Btn');
+    const lesson2FeedbackMsg = document.getElementById('lesson2FeedbackMsg');
+    let lesson2Completed = false;
+
+    if (finishLesson2Btn) {
+      finishLesson2Btn.addEventListener('click', () => {
+        if (lesson2Completed) {
+          switchToLesson3();
+          return;
+        }
+
+        lesson2Completed = true;
+        grantXp(300);
+        createConfetti();
+        playLevelCompleteSound();
+
+        const levelSpan = document.querySelector('.level-text');
+        if (levelSpan) {
+          levelSpan.innerHTML = '⭐ LEVEL 5 · BASS EXPLORER ⭐';
+        }
+
+        finishLesson2Btn.style.background = '#8fbc8f';
+        finishLesson2Btn.style.boxShadow = '0 4px 0 #4a6e3b';
+        finishLesson2Btn.innerHTML = '▶ Go to Lesson 3 (Bass Clef)';
+
+        if (lesson2FeedbackMsg) {
+          lesson2FeedbackMsg.textContent = 'Awesome! Lesson 2 complete. Loading Bass Clef...';
+        }
+
+        setTimeout(() => {
+          switchToLesson3();
+        }, 1800);
+      });
+    }
+
+    const backToLesson2Btn = document.getElementById('backToLesson2Btn');
+    if (backToLesson2Btn) {
+      backToLesson2Btn.addEventListener('click', () => {
+        if (lesson3Page) lesson3Page.classList.remove('active');
+        if (lesson2Page) lesson2Page.classList.add('active');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    }
+
+    const finishLesson3Btn = document.getElementById('finishLesson3Btn');
+    const lesson3FeedbackMsg = document.getElementById('lesson3FeedbackMsg');
+    let lesson3Completed = false;
+    let lesson4Perfect = false;
+    let basicLevelCompleted = false;
+
+    if (finishLesson3Btn) {
+      finishLesson3Btn.addEventListener('click', () => {
+        if (lesson3Completed) {
+          switchToLesson4();
+          return;
+        }
+
+        lesson3Completed = true;
+        grantXp(350);
+        createConfetti();
+        playLevelCompleteSound();
+
+        const levelSpan = document.querySelector('.level-text');
+        if (levelSpan) {
+          levelSpan.innerHTML = '⭐ LEVEL 6 · BASS SPACE MASTER ⭐';
+        }
+
+        finishLesson3Btn.style.background = '#8fbc8f';
+        finishLesson3Btn.style.boxShadow = '0 4px 0 #4a6e3b';
+        finishLesson3Btn.innerHTML = '▶ Go to Lesson 4 (Bass Spaces)';
+
+        if (lesson3FeedbackMsg) {
+          lesson3FeedbackMsg.textContent = 'Great job! Lesson 3 complete. Bass spaces are next...';
+        }
+
+        setTimeout(() => {
+          switchToLesson4();
+        }, 1800);
+      });
+    }
+
+    const backToLesson3Btn = document.getElementById('backToLesson3Btn');
+    if (backToLesson3Btn) {
+      backToLesson3Btn.addEventListener('click', () => {
+        if (lesson4Page) lesson4Page.classList.remove('active');
+        if (lesson3Page) lesson3Page.classList.add('active');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    }
+
+    const basicCompleteOverlay = document.getElementById('basicCompleteOverlay');
+    const closeBasicCompleteBtn = document.getElementById('closeBasicCompleteBtn');
+
+    function openBasicCompleteOverlay() {
+      if (!basicCompleteOverlay) return;
+
+      // Move overlay to body so it always covers the viewport regardless of scroll/container clipping.
+      if (basicCompleteOverlay.parentElement !== document.body) {
+        document.body.appendChild(basicCompleteOverlay);
+      }
+
+      document.documentElement.style.overflow = 'hidden';
+      document.body.style.overflow = 'hidden';
+      basicCompleteOverlay.classList.add('active');
+      basicCompleteOverlay.setAttribute('aria-hidden', 'false');
+    }
+
+    function closeBasicCompleteOverlay() {
+      if (!basicCompleteOverlay) return;
+      basicCompleteOverlay.classList.remove('active');
+      basicCompleteOverlay.setAttribute('aria-hidden', 'true');
+      document.documentElement.style.overflow = '';
+      document.body.style.overflow = '';
+    }
+
+    if (closeBasicCompleteBtn) {
+      closeBasicCompleteBtn.addEventListener('click', closeBasicCompleteOverlay);
+    }
+
+    if (basicCompleteOverlay) {
+      basicCompleteOverlay.addEventListener('click', (e) => {
+        if (e.target === basicCompleteOverlay) closeBasicCompleteOverlay();
+      });
+    }
+
+    const finishLesson4Btn = document.getElementById('finishLesson4Btn');
+    const lesson4FeedbackMsg = document.getElementById('lesson4FeedbackMsg');
+
+    if (finishLesson4Btn) {
+      finishLesson4Btn.addEventListener('click', () => {
+        if (basicLevelCompleted) {
+          openBasicCompleteOverlay();
+          return;
+        }
+
+        if (!lesson4Perfect) {
+          if (lesson4FeedbackMsg) {
+            lesson4FeedbackMsg.textContent = 'Complete Lesson 4 perfectly first, then finish the basic level.';
+          }
+          showRewardMessage('Finish all Lesson 4 matches correctly to complete the basic level.', true);
+          return;
+        }
+
+        basicLevelCompleted = true;
+        grantXp(500);
+        createConfetti();
+        setTimeout(createConfetti, 280);
+        playLevelCompleteSound();
+        playHooraySound();
+
+        const levelSpan = document.querySelector('.level-text');
+        if (levelSpan) {
+          levelSpan.innerHTML = '🏆 BASIC LEVEL COMPLETE 🏆';
+        }
+
+        finishLesson4Btn.style.background = '#8fbc8f';
+        finishLesson4Btn.style.boxShadow = '0 4px 0 #4a6e3b';
+        finishLesson4Btn.innerHTML = '🏆 BASIC COMPLETE';
+
+        if (lesson4FeedbackMsg) {
+          lesson4FeedbackMsg.textContent = 'Excellent! You finished the basic level.';
+        }
+
+        showRewardMessage('LEGENDARY! You completed the Basic Level!', false);
+        openBasicCompleteOverlay();
       });
     }
 
@@ -1451,8 +2498,8 @@
     }
 
     // Tap letter boxes to show matching note on the staff
-    const tapButtons = document.querySelectorAll('.tap-note-btn');
-    const staffDots = document.querySelectorAll('.staff-note-dot');
+    const tapButtons = document.querySelectorAll('.tap-note-btn:not(.bass-tap-note-btn)');
+    const staffDots = document.querySelectorAll('.staff-note-dot[data-note]');
     const tapFeedback = document.getElementById('tapNoteFeedback');
 
     function showStaffNote(note) {
@@ -1472,7 +2519,266 @@
         showStaffNote(btn.dataset.note);
       });
     });
+
+    // Bass clef tap interaction (Lesson 3)
+    const bassTapButtons = document.querySelectorAll('.bass-tap-note-btn');
+    const bassDots = document.querySelectorAll('.staff-note-dot.bass-dot');
+    const tapBassFeedback = document.getElementById('tapBassFeedback');
+
+    function showBassStaffNote(note) {
+      bassDots.forEach(dot => {
+        dot.classList.toggle('active', dot.dataset.bnote === note);
+      });
+      bassTapButtons.forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.bnote === note);
+      });
+      if (tapBassFeedback) {
+        tapBassFeedback.textContent = `Showing bass note ${note} on the staff.`;
+      }
+    }
+
+    bassTapButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        showBassStaffNote(btn.dataset.bnote);
+      });
+    });
+
+    // Bass clef space tap interaction (Lesson 4)
+    const bassSpaceTapButtons = document.querySelectorAll('.bass-space-tap-note-btn');
+    const bassSpaceDots = document.querySelectorAll('.staff-note-dot.bass-space-dot');
+    const tapBassSpaceFeedback = document.getElementById('tapBassSpaceFeedback');
+
+    function showBassSpaceStaffNote(note) {
+      bassSpaceDots.forEach(dot => {
+        dot.classList.toggle('active', dot.dataset.bsnote === note);
+      });
+      bassSpaceTapButtons.forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.bsnote === note);
+      });
+      if (tapBassSpaceFeedback) {
+        tapBassSpaceFeedback.textContent = `Showing bass space note ${note} on the staff.`;
+      }
+    }
+
+    bassSpaceTapButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        showBassSpaceStaffNote(btn.dataset.bsnote);
+      });
+    });
+
+    // Lesson 3: Drag-the-letter matching game for Bass Clef lines G-B-D-F-A
+    const dragGame3 = document.getElementById('dragMatchGame3');
+    if (dragGame3) {
+      const feedback3 = document.getElementById('matchFeedback3');
+      const resetBtn3 = document.getElementById('resetMatchGame3');
+      const tiles3 = [...dragGame3.querySelectorAll('.drag-tile')];
+      const zones3 = [...dragGame3.querySelectorAll('.drag-drop-zone')];
+      let draggedTile3 = null;
+      let droppedCount3 = 0;
+
+      const usedTiles3 = new Set();
+
+      tiles3.forEach((tile) => {
+        tile.addEventListener('dragstart', (e) => {
+          if (usedTiles3.has(tile.id)) { e.preventDefault(); return; }
+          draggedTile3 = tile;
+          tile.classList.add('dragging');
+          e.dataTransfer.effectAllowed = 'move';
+          e.dataTransfer.setData('text/plain', tile.dataset.note);
+        });
+        tile.addEventListener('dragend', () => {
+          tile.classList.remove('dragging');
+        });
+      });
+
+      zones3.forEach((zone) => {
+        const slot = zone.querySelector('.drop-slot');
+
+        zone.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          e.dataTransfer.dropEffect = 'move';
+          if (!zone.classList.contains('filled')) zone.classList.add('drag-over');
+        });
+
+        zone.addEventListener('dragleave', () => {
+          zone.classList.remove('drag-over');
+        });
+
+        zone.addEventListener('drop', (e) => {
+          e.preventDefault();
+          zone.classList.remove('drag-over');
+          if (!draggedTile3 || zone.classList.contains('filled')) return;
+
+          const tileNote = draggedTile3.dataset.note;
+          const zoneAccept = zone.dataset.accept;
+          const correct = tileNote === zoneAccept;
+
+          slot.textContent = tileNote;
+          slot.classList.add(correct ? 'slot-correct' : 'slot-wrong');
+          zone.classList.add('filled', correct ? 'correct' : 'wrong');
+
+          usedTiles3.add(draggedTile3.id);
+          draggedTile3.classList.add('used');
+          draggedTile3.setAttribute('draggable', 'false');
+
+          droppedCount3++;
+          updateDragFeedback3();
+          draggedTile3 = null;
+        });
+      });
+
+      function updateDragFeedback3() {
+        const correctCount = dragGame3.querySelectorAll('.drop-slot.slot-correct').length;
+        if (droppedCount3 < 5) {
+          if (feedback3) feedback3.textContent = `Dropped: ${droppedCount3}/5 — Correct: ${correctCount}`;
+        } else if (correctCount === 5) {
+          if (feedback3) feedback3.textContent = '🎉 Perfect! All 5 correct!';
+          showRewardMessage('Excellent! You mastered Bass Clef line notes!', false);
+        } else {
+          if (feedback3) feedback3.textContent = `Done: ${correctCount}/5 correct. Press Reset to retry.`;
+          showRewardMessage('Some bass notes are wrong. Try again!', true);
+        }
+      }
+
+      function resetDragGame3() {
+        droppedCount3 = 0;
+        usedTiles3.clear();
+        draggedTile3 = null;
+        tiles3.forEach((t) => {
+          t.classList.remove('used', 'dragging');
+          t.setAttribute('draggable', 'true');
+        });
+        zones3.forEach((z) => {
+          z.classList.remove('filled', 'correct', 'wrong', 'drag-over');
+          const slot = z.querySelector('.drop-slot');
+          if (slot) { slot.textContent = 'Drop here'; slot.className = 'drop-slot'; }
+        });
+        if (feedback3) feedback3.textContent = 'Drag all 5 tiles to the correct bass staff cards.';
+      }
+
+      if (resetBtn3) resetBtn3.addEventListener('click', resetDragGame3);
+    }
+
+    // Lesson 4: Drag-the-letter matching game for Bass Clef spaces A-C-E-G
+    const dragGame4 = document.getElementById('dragMatchGame4');
+    if (dragGame4) {
+      const feedback4 = document.getElementById('matchFeedback4');
+      const resetBtn4 = document.getElementById('resetMatchGame4');
+      const tiles4 = [...dragGame4.querySelectorAll('.drag-tile')];
+      const zones4 = [...dragGame4.querySelectorAll('.drag-drop-zone')];
+      let draggedTile4 = null;
+      let droppedCount4 = 0;
+
+      const usedTiles4 = new Set();
+
+      tiles4.forEach((tile) => {
+        tile.addEventListener('dragstart', (e) => {
+          if (usedTiles4.has(tile.id)) { e.preventDefault(); return; }
+          draggedTile4 = tile;
+          tile.classList.add('dragging');
+          e.dataTransfer.effectAllowed = 'move';
+          e.dataTransfer.setData('text/plain', tile.dataset.note);
+        });
+        tile.addEventListener('dragend', () => {
+          tile.classList.remove('dragging');
+        });
+      });
+
+      zones4.forEach((zone) => {
+        const slot = zone.querySelector('.drop-slot');
+
+        zone.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          e.dataTransfer.dropEffect = 'move';
+          if (!zone.classList.contains('filled')) zone.classList.add('drag-over');
+        });
+
+        zone.addEventListener('dragleave', () => {
+          zone.classList.remove('drag-over');
+        });
+
+        zone.addEventListener('drop', (e) => {
+          e.preventDefault();
+          zone.classList.remove('drag-over');
+          if (!draggedTile4 || zone.classList.contains('filled')) return;
+
+          const tileNote = draggedTile4.dataset.note;
+          const zoneAccept = zone.dataset.accept;
+          const correct = tileNote === zoneAccept;
+
+          slot.textContent = tileNote;
+          slot.classList.add(correct ? 'slot-correct' : 'slot-wrong');
+          zone.classList.add('filled', correct ? 'correct' : 'wrong');
+
+          usedTiles4.add(draggedTile4.id);
+          draggedTile4.classList.add('used');
+          draggedTile4.setAttribute('draggable', 'false');
+
+          droppedCount4++;
+          updateDragFeedback4();
+          draggedTile4 = null;
+        });
+      });
+
+      function updateDragFeedback4() {
+        const correctCount = dragGame4.querySelectorAll('.drop-slot.slot-correct').length;
+        if (droppedCount4 < 5) {
+          lesson4Perfect = false;
+          if (feedback4) feedback4.textContent = `Dropped: ${droppedCount4}/5 — Correct: ${correctCount}`;
+        } else if (correctCount === 5) {
+          lesson4Perfect = true;
+          if (feedback4) feedback4.textContent = '🎉 Perfect! All 5 correct!';
+          showRewardMessage('Excellent! You mastered Bass Clef spaces with bonus B note!', false);
+        } else {
+          lesson4Perfect = false;
+          if (feedback4) feedback4.textContent = `Done: ${correctCount}/5 correct. Press Reset to retry.`;
+          showRewardMessage('Some bass space notes are wrong. Try again!', true);
+        }
+      }
+
+      function resetDragGame4() {
+        droppedCount4 = 0;
+        lesson4Perfect = false;
+        usedTiles4.clear();
+        draggedTile4 = null;
+        tiles4.forEach((t) => {
+          t.classList.remove('used', 'dragging');
+          t.setAttribute('draggable', 'true');
+        });
+        zones4.forEach((z) => {
+          z.classList.remove('filled', 'correct', 'wrong', 'drag-over');
+          const slot = z.querySelector('.drop-slot');
+          if (slot) { slot.textContent = 'Drop here'; slot.className = 'drop-slot'; }
+        });
+        if (feedback4) feedback4.textContent = 'Drag all 5 tiles to the correct bass space staff cards.';
+      }
+
+      if (resetBtn4) resetBtn4.addEventListener('click', resetDragGame4);
+    }
   })();
+
+  const practiceSessionStartedAt = Date.now();
+  let practiceSessionSent = false;
+
+  function sendPracticeSession() {
+    if (practiceSessionSent) return;
+    practiceSessionSent = true;
+    const durationSeconds = Math.max(1, Math.round((Date.now() - practiceSessionStartedAt) / 1000));
+    const payload = JSON.stringify({ game_type: 'game1', duration_seconds: durationSeconds });
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon('/api/log-practice-session', new Blob([payload], { type: 'application/json' }));
+      return;
+    }
+    fetch('/api/log-practice-session', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: payload,
+      keepalive: true,
+    }).catch(() => {});
+  }
+
+  window.addEventListener('pagehide', sendPracticeSession);
+  window.addEventListener('beforeunload', sendPracticeSession);
 </script>
 </body>
 </html>

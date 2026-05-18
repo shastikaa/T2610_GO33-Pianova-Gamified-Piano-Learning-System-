@@ -1,5 +1,4 @@
 from functools import wraps
-import os
 
 from flask import Flask, flash, redirect, render_template, request, session, url_for
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -8,27 +7,16 @@ from templates.templates.database import (
     add_score,
     create_user,
     fetch_user_by_username,
-    get_all_accounts,
     get_admin_metrics,
     get_user_metrics,
     init_app as init_database_app,
     init_db,
-    reset_password,
     save_progress,
 )
 
 app = Flask(__name__, static_folder='static')
 app.secret_key = "secret123"
-app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 init_database_app(app)
-
-
-@app.after_request
-def add_no_cache_headers(response):
-    response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
-    response.headers['Pragma'] = 'no-cache'
-    response.headers['Expires'] = '0'
-    return response
 
 
 def verify_password(stored_password, provided_password):
@@ -79,7 +67,7 @@ def login():
         user = fetch_user_by_username(username)
         if user is None or not verify_password(user['password'], password):
             flash('Invalid username or password.', 'error')
-            return render_template('login.html')
+            return render_template('login_new.html')
 
         session.clear()
         session['user_id'] = user['id']
@@ -91,7 +79,7 @@ def login():
             return redirect(url_for('admin_dashboard'))
         return redirect(url_for('user_dashboard'))
 
-    return render_template('login.html')
+    return render_template('login_new.html')
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -124,31 +112,17 @@ def register():
 @app.route('/forgot-password', methods=['GET', 'POST'])
 def forgot_password():
     if request.method == 'POST':
-        username = request.form.get('username', '').strip()
-        new_password = request.form.get('new_password', '')
-        confirm_password = request.form.get('confirm_password', '')
-
-        if not username or not new_password:
-            flash('All fields are required.', 'error')
+        email = request.form.get('email', '').strip()
+        
+        if not email:
+            flash('Please enter your email address.', 'error')
             return render_template('forgot_password.html')
-
-        if new_password != confirm_password:
-            flash('Passwords do not match.', 'error')
-            return render_template('forgot_password.html')
-
-        if len(new_password) < 4:
-            flash('Password must be at least 4 characters.', 'error')
-            return render_template('forgot_password.html')
-
-        user = fetch_user_by_username(username)
-        if user is None:
-            flash('No account found with that username.', 'error')
-            return render_template('forgot_password.html')
-
-        reset_password(username, generate_password_hash(new_password))
-        flash('Password reset successfully. You can now log in.', 'success')
+        
+        # For demo purposes, just show a success message
+        # In a real app, you would send a password reset email
+        flash('If an account with that email exists, a password reset link has been sent.', 'success')
         return redirect(url_for('login'))
-
+    
     return render_template('forgot_password.html')
 
 
@@ -171,7 +145,6 @@ def admin_dashboard():
         'admin_dashboard.html',
         username=session['user'],
         metrics=get_admin_metrics(),
-        accounts=get_all_accounts(),
     )
 
 
@@ -184,11 +157,23 @@ def lessons():
 
 
 @app.route('/game', methods=['GET', 'POST'])
-@app.route('/game1', methods=['GET'])
 @login_required
 @role_required('user')
 def game():
-    return render_template('templates/game1.html')
+    message = ''
+
+    if request.method == 'POST':
+        answer = request.form.get('note')
+
+        if answer == 'C':
+            message = 'Correct! Level 2 unlocked.'
+            session['level'] = max(session.get('level', 1), 2)
+            save_progress(session['user_id'], 1, 'completed')
+            add_score(session['user_id'], 'note-match', 10)
+        else:
+            message = 'Wrong answer. Try again.'
+
+    return render_template('game.html', message=message)
 
 
 @app.route('/logout')
@@ -201,8 +186,4 @@ init_db(app)
 
 
 if __name__ == '__main__':
-    app.run(
-        host='0.0.0.0',
-        port=int(os.getenv('PORT', '5000')),
-        debug=True,
-    )
+    app.run(debug=True)

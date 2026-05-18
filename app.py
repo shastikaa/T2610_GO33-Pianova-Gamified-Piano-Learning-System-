@@ -67,7 +67,7 @@ def login():
         user = fetch_user_by_username(username)
         if user is None or not verify_password(user['password'], password):
             flash('Invalid username or password.', 'error')
-            return render_template('login.html')
+            return render_template('login_new.html')
 
         session.clear()
         session['user_id'] = user['id']
@@ -79,7 +79,7 @@ def login():
             return redirect(url_for('admin_dashboard'))
         return redirect(url_for('user_dashboard'))
 
-    return render_template('login.html')
+    return render_template('login_new.html')
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -107,6 +107,23 @@ def register():
         return redirect(url_for('login'))
 
     return render_template('register.html')
+
+
+@app.route('/forgot-password', methods=['GET', 'POST'])
+def forgot_password():
+    if request.method == 'POST':
+        email = request.form.get('email', '').strip()
+        
+        if not email:
+            flash('Please enter your email address.', 'error')
+            return render_template('forgot_password.html')
+        
+        # For demo purposes, just show a success message
+        # In a real app, you would send a password reset email
+        flash('If an account with that email exists, a password reset link has been sent.', 'success')
+        return redirect(url_for('login'))
+    
+    return render_template('forgot_password.html')
 
 
 @app.route('/dashboard')

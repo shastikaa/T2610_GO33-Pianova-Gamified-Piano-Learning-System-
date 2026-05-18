@@ -17,10 +17,130 @@
       background: linear-gradient(145deg, #1e2a3a 0%, #0f1a24 100%);
       min-height: 100vh;
       display: flex;
-      justify-content: center;
+      justify-content: flex-start;
       align-items: center;
+      flex-direction: column;
       font-family: 'Poppins', 'Segoe UI', system-ui, -apple-system, 'Inter', sans-serif;
       padding: 1.2rem;
+    }
+
+    .top-shell {
+      max-width: 1500px;
+      width: 100%;
+      border-radius: 2rem;
+      border: 1px solid rgba(255, 205, 126, 0.35);
+      background: linear-gradient(180deg, rgba(10, 16, 26, 0.96), rgba(8, 12, 20, 0.92));
+      box-shadow: 0 14px 30px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.05);
+      margin-bottom: 0.9rem;
+      overflow: hidden;
+    }
+
+    .top-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.95rem 1.2rem;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      flex-wrap: wrap;
+    }
+
+    .top-brand {
+      color: #ffe0ad;
+      font-weight: 800;
+      font-size: 1.5rem;
+      letter-spacing: -0.2px;
+    }
+
+    .top-brand-sub {
+      color: #e8d1ad;
+      font-size: 0.95rem;
+      opacity: 0.92;
+      margin-top: 2px;
+    }
+
+    .top-link-row {
+      display: flex;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+    }
+
+    .top-link {
+      color: #f3dfbc;
+      text-decoration: none;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: #0c1016;
+      padding: 0.55rem 0.95rem;
+      border-radius: 0.95rem;
+      font-weight: 700;
+      font-size: 0.95rem;
+      transition: 0.2s ease;
+    }
+
+    .top-link.active,
+    .top-link:hover {
+      background: linear-gradient(145deg, #5a4323, #2f2518);
+      border-color: rgba(255, 210, 130, 0.42);
+    }
+
+    .top-stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(140px, 1fr));
+      gap: 0.8rem;
+      padding: 0.95rem 1.2rem 1.1rem;
+    }
+
+    .top-stat-card {
+      border: 1px solid rgba(255,255,255,0.11);
+      border-radius: 1rem;
+      background: rgba(9, 14, 24, 0.95);
+      padding: 0.8rem 0.95rem;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+    }
+
+    .top-stat-title {
+      color: #edd5ad;
+      font-size: 0.95rem;
+      margin-bottom: 0.3rem;
+      font-weight: 600;
+    }
+
+    .top-stat-value {
+      color: #ffe7be;
+      font-size: 1.7rem;
+      font-weight: 800;
+      line-height: 1.05;
+    }
+
+    .top-hearts {
+      color: #ff6f91;
+      letter-spacing: 2px;
+      font-size: 1.35rem;
+      font-weight: 700;
+    }
+
+    .top-level-track {
+      width: 100%;
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.14);
+      margin-top: 0.38rem;
+      overflow: hidden;
+    }
+
+    .top-level-fill {
+      width: 0%;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #ffd167, #ffa149);
+      transition: width 0.35s ease;
+    }
+
+    .top-level-percent {
+      margin-top: 0.35rem;
+      color: #edd5ad;
+      font-weight: 700;
+      font-size: 0.9rem;
     }
 
     /* main game card */
@@ -1557,9 +1677,71 @@
       0%, 100% { opacity: 0.55; filter: saturate(1); }
       50% { opacity: 0.95; filter: saturate(1.2); }
     }
+
+    .quit-button {
+      padding: 0.6rem 1.2rem;
+      background-color: #ff4444;
+      color: white;
+      border: none;
+      border-radius: 40px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 0.95rem;
+      transition: background-color 0.3s;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+    }
+
+    .quit-button:hover {
+      background-color: #cc0000;
+    }
+
+    @media (max-width: 880px) {
+      .top-stats {
+        grid-template-columns: repeat(2, minmax(140px, 1fr));
+      }
+
+      .top-stat-value {
+        font-size: 1.35rem;
+      }
+    }
   </style>
 </head>
 <body>
+<div class="top-shell">
+  <div class="top-nav">
+    <div>
+      <div class="top-brand">Pianova</div>
+      <div class="top-brand-sub">Play • Learn • Master</div>
+    </div>
+    <div class="top-link-row">
+      <a class="top-link active" href="/">Home</a>
+      <a class="top-link" href="/game2">Practice</a>
+      <a class="top-link" href="/lessons">Lessons</a>
+      <a class="top-link" href="/dashboard">Leaderboard</a>
+      <a class="top-link" href="/dashboard">Profile</a>
+    </div>
+  </div>
+
+  <div class="top-stats">
+    <div class="top-stat-card">
+      <div class="top-stat-title">Score</div>
+      <div class="top-stat-value" id="topScore">0</div>
+    </div>
+    <div class="top-stat-card">
+      <div class="top-stat-title">Combo</div>
+      <div class="top-stat-value" id="topCombo">0 Keep going!</div>
+    </div>
+    <div class="top-stat-card">
+      <div class="top-stat-title">Lives</div>
+      <div class="top-hearts" id="topLives">♥ ♥ ♥ ♥ ♥</div>
+    </div>
+    <div class="top-stat-card">
+      <div class="top-stat-title" id="topLevelTitle">Level 1</div>
+      <div class="top-level-track"><div class="top-level-fill" id="topLevelFill"></div></div>
+      <div class="top-level-percent" id="topLevelPercent">0%</div>
+    </div>
+  </div>
+</div>
 <div class="game-container">
   <div class="lesson-header">
     <div class="title-badge">
@@ -1567,8 +1749,9 @@
       <div class="gamified-badge">✨ GAMIFIED PIANO LEARNING ✨</div>
     </div>
     <div class="level-progress">
-      <span class="level-text">⭐ LEVEL 3 · MASTER READER</span>
-      <span class="xp-points">🎯 2450 XP</span>
+      <span class="level-text" id="mainLevelText">⭐ LEVEL 3 · MASTER READER</span>
+      <span class="xp-points" id="mainXpPoints">🎯 0 XP</span>
+      <button class="quit-button" onclick="quitGame()">🚪 Quit Lesson</button>
     </div>
   </div>
 
@@ -2026,11 +2209,33 @@
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
+    function updateTopHud() {
+      const xpText = document.querySelector('.xp-points')?.innerText || '0';
+      const xp = parseInt(xpText.match(/\d+/)?.[0] || 0, 10);
+      const completed = [levelCompleted, lesson2Completed, lesson3Completed, basicLevelCompleted].filter(Boolean).length;
+
+      const topScore = document.getElementById('topScore');
+      const topCombo = document.getElementById('topCombo');
+      const topLives = document.getElementById('topLives');
+      const topLevelTitle = document.getElementById('topLevelTitle');
+      const topLevelFill = document.getElementById('topLevelFill');
+      const topLevelPercent = document.getElementById('topLevelPercent');
+
+      if (topScore) topScore.textContent = xp;
+      if (topCombo) topCombo.textContent = completed === 0 ? '0 Keep going!' : `${completed} On fire!`;
+      if (topLives) topLives.textContent = '♥ ♥ ♥ ♥ ♥';
+
+      const percent = Math.min(100, completed * 25);
+      if (topLevelTitle) topLevelTitle.textContent = completed >= 4 ? 'Level Complete' : `Level ${completed + 1}`;
+      if (topLevelFill) topLevelFill.style.width = `${percent}%`;
+      if (topLevelPercent) topLevelPercent.textContent = `${percent}%`;
+    }
+
     function grantXp(points) {
       const xpSpan = document.querySelector('.xp-points');
       if (!xpSpan) return;
 
-      let currentXP = parseInt(xpSpan.innerText.match(/\d+/)?.[0] || 2450);
+      let currentXP = parseInt(xpSpan.innerText.match(/\d+/)?.[0] || 0);
       const newXP = currentXP + points;
       xpSpan.innerHTML = `🎯 ${newXP} XP`;
 
@@ -2059,6 +2264,8 @@
       setTimeout(() => {
         if (plusBadge) plusBadge.remove();
       }, 1000);
+
+      updateTopHud();
     }
 
     function finishLevelAction() {
@@ -2069,8 +2276,6 @@
       }
       // Gamified completion: show big success, add confetti, XP gain animation
       levelCompleted = true;
-      // add visual XP pop
-      grantXp(350);
 
       // trigger confetti explosion
       createConfetti();
@@ -2084,7 +2289,7 @@
         levelSpan.innerHTML = '🏅 LEVEL MASTER · PIANO LEGEND 🏅';
       }
 
-      showRewardMessage("✨✨ AMAZING! LESSON 1 COMPLETE! You've mastered E-G-B-D-F! Click again for Lesson 2! ✨✨ +350 XP", false);
+      showRewardMessage("✨✨ AMAZING! LESSON 1 COMPLETE! You've mastered E-G-B-D-F! Click again for Lesson 2! ✨✨", false);
       
       // change finish button style to show completed
       finishButton.style.background = "#8fbc8f";
@@ -2132,7 +2337,7 @@
         }
 
         lesson2Completed = true;
-        grantXp(300);
+        updateTopHud();
         createConfetti();
         playLevelCompleteSound();
 
@@ -2178,7 +2383,7 @@
         }
 
         lesson3Completed = true;
-        grantXp(350);
+        updateTopHud();
         createConfetti();
         playLevelCompleteSound();
 
@@ -2264,7 +2469,7 @@
         }
 
         basicLevelCompleted = true;
-        grantXp(500);
+        updateTopHud();
         createConfetti();
         setTimeout(createConfetti, 280);
         playLevelCompleteSound();
@@ -2287,6 +2492,8 @@
         openBasicCompleteOverlay();
       });
     }
+
+    updateTopHud();
 
     // bonus: optional hovering mnemonic reinforce
     const mnemonics = document.querySelectorAll('.mnemonic');
@@ -2360,6 +2567,7 @@
           slot.textContent = tileNote;
           slot.classList.add(correct ? 'slot-correct' : 'slot-wrong');
           zone.classList.add('filled', correct ? 'correct' : 'wrong');
+          if (correct) grantXp(250);
 
           // Mark tile as used and dim it
           usedTiles.add(draggedTile.id);
@@ -2454,6 +2662,7 @@
           slot.textContent = tileNote;
           slot.classList.add(correct ? 'slot-correct' : 'slot-wrong');
           zone.classList.add('filled', correct ? 'correct' : 'wrong');
+          if (correct) grantXp(250);
 
           usedTiles2.add(draggedTile2.id);
           draggedTile2.classList.add('used');
@@ -2616,6 +2825,7 @@
           slot.textContent = tileNote;
           slot.classList.add(correct ? 'slot-correct' : 'slot-wrong');
           zone.classList.add('filled', correct ? 'correct' : 'wrong');
+          if (correct) grantXp(250);
 
           usedTiles3.add(draggedTile3.id);
           draggedTile3.classList.add('used');
@@ -2709,6 +2919,7 @@
           slot.textContent = tileNote;
           slot.classList.add(correct ? 'slot-correct' : 'slot-wrong');
           zone.classList.add('filled', correct ? 'correct' : 'wrong');
+          if (correct) grantXp(250);
 
           usedTiles4.add(draggedTile4.id);
           draggedTile4.classList.add('used');
@@ -2779,6 +2990,12 @@
 
   window.addEventListener('pagehide', sendPracticeSession);
   window.addEventListener('beforeunload', sendPracticeSession);
+
+  function quitGame() {
+    if (confirm('Are you sure you want to quit? Your progress will not be saved.')) {
+      window.location.href = '/';
+    }
+  }
 </script>
 </body>
 </html>

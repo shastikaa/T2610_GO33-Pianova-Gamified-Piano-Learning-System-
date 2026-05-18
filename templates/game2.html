@@ -8,14 +8,117 @@
 
         body {
             font-family: 'Segoe UI', sans-serif;
-            background-color: #1a1a1a;
+            background: radial-gradient(circle at 10% 10%, #14243c 0%, #070b12 35%, #040608 100%);
             color: white;
             display: flex;
-            justify-content: center;
+            justify-content: flex-start;
             align-items: center;
-            height: 100vh;
+            flex-direction: column;
+            min-height: 100vh;
             margin: 0;
+            overflow-x: hidden;
+            padding: 16px;
+        }
+
+        .top-shell {
+            width: min(1400px, 100%);
+            border: 1px solid rgba(238, 187, 101, 0.32);
+            border-radius: 26px;
+            background: rgba(8, 13, 21, 0.84);
+            box-shadow: 0 16px 36px rgba(0,0,0,0.45), inset 0 0 0 1px rgba(255,255,255,0.03);
+            margin-bottom: 18px;
             overflow: hidden;
+        }
+
+        .top-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            flex-wrap: wrap;
+        }
+
+        .brand {
+            font-size: 20px;
+            color: #f8d59a;
+            font-weight: 700;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .nav-pill {
+            padding: 10px 14px;
+            border-radius: 14px;
+            border: 1px solid rgba(255,255,255,0.12);
+            background: #0c1016;
+            color: #f3d8aa;
+            font-weight: 600;
+            font-size: 14px;
+            text-decoration: none;
+        }
+
+        .nav-pill.active {
+            background: linear-gradient(135deg, #7f5d2e, #3a2a1b);
+        }
+
+        .top-stats {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(150px, 1fr));
+            gap: 12px;
+            padding: 12px 16px 16px;
+        }
+
+        .stat-card {
+            background: rgba(7,10,16,0.9);
+            border: 1px solid rgba(255,255,255,0.09);
+            border-radius: 18px;
+            padding: 12px 14px;
+        }
+
+        .stat-title {
+            color: #f0ddc1;
+            font-size: 14px;
+            margin-bottom: 6px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #ffe4b3;
+            line-height: 1;
+        }
+
+        .hearts {
+            color: #ff6f91;
+            letter-spacing: 2px;
+            font-size: 22px;
+        }
+
+        .level-track {
+            height: 10px;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.12);
+            margin-top: 8px;
+            overflow: hidden;
+        }
+
+        .level-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #ffd071, #ff9f43);
+            transition: width 0.3s ease;
+        }
+
+        .level-percent {
+            margin-top: 6px;
+            color: #f0ddc1;
+            font-weight: 700;
         }
 
         .container {
@@ -24,7 +127,8 @@
             padding: 30px;
             border-radius: 15px;
             box-shadow: 0 10px 40px rgba(0,0,0,0.6);
-            width: 700px;
+            width: min(860px, 100%);
+            border: 1px solid rgba(238, 187, 101, 0.3);
         }
 
         .shake { animation: shake 0.3s; }
@@ -125,16 +229,74 @@
             cursor: pointer;
             font-weight: bold;
         }
+
+        .quit-button {
+            padding: 10px 20px;
+            background-color: #ff4444;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+
+        .quit-button:hover {
+            background-color: #cc0000;
+        }
+
+        @media (max-width: 850px) {
+            .top-stats {
+                grid-template-columns: repeat(2, minmax(140px, 1fr));
+            }
+            .stat-value {
+                font-size: 22px;
+            }
+        }
     </style>
 </head>
 <body>
+
+<div class="top-shell">
+    <div class="top-nav">
+        <div class="brand">Pianova - Play - Learn - Master</div>
+        <div class="nav-links">
+            <a class="nav-pill active" href="#">Home</a>
+            <a class="nav-pill" href="#">Practice</a>
+            <a class="nav-pill" href="#">Lessons</a>
+            <a class="nav-pill" href="#">Leaderboard</a>
+            <a class="nav-pill" href="#">Profile</a>
+        </div>
+    </div>
+    <div class="top-stats">
+        <div class="stat-card">
+            <div class="stat-title">Score</div>
+            <div class="stat-value" id="score-top">0</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-title">Combo</div>
+            <div class="stat-value" id="combo-top">0</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-title">Lives</div>
+            <div class="hearts" id="lives-top">♥ ♥ ♥ ♥ ♥</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-title" id="level-title">Level 1</div>
+            <div class="level-track"><div class="level-fill" id="level-fill"></div></div>
+            <div class="level-percent" id="level-percent">0%</div>
+        </div>
+    </div>
+</div>
 
 <div class="container" id="game-container">
     <div class="header">
         <h1 class="logo">🎹 Pianova</h1>
         <!-- UPDATED (added lives) -->
         <div class="progress">
-            Score: <span id="score">0</span> | Lives: <span id="lives">3</span>
+            Score: <span id="score">0</span> | Lives: <span id="lives">5</span>
+            <button class="quit-button" onclick="quitGame()">Quit</button>
         </div>
     </div>
 
@@ -204,10 +366,30 @@
 
     let currentNote = "";
     let score = 0;
+    let combo = 0;
 
     // === ADDED ===
     let lives = 5;
     const maxScore = 10;
+
+    function renderHearts(count) {
+        return new Array(Math.max(0, count)).fill("♥").join(" ");
+    }
+
+    function updateTopStats() {
+        const scoreTop = document.getElementById("score-top");
+        const comboTop = document.getElementById("combo-top");
+        const livesTop = document.getElementById("lives-top");
+        const levelFill = document.getElementById("level-fill");
+        const levelPercent = document.getElementById("level-percent");
+        if (scoreTop) scoreTop.innerText = score;
+        if (comboTop) comboTop.innerText = combo;
+        if (livesTop) livesTop.innerText = renderHearts(lives);
+
+        const percent = Math.min(100, Math.round((score / maxScore) * 100));
+        if (levelFill) levelFill.style.width = `${percent}%`;
+        if (levelPercent) levelPercent.innerText = `${percent}%`;
+    }
 
     function drawStaff(note) {
         const canvas = document.getElementById("staff");
@@ -257,7 +439,9 @@
 
         if (note === currentNote) {
             score++;
+            combo++;
             document.getElementById("score").innerText = score;
+            updateTopStats();
 
             // WIN
             if (score >= maxScore) {
@@ -272,7 +456,9 @@
 
         } else {
             lives--;
+            combo = 0;
             document.getElementById("lives").innerText = lives;
+            updateTopStats();
 
             if (lives <= 0) {
                 saveGameResult(score, false);
@@ -306,15 +492,23 @@
 
     function restartGame() {
         score = 0;
+        combo = 0;
         lives = 5;
         document.getElementById("score").innerText = score;
         document.getElementById("lives").innerText = lives;
         document.getElementById("modal").style.display = "none";
+        updateTopStats();
         newQuestion();
     }
 
     function goHome() {
         location.reload();
+    }
+
+    function quitGame() {
+        if (confirm('Are you sure you want to quit? Your progress will not be saved.')) {
+            window.location.href = '/';
+        }
     }
 
     function newQuestion() {
@@ -332,6 +526,7 @@
             div.onclick = () => handleInput(item.note);
             piano.appendChild(div);
         });
+        updateTopStats();
         newQuestion();
     }
 

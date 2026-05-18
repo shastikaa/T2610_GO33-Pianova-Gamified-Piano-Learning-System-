@@ -1195,7 +1195,9 @@
                     </div>
                 </div>
             `;
-            document.getElementById('completeNextLessonBtn')?.addEventListener('click', () => showHomepage());
+            document.getElementById('completeNextLessonBtn')?.addEventListener('click', () => {
+                window.location.href = '/lesson2-4';
+            });
             document.getElementById('completeRestartBtn')?.addEventListener('click', () => fullReset());
             document.getElementById('completeHomeBtn')?.addEventListener('click', () => showHomepage());
         }

@@ -2,785 +2,195 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Pianova | Elegant Login</title>
+    <title>Pianova Login</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
         body {
-            font-family: 'Segoe UI', 'Poppins', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(145deg, #28477a 0%, #233f6b 46%, #1b3257 100%);
             min-height: 100vh;
             display: flex;
-            flex-direction: column;
-            justify-content: center;
             align-items: center;
-            position: relative;
-            background: #0a0a1a;
+            justify-content: center;
+            color: white;
         }
-
-        /* Background image from the provided URL */
-        body::before {
-            content: "";
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 85%;
-            background-image: url('https://i.pinimg.com/1200x/cb/a4/6d/cba46d88975ab1fcdc515fd16957141b.jpg');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            filter: brightness(0.90S) blur(1px);
-            z-index: -2;
-        }
-
-        /* Dark overlay for better text readability */
-        body::after {
-            content: "";
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.55);
-            z-index: -1;
-        }
-
-        .container {
-            width: 100%;
-            max-width: 500px;
-            margin: 2rem;
-            z-index: 10;
-        }
-
         .login-box {
-            background: rgba(18, 25, 45, 0.85);
-            backdrop-filter: blur(15px);
-            border-radius: 1rem;
-            padding: 2.5rem 2rem;
-            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.1);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            border: 1px solid rgba(255, 215, 150, 0.3);
+            background: #1a1a2e;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 400px;
         }
-
-        .login-box:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 30px 55px rgba(0, 0, 0, 0.6);
-            border-color: rgba(255, 200, 100, 0.5);
-        }
-
         h1 {
-            font-size: 3.2rem;
-            font-weight: 700;
-            letter-spacing: -0.5px;
-            background: linear-gradient(135deg, #F9E7B3, #E8C47F, #DBA555);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
             text-align: center;
-            margin-bottom: 0.4rem;
-            text-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            color: #6c3cff;
+            margin-bottom: 10px;
+            font-size: 2rem;
         }
-
         h2 {
-            font-size: 1.2rem;
-            font-weight: 500;
             text-align: center;
-            color: #e0e6f5;
-            margin-bottom: 2rem;
-            letter-spacing: 0.3px;
-            border-bottom: 1px dashed rgba(255,215,150,0.4);
-            display: inline-block;
-            width: auto;
-            margin-left: auto;
-            margin-right: auto;
-            padding-bottom: 8px;
+            color: #999;
+            margin-bottom: 30px;
+            font-size: 1rem;
         }
-
+        form {
+            display: grid;
+            gap: 14px;
+        }
         label {
-            display: block;
-            font-size: 0.85rem;
             font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: #dfe9ff;
-            margin-bottom: 0.5rem;
-            margin-top: 1rem;
+            color: #ddd;
         }
-
         input {
             width: 100%;
-            background: rgba(10, 14, 23, 0.8);
-            border: 1px solid #3a4562;
-            border-radius: 1.5rem;
-            padding: 0.9rem 1.2rem;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #444;
+            background: #0f0f1a;
+            color: #fff;
             font-size: 1rem;
-            color: #f0f3fa;
-            transition: all 0.2s;
-            outline: none;
-            font-weight: 400;
         }
-
-        input:focus {
-            border-color: #e7b45a;
-            box-shadow: 0 0 0 3px rgba(231, 180, 90, 0.3);
-            background: #0f1525;
-        }
-
         input::placeholder {
-            color: #7a88a8;
-            font-weight: 400;
+            color: #777;
         }
-
         .options {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            color: #999;
+            margin: 10px 0;
         }
-
-        .options label {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-top: 0;
-            font-size: 0.85rem;
-            text-transform: none;
-            font-weight: 500;
-            cursor: pointer;
-        }
-
-        .options input[type="checkbox"] {
-            width: auto;
-            margin: 0;
-            transform: scale(1.1);
-            accent-color: #e7b45a;
-        }
-
         .options a {
-            color: #f5cd8c;
+            color: #6c3cff;
             text-decoration: none;
-            font-size: 0.85rem;
-            font-weight: 500;
-            transition: all 0.2s;
-            cursor: pointer;
         }
-
         .options a:hover {
-            color: #ffdfa5;
             text-decoration: underline;
         }
-
         button {
             width: 100%;
-            background: linear-gradient(95deg, #E6B45A, #CF9F4A);
+            padding: 12px;
+            background: #6c3cff;
+            color: white;
             border: none;
-            border-radius: 2rem;
-            padding: 0.9rem;
+            border-radius: 8px;
             font-size: 1rem;
-            font-weight: 700;
-            color: #0e1424;
-            margin-top: 1.5rem;
+            font-weight: 600;
             cursor: pointer;
-            transition: 0.2s;
-            box-shadow: 0 6px 14px rgba(0,0,0,0.3);
-            letter-spacing: 0.5px;
+            transition: background 0.3s;
         }
-
         button:hover {
-            background: linear-gradient(95deg, #F7C56E, #DFAE58);
-            transform: scale(0.98);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+            background: #5a2db3;
         }
-
         .signup {
             text-align: center;
-            margin-top: 1.8rem;
-            font-size: 0.9rem;
-            color: #b8c7e0;
+            margin-top: 20px;
+            color: #999;
         }
-
         .signup a {
-            color: #f5cd8c;
+            color: #6c3cff;
             text-decoration: none;
             font-weight: 600;
-            border-bottom: 1px dotted #f5cd8c;
-            transition: all 0.2s;
-            cursor: pointer;
         }
-
-        .signup a:hover {
-            color: #ffdfa5;
-            border-bottom-color: #ffdfa5;
-        }
-
-        /* Flash message for feedback */
-        .flash-message {
-            margin-top: 1rem;
-            padding: 0.7rem;
-            border-radius: 2rem;
-            text-align: center;
-            font-size: 0.85rem;
-            font-weight: 500;
-            animation: fadeIn 0.3s ease;
-        }
-
-        .flash-error {
-            background: rgba(220, 53, 69, 0.9);
+        .flash {
+            margin-bottom: 16px;
+            padding: 12px;
+            border-radius: 8px;
+            background: #c70000;
             color: white;
         }
-
-        .flash-success {
-            background: rgba(40, 167, 69, 0.9);
-            color: white;
+        .flash.success {
+            background: #00c896;
+            color: #0d0d1a;
         }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-5px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Modal Styles for Forgot Password */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(10px);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal-content {
-            background: rgba(18, 25, 45, 0.95);
-            padding: 2rem;
-            border-radius: 1.5rem;
-            max-width: 400px;
-            width: 90%;
-            text-align: center;
-            border: 1px solid #e7b45a;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
-        }
-
-        .modal-content h3 {
-            color: #f5cd8c;
-            font-size: 1.5rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .modal-content p {
-            color: #b8c7e0;
-            margin-bottom: 1.5rem;
-            font-size: 0.9rem;
-        }
-
-        .modal-content input {
-            margin: 0.5rem 0 1rem;
-        }
-
-        .modal-buttons {
-            display: flex;
-            gap: 1rem;
-            margin-top: 0.5rem;
-        }
-
-        .modal-buttons button {
-            margin-top: 0;
-            flex: 1;
-        }
-
-        .modal-buttons button:last-child {
-            background: #444;
-            box-shadow: none;
-        }
-
-        .modal-buttons button:last-child:hover {
-            background: #666;
-            transform: scale(0.98);
-        }
-
-        /* ---------- Piano Keyboard Styling ---------- */
         .piano {
             position: fixed;
             bottom: 0;
             left: 0;
             width: 100%;
+            height: 60px;
             display: flex;
-            flex-wrap: nowrap;
-            background: rgba(8, 10, 18, 0.85);
-            backdrop-filter: blur(8px);
-            padding: 10px 12px 14px 12px;
             gap: 2px;
-            justify-content: center;
-            border-top: 2px solid rgba(231, 180, 90, 0.5);
-            box-shadow: 0 -8px 25px rgba(0, 0, 0, 0.5);
-            z-index: 20;
-            overflow-x: auto;
+            background: #111;
+            padding: 8px;
         }
-
         .key {
-            flex: 0 0 auto;
-            transition: all 0.07s ease;
-            cursor: pointer;
-            user-select: none;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+            flex: 1;
+            border-radius: 4px;
+            opacity: 0.3;
         }
-
-        /* White keys */
         .key.white {
-            background: linear-gradient(145deg, #fef9e6, #f5edda);
-            width: 52px;
-            height: 85px;
-            border-radius: 0 0 10px 10px;
-            border: 1px solid #cbbf9a;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,240,0.8);
-            z-index: 1;
+            background: white;
         }
-
-        /* Black keys */
         .key.black {
-            background: linear-gradient(145deg, #2a2a34, #15171f);
-            width: 34px;
-            height: 55px;
-            margin-left: -18px;
-            margin-right: -18px;
-            border-radius: 0 0 8px 8px;
-            z-index: 2;
-            border: 1px solid #111;
-            box-shadow: 0 5px 8px rgba(0,0,0,0.5);
-        }
-
-        /* Press effect */
-        .key:active {
-            transform: translateY(4px);
-            box-shadow: 0 1px 3px rgba(0,0,0,0.4);
-        }
-
-        .key.white:hover {
-            background: #fff7e8;
-            box-shadow: 0 2px 10px rgba(231,180,90,0.5);
-        }
-        .key.black:hover {
-            background: #3d3f55;
-            box-shadow: 0 2px 8px rgba(231,180,90,0.4);
-        }
-
-        /* Responsive */
-        @media (max-width: 760px) {
-            .key.white {
-                width: 40px;
-                height: 70px;
-            }
-            .key.black {
-                width: 26px;
-                height: 45px;
-                margin-left: -14px;
-                margin-right: -14px;
-            }
-            .login-box {
-                padding: 1.8rem;
-            }
-            h1 {
-                font-size: 2.5rem;
-            }
-        }
-
-        @media (max-width: 550px) {
-            .key.white {
-                width: 32px;
-                height: 60px;
-            }
-            .key.black {
-                width: 20px;
-                height: 38px;
-                margin-left: -11px;
-                margin-right: -11px;
-            }
-            .piano {
-                padding: 6px 6px 10px;
-            }
-        }
-
-        .piano::-webkit-scrollbar {
-            height: 5px;
-        }
-        .piano::-webkit-scrollbar-track {
-            background: #1e1e30;
-            border-radius: 10px;
-        }
-        .piano::-webkit-scrollbar-thumb {
-            background: #e7b45a;
-            border-radius: 10px;
-        }
-
-        /* Small floating indicator */
-        .piano-hint {
-            position: fixed;
-            bottom: 95px;
-            right: 15px;
-            background: rgba(0,0,0,0.6);
-            backdrop-filter: blur(4px);
-            padding: 5px 12px;
-            border-radius: 30px;
-            font-size: 11px;
-            color: #f5cd8c;
-            font-weight: 500;
-            z-index: 25;
-            pointer-events: none;
-            font-family: monospace;
-            letter-spacing: 0.5px;
+            background: black;
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="login-box">
-        <h1>Pianova</h1>
-        <h2>Login to Pianova</h2>
+<div class="login-box">
+    <h1>🎵 Pianova</h1>
+    <h2>Login to Pianova</h2>
 
-        <form id="loginForm" method="post">
-            <label for="username">Username</label>
-            <input id="username" name="username" type="text" placeholder="Enter your username" required autocomplete="off">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="flash {{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
 
-            <label for="password">Password</label>
-            <input id="password" name="password" type="password" placeholder="Enter your password" required>
+    <form method="POST">
+        <label>Username</label>
+        <input type="text" name="username" placeholder="Enter your username" required>
 
-            <div class="options">
-                <label>
-                    <input type="checkbox" id="rememberCheckbox"> Remember Me
-                </label>
-                <a id="forgotPasswordBtn">Forgot Password?</a>
-            </div>
+        <label>Password</label>
+        <input type="password" name="password" placeholder="Enter your password" required>
 
-            <button type="submit" id="loginBtn">Login</button>
-
-            <p class="signup">Don't have an account? <a href="#" id="signupMock">Sign Up</a></p>
-        </form>
-        <div id="messageArea" style="margin-top: 1rem;"></div>
-    </div>
-</div>
-
-<!-- Forgot Password Modal -->
-<div id="forgotModal" class="modal">
-    <div class="modal-content">
-        <h3>🔐 Reset Password</h3>
-        <p>Enter your email address and we'll send you a reset link</p>
-        <input type="email" id="resetEmail" placeholder="your@email.com">
-        <div class="modal-buttons">
-            <button id="sendResetBtn">Send Reset Link</button>
-            <button id="closeModalBtn">Cancel</button>
+        <div class="options">
+            <label><input type="checkbox" name="remember"> Remember Me</label>
+            <a href="#">Forgot Password?</a>
         </div>
-    </div>
+
+        <button type="submit">Login</button>
+
+        <p class="signup">Don't have an account? <a href="{{ url_for('register') }}">Sign Up</a></p>
+    </form>
 </div>
 
 <!-- Piano Keyboard -->
-<div class="piano" id="pianoKeyboard">
-    <div class="key white" data-note="C4"></div>
-    <div class="key black" data-note="C#4"></div>
-    <div class="key white" data-note="D4"></div>
-    <div class="key black" data-note="D#4"></div>
-    <div class="key white" data-note="E4"></div>
-    <div class="key white" data-note="F4"></div>
-    <div class="key black" data-note="F#4"></div>
-    <div class="key white" data-note="G4"></div>
-    <div class="key black" data-note="G#4"></div>
-    <div class="key white" data-note="A4"></div>
-    <div class="key black" data-note="A#4"></div>
-    <div class="key white" data-note="B4"></div>
-    <div class="key white" data-note="C5"></div>
-    <div class="key black" data-note="C#5"></div>
-    <div class="key white" data-note="D5"></div>
-    <div class="key black" data-note="D#5"></div>
-    <div class="key white" data-note="E5"></div>
-    <div class="key white" data-note="F5"></div>
-    <div class="key black" data-note="F#5"></div>
-    <div class="key white" data-note="G5"></div>
-    <div class="key black" data-note="G#5"></div>
-    <div class="key white" data-note="A5"></div>
-    <div class="key black" data-note="A#5"></div>
-    <div class="key white" data-note="B5"></div>
-    <div class="key white" data-note="C6"></div>
-    <div class="key black" data-note="C#6"></div>
-    <div class="key white" data-note="D6"></div>
-    <div class="key black" data-note="D#6"></div>
-    <div class="key white" data-note="E6"></div>
-    <div class="key white" data-note="F6"></div>
-    <div class="key black" data-note="F#6"></div>
-    <div class="key white" data-note="G6"></div>
-    <div class="key black" data-note="G#6"></div>
-    <div class="key white" data-note="A6"></div>
-    <div class="key black" data-note="A#6"></div>
-    <div class="key white" data-note="B6"></div>
+<div class="piano">
+    <div class="key white"></div>
+    <div class="key black"></div>
+    <div class="key white"></div>
+    <div class="key black"></div>
+    <div class="key white"></div>
+    <div class="key white"></div>
+    <div class="key black"></div>
+    <div class="key white"></div>
+    <div class="key black"></div>
+    <div class="key white"></div>
+    <div class="key black"></div>
+    <div class="key white"></div>
+    <div class="key white"></div>
+    <div class="key black"></div>
+    <div class="key white"></div>
+    <div class="key black"></div>
+    <div class="key white"></div>
+    <div class="key white"></div>
+    <div class="key black"></div>
+    <div class="key white"></div>
+    <div class="key black"></div>
+    <div class="key white"></div>
+    <div class="key black"></div>
+    <div class="key white"></div>
 </div>
-<div class="piano-hint">🎹 click keys · play along</div>
 
-<script>
-    (function() {
-        // ---------- AUDIO CONTEXT ----------
-        let audioCtx = null;
-        
-        function initAudio() {
-            if (audioCtx) return;
-            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        }
-        
-        function resumeAudio() {
-            if (!audioCtx) {
-                initAudio();
-            }
-            if (audioCtx && audioCtx.state === 'suspended') {
-                audioCtx.resume().catch(e => console.warn);
-            }
-        }
-        
-        const freqMap = {
-            'C4': 261.63, 'C#4': 277.18, 'D4': 293.66, 'D#4': 311.13, 'E4': 329.63,
-            'F4': 349.23, 'F#4': 369.99, 'G4': 392.00, 'G#4': 415.30, 'A4': 440.00,
-            'A#4': 466.16, 'B4': 493.88, 'C5': 523.25, 'C#5': 554.37, 'D5': 587.33,
-            'D#5': 622.25, 'E5': 659.25, 'F5': 698.46, 'F#5': 739.99, 'G5': 783.99,
-            'G#5': 830.61, 'A5': 880.00, 'A#5': 932.33, 'B5': 987.77, 'C6': 1046.50,
-            'C#6': 1108.73, 'D6': 1174.66, 'D#6': 1244.51, 'E6': 1318.51, 'F6': 1396.91,
-            'F#6': 1479.98, 'G6': 1567.98, 'G#6': 1661.22, 'A6': 1760.00, 'A#6': 1864.66, 'B6': 1975.53
-        };
-        
-        function playPianoNote(frequency, duration = 0.65) {
-            if (!audioCtx || audioCtx.state !== 'running') return;
-            const now = audioCtx.currentTime;
-            const osc = audioCtx.createOscillator();
-            const gainNode = audioCtx.createGain();
-            osc.connect(gainNode);
-            gainNode.connect(audioCtx.destination);
-            osc.type = 'triangle';
-            osc.frequency.value = frequency;
-            gainNode.gain.setValueAtTime(0.22, now);
-            gainNode.gain.exponentialRampToValueAtTime(0.0001, now + duration);
-            osc.start();
-            osc.stop(now + duration);
-        }
-        
-        const pianoKeys = document.querySelectorAll('.key');
-        
-        function playKeyWithFeedback(keyElement) {
-            const note = keyElement.getAttribute('data-note');
-            if (!note) return;
-            const freq = freqMap[note];
-            if (!freq) return;
-            
-            if (!audioCtx) {
-                initAudio();
-                resumeAudio();
-            } else {
-                resumeAudio();
-            }
-            
-            if (audioCtx && audioCtx.state === 'running') {
-                playPianoNote(freq, 0.6);
-            }
-            
-            keyElement.style.transform = 'translateY(4px)';
-            keyElement.style.filter = 'drop-shadow(0 0 6px #ffc285)';
-            setTimeout(() => {
-                if (keyElement) {
-                    keyElement.style.transform = '';
-                    keyElement.style.filter = '';
-                }
-            }, 120);
-        }
-        
-        pianoKeys.forEach(key => {
-            key.addEventListener('click', (e) => {
-                e.stopPropagation();
-                playKeyWithFeedback(key);
-            });
-        });
-        
-        function enableAudioOnFirstInteraction() {
-            if (!audioCtx) {
-                initAudio();
-            }
-            if (audioCtx && audioCtx.state === 'suspended') {
-                audioCtx.resume().catch(err => console.log);
-            }
-            document.removeEventListener('click', enableAudioOnFirstInteraction);
-            document.removeEventListener('keydown', enableAudioOnFirstInteraction);
-        }
-        document.addEventListener('click', enableAudioOnFirstInteraction);
-        document.addEventListener('keydown', enableAudioOnFirstInteraction);
-        
-        // ---------- FORM LOGIC ----------
-        const loginForm = document.getElementById('loginForm');
-        const messageArea = document.getElementById('messageArea');
-        
-        function showMessage(msg, isError = true) {
-            messageArea.innerHTML = '';
-            const msgDiv = document.createElement('div');
-            msgDiv.className = `flash-message ${isError ? 'flash-error' : 'flash-success'}`;
-            msgDiv.textContent = msg;
-            messageArea.appendChild(msgDiv);
-            setTimeout(() => {
-                if (msgDiv) msgDiv.remove();
-            }, 3200);
-        }
-        
-        loginForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const username = document.getElementById('username').value.trim();
-            const password = document.getElementById('password').value;
-            const remember = document.getElementById('rememberCheckbox').checked;
-            
-            if (username === "" || password === "") {
-                showMessage('❄️ Please fill in both username and password to enter Pianova.', true);
-                if (audioCtx && audioCtx.state === 'running') {
-                    const osc = audioCtx.createOscillator();
-                    const gain = audioCtx.createGain();
-                    osc.connect(gain);
-                    gain.connect(audioCtx.destination);
-                    osc.frequency.value = 196.00;
-                    gain.gain.setValueAtTime(0.18, audioCtx.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.45);
-                    osc.start();
-                    osc.stop(audioCtx.currentTime + 0.45);
-                }
-                return;
-            }
-            
-            if (audioCtx && audioCtx.state === 'running') {
-                const arpeggioNotes = [523.25, 659.25, 783.99, 1046.50];
-                let delayMs = 0;
-                arpeggioNotes.forEach(freq => {
-                    setTimeout(() => {
-                        if (audioCtx && audioCtx.state === 'running') {
-                            const osc = audioCtx.createOscillator();
-                            const gain = audioCtx.createGain();
-                            osc.connect(gain);
-                            gain.connect(audioCtx.destination);
-                            osc.frequency.value = freq;
-                            osc.type = 'sine';
-                            gain.gain.setValueAtTime(0.22, audioCtx.currentTime);
-                            gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.55);
-                            osc.start();
-                            osc.stop(audioCtx.currentTime + 0.55);
-                        }
-                    }, delayMs);
-                    delayMs += 140;
-                });
-            }
-            
-            showMessage(`✨ Welcome, ${username}! ✨ You've entered the Pianova universe.`, false);
-            
-            const loginBtn = document.getElementById('loginBtn');
-            loginBtn.disabled = true;
-            loginBtn.style.opacity = '0.7';
-            
-            setTimeout(() => {
-                alert(`🎹 Pianova Demo:\nHello ${username}, login successful!\nRemember me: ${remember ? 'ON' : 'OFF'}\nEnjoy the musical journey. 🎶`);
-                loginForm.reset();
-                document.getElementById('rememberCheckbox').checked = false;
-                loginBtn.disabled = false;
-                loginBtn.style.opacity = '1';
-            }, 1600);
-        });
-        
-        // ---------- FORGOT PASSWORD MODAL ----------
-        const forgotBtn = document.getElementById('forgotPasswordBtn');
-        const modal = document.getElementById('forgotModal');
-        const closeModalBtn = document.getElementById('closeModalBtn');
-        const sendResetBtn = document.getElementById('sendResetBtn');
-        
-        forgotBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            modal.style.display = 'flex';
-            if (audioCtx && audioCtx.state === 'running') {
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-                osc.frequency.value = 349.23;
-                gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.4);
-                osc.start();
-                osc.stop(audioCtx.currentTime + 0.4);
-            }
-        });
-        
-        closeModalBtn.addEventListener('click', () => {
-            modal.style.display = 'none';
-            document.getElementById('resetEmail').value = '';
-        });
-        
-        sendResetBtn.addEventListener('click', () => {
-            const email = document.getElementById('resetEmail').value.trim();
-            if (email && email.includes('@') && email.includes('.')) {
-                showMessage(`✅ Password reset link sent to ${email}! Check your inbox.`, false);
-                modal.style.display = 'none';
-                document.getElementById('resetEmail').value = '';
-                if (audioCtx && audioCtx.state === 'running') {
-                    const osc = audioCtx.createOscillator();
-                    const gain = audioCtx.createGain();
-                    osc.connect(gain);
-                    gain.connect(audioCtx.destination);
-                    osc.frequency.value = 523.25;
-                    gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.5);
-                    osc.start();
-                    osc.stop(audioCtx.currentTime + 0.5);
-                }
-            } else {
-                showMessage('❌ Please enter a valid email address.', true);
-            }
-        });
-        
-        window.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                modal.style.display = 'none';
-            }
-        });
-        
-        // ---------- SIGN UP LINK ----------
-        const signupLink = document.getElementById('signupMock');
-        signupLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            if (audioCtx && audioCtx.state === 'running') {
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-                osc.frequency.value = 523.25;
-                gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.5);
-                osc.start();
-                osc.stop(audioCtx.currentTime + 0.5);
-            }
-            showMessage(`🎵 Join the Pianova family! Sign-up will be available soon. Stay tuned for musical magic. 🎵`, false);
-        });
-        
-        // Keyboard piano mapping
-        window.addEventListener('keydown', (e) => {
-            if (e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON' || e.target.tagName === 'A') return;
-            const keyMap = {
-                'a': 'C4', 'w': 'C#4', 's': 'D4', 'e': 'D#4', 'd': 'E4',
-                'f': 'F4', 't': 'F#4', 'g': 'G4', 'y': 'G#4', 'h': 'A4',
-                'u': 'A#4', 'j': 'B4', 'k': 'C5', 'o': 'C#5', 'l': 'D5'
-            };
-            const targetNote = keyMap[e.key];
-            if (targetNote) {
-                e.preventDefault();
-                const targetKey = Array.from(pianoKeys).find(k => k.getAttribute('data-note') === targetNote);
-                if (targetKey) {
-                    playKeyWithFeedback(targetKey);
-                }
-            }
-        });
-    })();
-</script>
 </body>
 </html>

@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Pianova Pro</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background:
+                radial-gradient(circle at 10% 10%, rgba(255, 208, 113, 0.18), transparent 24%),
+                radial-gradient(circle at 90% 30%, rgba(83, 133, 255, 0.16), transparent 28%),
+                radial-gradient(circle at 50% 100%, rgba(255, 159, 67, 0.18), transparent 26%),
+                #040608;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            min-height: 100dvh;
+            height: 100dvh;
+            padding: clamp(6px, 1.4vh, 16px);
+            gap: clamp(7px, 1.4vh, 14px);
+        }
+
+        .top-shell {
+            width: min(1400px, 100%);
+            border: 1px solid rgba(238, 187, 101, 0.32);
+            border-radius: clamp(16px, 2vw, 26px);
+            background: rgba(8, 13, 21, 0.84);
+            box-shadow: 0 16px 36px rgba(0,0,0,0.45), inset 0 0 0 1px rgba(255,255,255,0.03);
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .top-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            padding: clamp(7px, 1.1vh, 12px) clamp(8px, 1.4vw, 16px);
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            flex-wrap: wrap;
+        }
+
+        .brand {
+            font-size: clamp(14px, 2vw, 20px);
+            color: #f8d59a;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: clamp(5px, 1vw, 10px);
+            flex-wrap: wrap;
+        }
+
+        .nav-pill {
+            padding: clamp(6px, 1vh, 10px) clamp(8px, 1.2vw, 14px);
+            border-radius: 14px;
+            border: 1px solid rgba(255,255,255,0.12);
+            background: #0c1016;
+            color: #f3d8aa;
+            font-weight: 700;
+            font-size: clamp(11px, 1.45vw, 14px);
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .nav-pill.active {
+            background: linear-gradient(135deg, #9f743a, #3a2a1b);
+            box-shadow: 0 0 18px rgba(255, 208, 113, 0.18);
+        }
+
+        .top-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: clamp(6px, 1vw, 12px);
+            padding: clamp(7px, 1.1vh, 12px) clamp(8px, 1.4vw, 16px);
+        }
+
+        .stat-card {
+            background: rgba(7,10,16,0.9);
+            border: 1px solid rgba(255,255,255,0.09);
+            border-radius: 16px;
+            padding: clamp(7px, 1vh, 12px) clamp(8px, 1vw, 14px);
+            min-width: 0;
+        }
+
+        .stat-title {
+            color: #f0ddc1;
+            font-size: clamp(10px, 1.4vw, 14px);
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: clamp(16px, 3vw, 28px);
+            font-weight: 800;
+            color: #ffe4b3;
+            line-height: 1;
+        }
+
+        .hearts {
+            color: #ff6f91;
+            letter-spacing: 1px;
+            font-size: clamp(14px, 2.4vw, 22px);
+            white-space: nowrap;
+        }
+
+        .level-track {
+            height: 7px;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.12);
+            margin-top: 6px;
+            overflow: hidden;
+        }
+
+        .level-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #ffd071, #ff9f43);
+            transition: width 0.3s ease;
+        }
+
+        .level-percent {
+            margin-top: 4px;
+            color: #f0ddc1;
+            font-weight: 800;
+            font-size: clamp(10px, 1.4vw, 14px);
+        }
+
+        .container {
+            text-align: center;
+            background: linear-gradient(180deg, #303030, #202020);
+            padding: clamp(10px, 2vh, 28px);
+            border-radius: clamp(14px, 2vw, 22px);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+            width: min(900px, 100%);
+            max-height: calc(100dvh - 145px);
+            border: 1px solid rgba(238, 187, 101, 0.3);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow: hidden;
+        }
+
+        .shake {
+            animation: shake 0.3s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            75% { transform: translateX(8px); }
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: clamp(6px, 1vh, 15px);
+        }
+
+        .logo {
+            margin: 0;
+            font-size: clamp(18px, 3vw, 28px);
+            color: gold;
+            line-height: 1;
+            white-space: nowrap;
+        }
+
+        .progress {
+            font-size: clamp(12px, 2vw, 20px);
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        #instruction {
+            font-size: clamp(15px, 2.3vw, 24px);
+            margin: clamp(4px, 1vh, 10px) 0;
+            color: #ffe4b3;
+            min-height: 1.2em;
+        }
+
+        #staff {
+            width: min(720px, 100%);
+            height: clamp(120px, 24vh, 240px);
+            background: #eee;
+            border-radius: 10px;
+            margin: 0 auto clamp(8px, 1.8vh, 20px);
+            box-shadow: inset 0 0 12px rgba(0,0,0,0.25);
+            display: block;
+        }
+
+        .piano {
+            display: flex;
+            justify-content: center;
+            position: relative;
+            height: clamp(135px, 28vh, 240px);
+            margin-top: clamp(8px, 2vh, 20px);
+            background: #111;
+            padding: clamp(8px, 2vh, 16px);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .key {
+            width: clamp(34px, 7vw, 60px);
+            height: calc(100% - 18px);
+            background: linear-gradient(180deg, #ffffff, #d8d8d8);
+            border: 1px solid #999;
+            border-radius: 0 0 8px 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding-bottom: clamp(6px, 1.5vh, 12px);
+            color: #333;
+            font-size: clamp(12px, 1.8vw, 16px);
+            font-weight: bold;
+            z-index: 1;
+            transition: transform 0.08s ease, background 0.1s ease, box-shadow 0.1s ease;
+        }
+
+        .key.black {
+            width: clamp(24px, 4.5vw, 42px);
+            height: 60%;
+            background: linear-gradient(180deg, #333, #050505);
+            color: white;
+            margin-left: calc(clamp(24px, 4.5vw, 42px) / -2);
+            margin-right: calc(clamp(24px, 4.5vw, 42px) / -2);
+            z-index: 2;
+            border: 1px solid #000;
+        }
+
+        .key:active,
+        .key.active {
+            transform: translateY(5px);
+            background: #ccc;
+            box-shadow: inset 0 0 18px rgba(255, 208, 113, 0.65);
+        }
+
+        .key.black:active,
+        .key.black.active {
+            background: #444;
+        }
+
+        .key.correct {
+            box-shadow: inset 0 0 22px rgba(140, 255, 120, 0.85), 0 0 18px rgba(140, 255, 120, 0.45);
+        }
+
+        .key.wrong {
+            box-shadow: inset 0 0 22px rgba(255, 68, 68, 0.85), 0 0 18px rgba(255, 68, 68, 0.45);
+        }
+
+        .hint {
+            color: #cfcfcf;
+            margin-top: clamp(5px, 1vh, 10px);
+            font-style: italic;
+            font-size: clamp(11px, 1.6vw, 16px);
+        }
+
+        .quit-button {
+            padding: clamp(6px, 1vh, 10px) clamp(8px, 1.5vw, 18px);
+            background-color: #ff4444;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: clamp(11px, 1.5vw, 14px);
+        }
+
+        .quit-button:hover {
+            background-color: #cc0000;
+        }
+
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.82);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+            padding: 16px;
+        }
+
+        .modal-content {
+            background: #2d2d2d;
+            padding: 26px;
+            border-radius: 14px;
+            text-align: center;
+            border: 1px solid rgba(238, 187, 101, 0.4);
+            box-shadow: 0 18px 46px rgba(0,0,0,0.6);
+            width: min(360px, 100%);
+        }
+
+        .modal-content h2 {
+            color: #ffe4b3;
+            margin-bottom: 12px;
+        }
+
+        .modal-content p {
+            color: #ddd;
+            margin-bottom: 16px;
+        }
+
+        .modal button {
+            margin: 6px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .modal button:first-of-type {
+            background: linear-gradient(135deg, #ffd071, #ff9f43);
+            color: #1d1305;
+        }
+
+        .modal button:last-of-type {
+            background: #111;
+            color: #f3d8aa;
+            border: 1px solid rgba(255,255,255,0.15);
+        }
+
+        @media (max-width: 560px) {
+            .top-nav {
+                justify-content: center;
+                text-align: center;
+            }
+
+            .nav-links {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .container {
+                max-height: calc(100dvh - 170px);
+            }
+
+            .header {
+                flex-direction: column;
+            }
+
+            .top-stats {
+                gap: 5px;
+            }
+
+            .stat-card {
+                border-radius: 12px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="top-shell">
+        <div class="top-nav">
+            <div class="brand">Pianova - Play - Learn - Master</div>
+            <div class="nav-links">
+                <a class="nav-pill active" href="#">Home</a>
+                <a class="nav-pill" href="#">Practice</a>
+                <a class="nav-pill" href="#">Lessons</a>
+                <a class="nav-pill" href="#">Leaderboard</a>
+                <a class="nav-pill" href="#">Profile</a>
+            </div>
+        </div>
+
+        <div class="top-stats">
+            <div class="stat-card">
+                <div class="stat-title">Score</div>
+                <div class="stat-value" id="score-top">0</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-title">Combo</div>
+                <div class="stat-value" id="combo-top">0</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-title">Lives</div>
+                <div class="hearts" id="lives-top">♥ ♥ ♥ ♥ ♥</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-title" id="level-title">Level 1</div>
+                <div class="level-track">
+                    <div class="level-fill" id="level-fill"></div>
+                </div>
+                <div class="level-percent" id="level-percent">0%</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container" id="game-container">
+        <div class="header">
+            <h1 class="logo">Pianova</h1>
+
+            <div class="progress">
+                <span>Score: <span id="score">0</span></span>
+                <span>Lives: <span id="lives">5</span></span>
+                <button class="quit-button" onclick="quitGame()">Quit</button>
+            </div>
+        </div>
+
+        <h2 id="instruction">Identify the note on the staff</h2>
+
+        <canvas id="staff" width="600" height="180"></canvas>
+
+        <div class="piano" id="piano"></div>
+
+        <p class="hint">Click the piano key that matches the staff!</p>
+    </div>
+
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <h2 id="modal-text"></h2>
+            <p id="modal-score"></p>
+            <button onclick="restartGame()">Restart</button>
+            <button onclick="goHome()">Home</button>
+        </div>
+    </div>
+
+    <script>
+        let audioCtx = null;
+
+        function getAudioCtx() {
+            if (!audioCtx) {
+                const AudioClass = window.AudioContext || window.webkitAudioContext;
+                if (!AudioClass) return null;
+                audioCtx = new AudioClass();
+            }
+
+            if (audioCtx.state === "suspended") {
+                audioCtx.resume();
+            }
+
+            return audioCtx;
+        }
+
+        const frequencies = {
+            "C": 261.63,
+            "C#": 277.18,
+            "D": 293.66,
+            "D#": 311.13,
+            "E": 329.63,
+            "F": 349.23,
+            "F#": 369.99,
+            "G": 392.00,
+            "G#": 415.30,
+            "A": 440.00,
+            "A#": 466.16,
+            "B": 493.88,
+            "C2": 523.25
+        };
+
+        const pianoLayout = [
+            { note: "C", color: "white" },
+            { note: "C#", color: "black" },
+            { note: "D", color: "white" },
+            { note: "D#", color: "black" },
+            { note: "E", color: "white" },
+            { note: "F", color: "white" },
+            { note: "F#", color: "black" },
+            { note: "G", color: "white" },
+            { note: "G#", color: "black" },
+            { note: "A", color: "white" },
+            { note: "A#", color: "black" },
+            { note: "B", color: "white" },
+            { note: "C2", color: "white", label: "C" }
+        ];
+
+        const staffPos = {
+            "C": 138,
+            "C#": 138,
+            "D": 130,
+            "D#": 130,
+            "E": 122,
+            "F": 114,
+            "F#": 114,
+            "G": 106,
+            "G#": 106,
+            "A": 98,
+            "A#": 98,
+            "B": 90,
+            "C2": 82
+        };
+
+        let currentNote = "";
+        let score = 0;
+        let combo = 0;
+        let lives = 5;
+
+        const maxLives = 5;
+        const maxScore = 10;
+
+        function playNote(note) {
+            const ctx = getAudioCtx();
+            if (!ctx || !frequencies[note]) return;
+
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            const now = ctx.currentTime;
+
+            osc.type = "triangle";
+            osc.frequency.setValueAtTime(frequencies[note], now);
+
+            gain.gain.setValueAtTime(0.24, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.75);
+
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+
+            osc.start(now);
+            osc.stop(now + 0.75);
+        }
+
+        function playFeedbackTone(success) {
+            const ctx = getAudioCtx();
+            if (!ctx) return;
+
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            const now = ctx.currentTime;
+
+            osc.type = success ? "sine" : "sawtooth";
+            osc.frequency.setValueAtTime(success ? 880 : 180, now);
+
+            gain.gain.setValueAtTime(0.18, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+
+            osc.start(now);
+            osc.stop(now + 0.22);
+        }
+
+        function renderHearts(count) {
+            let output = "";
+
+            for (let i = 0; i < maxLives; i++) {
+                output += i < count ? "♥ " : "♡ ";
+            }
+
+            return output.trim();
+        }
+
+        function updateTopStats() {
+            document.getElementById("score").innerText = score;
+            document.getElementById("lives").innerText = lives;
+            document.getElementById("score-top").innerText = score;
+            document.getElementById("combo-top").innerText = combo;
+            document.getElementById("lives-top").innerText = renderHearts(lives);
+
+            const percent = Math.min(100, Math.round((score / maxScore) * 100));
+
+            document.getElementById("level-fill").style.width = percent + "%";
+            document.getElementById("level-percent").innerText = percent + "%";
+        }
+
+        function drawStaff(note) {
+            const canvas = document.getElementById("staff");
+            const ctx = canvas.getContext("2d");
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            ctx.strokeStyle = "#333";
+            ctx.lineWidth = 2;
+
+            for (let i = 0; i < 5; i++) {
+                const y = 60 + i * 16;
+
+                ctx.beginPath();
+                ctx.moveTo(50, y);
+                ctx.lineTo(550, y);
+                ctx.stroke();
+            }
+
+            ctx.font = "70px serif";
+            ctx.fillStyle = "#333";
+            ctx.fillText("𝄞", 60, 130);
+
+            const y = staffPos[note];
+
+            if (note.includes("#")) {
+                ctx.font = "26px serif";
+                ctx.fillText("♯", 270, y + 9);
+            }
+
+            if (note === "C" || note === "C#") {
+                ctx.beginPath();
+                ctx.moveTo(280, 138);
+                ctx.lineTo(320, 138);
+                ctx.stroke();
+            }
+
+            ctx.fillStyle = "#111";
+            ctx.beginPath();
+            ctx.ellipse(300, y, 10, 7, -0.35, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.strokeStyle = "#111";
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(309, y);
+            ctx.lineTo(309, y - 45);
+            ctx.stroke();
+        }
+
+        function flashKey(note, className) {
+            const key = document.querySelector(`[data-note="${note}"]`);
+            if (!key) return;
+
+            key.classList.add("active", className);
+
+            setTimeout(() => {
+                key.classList.remove("active", className);
+            }, 260);
+        }
+
+        function handleInput(note) {
+            playNote(note);
+
+            if (note === currentNote) {
+                score++;
+                combo++;
+
+                flashKey(note, "correct");
+                playFeedbackTone(true);
+
+                document.getElementById("instruction").innerText = "Excellent! Next note...";
+                document.getElementById("instruction").style.color = "gold";
+
+                updateTopStats();
+
+                if (score >= maxScore) {
+                    saveGameResult(score, true);
+                    showModal("You Passed!");
+                    return;
+                }
+
+                setTimeout(newQuestion, 500);
+                return;
+            }
+
+            lives--;
+            combo = 0;
+
+            flashKey(note, "wrong");
+            playFeedbackTone(false);
+
+            document.getElementById("game-container").classList.add("shake");
+            document.getElementById("instruction").innerText = "Wrong! That was " + currentNote;
+            document.getElementById("instruction").style.color = "#ff6f91";
+
+            updateTopStats();
+
+            if (lives <= 0) {
+                saveGameResult(score, false);
+                showModal("You Failed!");
+                return;
+            }
+
+            setTimeout(() => {
+                document.getElementById("game-container").classList.remove("shake");
+                newQuestion();
+            }, 850);
+        }
+
+        function newQuestion() {
+            const keys = Object.keys(staffPos);
+            currentNote = keys[Math.floor(Math.random() * keys.length)];
+
+            document.getElementById("instruction").innerText = "Identify the note on the staff";
+            document.getElementById("instruction").style.color = "#ffe4b3";
+
+            drawStaff(currentNote);
+        }
+
+        function showModal(text) {
+            document.getElementById("modal-text").innerText = text;
+            document.getElementById("modal-score").innerText = "Final score: " + score + " / " + maxScore;
+            document.getElementById("modal").style.display = "flex";
+        }
+
+        function restartGame() {
+            score = 0;
+            combo = 0;
+            lives = maxLives;
+
+            document.getElementById("modal").style.display = "none";
+            document.getElementById("game-container").classList.remove("shake");
+
+            updateTopStats();
+            newQuestion();
+        }
+
+        function goHome() {
+            restartGame();
+        }
+
+        function quitGame() {
+            if (confirm("Are you sure you want to quit?")) {
+                restartGame();
+            }
+        }
+
+        function saveGameResult(finalScore, passed) {
+            fetch("/api/save-game2", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    score: finalScore,
+                    passed: passed
+                })
+            }).catch(() => {});
+        }
+
+        function initPiano() {
+            const piano = document.getElementById("piano");
+
+            piano.innerHTML = "";
+
+            pianoLayout.forEach(item => {
+                const key = document.createElement("button");
+
+                key.type = "button";
+                key.className = "key " + item.color;
+                key.dataset.note = item.note;
+                key.innerHTML = "<span>" + (item.label || item.note) + "</span>";
+                key.addEventListener("click", () => handleInput(item.note));
+
+                piano.appendChild(key);
+            });
+        }
+
+        function init() {
+            initPiano();
+            updateTopStats();
+            newQuestion();
+        }
+
+        document.addEventListener("DOMContentLoaded", init);
+
+        const practiceSessionStartedAt = Date.now();
+        let practiceSessionSent = false;
+
+        function sendPracticeSession() {
+            if (practiceSessionSent) return;
+
+            practiceSessionSent = true;
+
+            const durationSeconds = Math.max(1, Math.round((Date.now() - practiceSessionStartedAt) / 1000));
+            const payload = JSON.stringify({
+                game_type: "game2",
+                duration_seconds: durationSeconds
+            });
+
+            if (navigator.sendBeacon) {
+                navigator.sendBeacon("/api/log-practice-session", new Blob([payload], {
+                    type: "application/json"
+                }));
+                return;
+            }
+
+            fetch("/api/log-practice-session", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: payload,
+                keepalive: true
+            }).catch(() => {});
+        }
+
+        window.addEventListener("pagehide", sendPracticeSession);
+        window.addEventListener("beforeunload", sendPracticeSession);
+    </script>
+</body>
+</html>

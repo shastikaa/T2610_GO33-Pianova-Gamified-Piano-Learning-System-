@@ -1059,14 +1059,34 @@
                         <p style="color: var(--muted); margin-bottom: 26px;">Final score: <strong style="color: var(--gold-soft);">${score}</strong></p>
                         <div class="home-actions">
                             <button class="primary-btn" id="playAgainBtn">Play Again</button>
+                            <button class="primary-btn" id="nextLessonBtn">Next Lesson</button>
+                            <button class="ghost-btn" id="exitBtn">Exit</button>
                             <button class="ghost-btn" id="homeBtn">Home</button>
                         </div>
                     </div>
                 </section>
             `;
             $('#playAgainBtn').addEventListener('click', startGame);
+            $('#nextLessonBtn').addEventListener('click', goNextLesson);
+            $('#exitBtn').addEventListener('click', goExit);
             $('#homeBtn').addEventListener('click', renderHome);
             $('#resetBtn')?.addEventListener('click', startGame);
+        }
+
+        function goNextLesson() {
+            if (window.location.protocol.startsWith('http')) {
+                window.location.href = '/lesson2-2';
+            } else {
+                window.location.href = 'level 2(lesson 2).html';
+            }
+        }
+
+        function goExit() {
+            if (window.location.protocol.startsWith('http')) {
+                window.location.href = '/';
+            } else {
+                window.location.href = 'index.html';
+            }
         }
 
         window.addEventListener('keydown', event => {

@@ -5,19 +5,23 @@ from flask import Flask, flash, redirect, render_template, request, session, url
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from templates.templates.database import (
+    add_quiz_score,
     add_score,
     add_practice_session,
     create_user,
     fetch_user_by_username,
     get_all_accounts,
     get_admin_metrics,
+    get_latest_certificate_for_user,
     get_recent_progress,
     get_recent_scores,
     get_user_metrics,
     init_app as init_database_app,
     init_db,
+    issue_certificate,
     reset_password,
     save_progress,
+    save_task_progress,
 )
 
 app = Flask(__name__, static_folder='static')
@@ -372,17 +376,75 @@ def level2_lesson4_alias():
 
 @app.route('/api/save-game2', methods=['POST'])
 @login_required
+@role_required('user')
 def save_game2():
     data = request.get_json(silent=True) or {}
-    score = int(data.get('score', 0))
-    passed = bool(data.get('passed', False))
+
+    try:
+        score = int(data.get('score', 0))
+    except (TypeError, ValueError):
+        score = 0
+    score = max(0, min(score, 1000))
+
+    raw_passed = data.get('passed', False)
+    if isinstance(raw_passed, bool):
+        passed = raw_passed
+    else:
+        passed = str(raw_passed).strip().lower() in {'1', 'true', 'yes', 'y'}
+
+    try:
+        total_questions = int(data.get('total_questions', 10))
+    except (TypeError, ValueError):
+        total_questions = 10
+    total_questions = max(1, min(total_questions, 1000))
+    correct_answers = max(0, min(score, total_questions))
+
     user_id = session['user_id']
 
     add_score(user_id, 'game2', score)
+    add_quiz_score(
+        user_id=user_id,
+        level_id=2,
+        task_id=4,
+        quiz_name='Game 2 Staff Notes Challenge',
+        score=score,
+        total_questions=total_questions,
+        correct_answers=correct_answers,
+        attempt_no=1,
+        passed=passed,
+    )
+    save_task_progress(user_id, task_id=4, status='completed' if passed else 'in_progress', last_score=score)
+
+    certificate = None
     if passed:
         save_progress(user_id, 2, 'completed')
+        session['level'] = max(int(session.get('level', 1)), 2)
+        certificate = issue_certificate(
+            user_id=user_id,
+            level_id=2,
+            issued_for=session.get('user'),
+            score_snapshot=score,
+        )
 
-    return {'status': 'ok'}
+    return {
+        'status': 'ok',
+        'passed': passed,
+        'certificate_issued': certificate is not None,
+        'certificate_no': certificate['certificate_no'] if certificate else None,
+        'certificate_url': url_for('certificate_page') if certificate else None,
+    }
+
+
+@app.route('/certificate', methods=['GET'])
+@login_required
+@role_required('user')
+def certificate_page():
+    certificate = get_latest_certificate_for_user(session['user_id'])
+    return render_template(
+        'certificate.html',
+        username=session.get('user', 'Student'),
+        certificate=certificate,
+    )
 
 
 @app.route('/api/log-practice-session', methods=['POST'])

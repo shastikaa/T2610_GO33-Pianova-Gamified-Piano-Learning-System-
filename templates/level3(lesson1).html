@@ -1,0 +1,1258 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Twinkle Piano Quest</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  height: 100vh;
+  font-family: Arial, Helvetica, sans-serif;
+  color: white;
+  background:
+    radial-gradient(circle at 20% 10%, rgba(212, 175, 55, 0.2), transparent 30%),
+    radial-gradient(circle at 80% 0%, rgba(170, 124, 17, 0.15), transparent 28%),
+    linear-gradient(180deg, #0a0803, #020201);
+  overflow: hidden;
+}
+
+.app {
+  width: min(1200px, 100%);
+  height: 100vh;
+  margin: 0 auto;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  justify-content: space-between;
+}
+
+.topbar,
+.stage,
+.panel,
+.info-card {
+  border: 1px solid rgba(212, 175, 55, 0.45);
+  background: linear-gradient(180deg, rgba(20, 17, 10, 0.95), rgba(8, 6, 3, 0.95));
+  box-shadow:
+    0 0 15px rgba(212, 175, 55, 0.15),
+    inset 0 0 15px rgba(170, 124, 17, 0.1);
+  border-radius: 10px;
+}
+
+.topbar {
+  height: 54px;
+  display: grid;
+  grid-template-columns: auto auto 1fr auto auto auto;
+  gap: 10px;
+  align-items: center;
+  padding: 4px 12px;
+}
+
+.icon-btn,
+.level,
+.score-box,
+.lives,
+.reset-top {
+  border: 1px solid rgba(212, 175, 55, 0.6);
+  background: linear-gradient(180deg, rgba(54, 43, 11, 0.85), rgba(20, 16, 5, 0.95));
+  box-shadow: 0 0 10px rgba(212, 175, 55, 0.15);
+  border-radius: 6px;
+}
+
+.icon-btn,
+.reset-top {
+  width: 38px;
+  height: 38px;
+  color: #f3e5ab;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.level {
+  padding: 8px 14px;
+  font-weight: 900;
+  font-size: 13px;
+  color: #ffdf00;
+  text-shadow: 0 0 5px rgba(255, 223, 0, 0.5);
+}
+
+.title {
+  font-size: 18px;
+  font-weight: 900;
+  color: #f3e5ab;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.score-box {
+  min-width: 240px;
+  padding: 4px 14px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  height: 38px;
+}
+
+.score-label {
+  color: #d4af37;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+#score {
+  font-size: 22px;
+  font-weight: 900;
+  color: #ffffff;
+  min-width: 80px;
+  font-variant-numeric: tabular-nums;
+}
+
+.stars {
+  font-size: 20px;
+  color: rgba(255, 255, 255, 0.28);
+}
+
+.stars .on {
+  color: #ffdf00;
+  text-shadow: 0 0 10px rgba(255, 223, 0, 0.9);
+}
+
+.lives {
+  height: 38px;
+  padding: 0 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 16px;
+  font-weight: 900;
+  color: #f3e5ab;
+}
+
+.heart {
+  color: #d4af37;
+  font-size: 22px;
+  text-shadow: 0 0 10px rgba(212, 175, 55, 0.8);
+}
+
+.stage {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 10px;
+  padding: 10px;
+  min-height: 0;
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 0;
+}
+
+.now-playing {
+  display: grid;
+  grid-template-columns: 45px 1fr;
+  align-items: center;
+  gap: 10px;
+  padding: 8px;
+}
+
+.clef {
+  font-size: 44px;
+  color: #ffd700;
+  text-shadow: 0 0 10px rgba(212, 175, 55, 0.8);
+  text-align: center;
+}
+
+.muted {
+  color: #aa7c11;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.song-title {
+  font-size: 15px;
+  font-weight: 900;
+  line-height: 1.2;
+  color: #f3e5ab;
+}
+
+.panel {
+  padding: 10px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  justify-content: space-between;
+}
+
+.section-label {
+  margin: 0 0 4px;
+  color: #f3e5ab;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.progress-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 8px;
+}
+
+.meter {
+  height: 12px;
+  border-radius: 99px;
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  background: #0f0d07;
+  overflow: hidden;
+}
+
+#progressBar {
+  display: block;
+  width: 0%;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #aa7c11, #ffd700, white);
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.85);
+  transition: width 0.22s ease;
+}
+
+#progressText {
+  font-size: 12px;
+  color: #d4af37;
+}
+
+.note-list-container {
+  flex: 1;
+  overflow-y: auto;
+  margin: 6px 0;
+  padding-right: 4px;
+}
+
+.note-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.note-pill {
+  width: 20px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(212, 175, 55, 0.55);
+  border-radius: 4px;
+  background: rgba(15, 12, 5, 0.86);
+  color: #f3e5ab;
+  font-weight: 900;
+  font-size: 11px;
+}
+
+.note-pill.done {
+  color: #000000;
+  background: linear-gradient(180deg, white, #d4af37);
+  box-shadow: 0 0 8px rgba(212, 175, 55, 0.9);
+}
+
+.note-pill.current {
+  border-color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 0 6px #ffd700;
+}
+
+.note-pill.miss {
+  background: rgba(219, 48, 34, 0.35);
+  border-color: #db3022;
+  color: white;
+}
+
+.combo-box {
+  display: grid;
+  grid-template-columns: 60px 1fr;
+  align-items: center;
+  gap: 8px;
+  padding-top: 6px;
+  border-top: 1px solid rgba(212, 175, 55, 0.22);
+}
+
+#combo {
+  color: #ffdf00;
+  font-size: 24px;
+  font-weight: 900;
+  text-shadow: 0 0 6px rgba(255, 223, 0, 0.4);
+}
+
+#feedback {
+  font-size: 18px;
+  font-weight: 900;
+  color: #ffffff;
+  text-shadow:
+    0 0 10px rgba(255, 255, 255, 0.6),
+    0 0 15px rgba(212, 175, 55, 0.9);
+  text-align: right;
+}
+
+.main {
+  display: grid;
+  grid-template-rows: 1fr auto;
+  gap: 10px;
+  min-width: 0;
+  height: 100%;
+}
+
+.staff-wrap {
+  position: relative;
+  overflow: hidden;
+  border-radius: 10px;
+  background: rgba(12, 10, 5, 0.6);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+}
+
+.instruction {
+  text-align: center;
+  padding: 6px;
+  font-size: 14px;
+  font-weight: 700;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  background: linear-gradient(180deg, rgba(8, 6, 3, 0.95), transparent);
+  color: #f3e5ab;
+}
+
+.sparkle {
+  color: #ffd700;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.85);
+}
+
+.staff {
+  position: absolute;
+  left: 40px;
+  right: 14px;
+  top: 40px;
+  bottom: 10px;
+}
+
+.staff-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: rgba(255, 244, 214, 0.35);
+  box-shadow: 0 0 4px rgba(212, 175, 55, 0.2);
+}
+
+.staff-line:nth-child(1) { top: 10%; }
+.staff-line:nth-child(2) { top: 25%; }
+.staff-line:nth-child(3) { top: 40%; }
+.staff-line:nth-child(4) { top: 55%; }
+.staff-line:nth-child(5) { top: 70%; }
+
+.big-clef {
+  position: absolute;
+  left: 4px;
+  top: -10px;
+  font-size: 56px;
+  color: #ffd700;
+  text-shadow: 0 0 12px rgba(212, 175, 55, 0.85);
+}
+
+.time-sig {
+  position: absolute;
+  left: 55px;
+  top: 5px;
+  font-size: 26px;
+  font-weight: 900;
+  line-height: 0.8;
+  color: #f3e5ab;
+}
+
+.note-track {
+  position: absolute;
+  left: 90px;
+  right: 10px;
+  top: 0;
+  bottom: 0;
+}
+
+.music-note {
+  position: absolute;
+  top: var(--y);
+  left: var(--x);
+  width: 14px;
+  height: 11px;
+  border-radius: 50%;
+  transform: rotate(-18deg);
+  background: linear-gradient(135deg, white, #ffd700 45%, #aa7c11);
+  box-shadow: 0 0 10px rgba(212, 175, 55, 0.9);
+  transition: 0.18s ease;
+}
+
+.music-note::before {
+  content: "";
+  position: absolute;
+  width: 1.5px;
+  height: 35px;
+  left: 12px;
+  bottom: 5px;
+  background: rgba(255, 248, 224, 0.9);
+}
+
+.music-note.done {
+  opacity: 0.22;
+}
+
+.music-note.current {
+  transform: rotate(-18deg) scale(1.25);
+  animation: pulse 850ms infinite;
+}
+
+.note-label {
+  position: absolute;
+  top: 75%;
+  left: calc(var(--x) - 6px);
+  min-width: 26px;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 900;
+  color: #f3e5ab;
+}
+
+.note-label.current {
+  transform: translateY(-3px);
+  color: #ffffff;
+  text-shadow: 0 0 12px rgba(255, 215, 0, 1);
+}
+
+.play-head {
+  position: absolute;
+  top: 0;
+  bottom: 20%;
+  left: var(--head, 2%);
+  width: 40px;
+  background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.4), transparent);
+  pointer-events: none;
+  transform: translateX(-50%);
+}
+
+.keyboard-wrap {
+  position: relative;
+  height: 190px;
+  padding: 6px 12px;
+  background: #000000;
+  border-radius: 12px;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.8);
+  width: 100%;
+}
+
+.keyboard {
+  --white-count: 8;
+  --black-width: 48px;
+  position: relative;
+  height: 100%;
+  width: 100%;
+  background: #000000;
+}
+
+.key {
+  position: absolute;
+  border: 0;
+  cursor: pointer;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 900;
+  transition: filter 0.05s ease, background 0.05s ease, transform 0.05s ease;
+}
+
+.key.white {
+  left: var(--left);
+  bottom: 0;
+  width: calc((100% - 6px) / var(--white-count));
+  margin-left: 3px;
+  height: 100%;
+  align-items: flex-end;
+  padding-bottom: 24px;
+  color: #111111;
+  font-size: 18px;
+  border-radius: 8px 8px 10px 10px;
+  background: linear-gradient(180deg, #ffffff 0%, #fefdfb 75%, #f2ebd9 88%, #d8cfb8 100%);
+  box-shadow: 
+    inset 0 2px 2px rgba(255,255,255,1),
+    inset 0 -6px 4px #c2b9a1,
+    0 4px 5px rgba(0,0,0,0.4);
+  z-index: 1;
+}
+
+.key.black {
+  left: calc(var(--left) - (var(--black-width) / 2) + 3px);
+  top: 0;
+  width: var(--black-width);
+  height: 62%;
+  align-items: center;
+  padding-top: 35px;
+  color: #fcebb3;
+  font-size: 14px;
+  border-radius: 6px 6px 12px 12px;
+  background: linear-gradient(180deg, #444444 0%, #1a1a1a 15%, #0a0a0a 90%, #151515 100%);
+  box-shadow: 
+    inset 0 2px 3px rgba(255,255,255,0.2),
+    inset 0 -4px 3px #000000,
+    5px 8px 12px rgba(0, 0, 0, 0.65);
+  z-index: 5;
+}
+
+.key.active {
+  filter: brightness(0.85);
+}
+
+.key.white.active {
+  background: linear-gradient(180deg, #fff7db 0%, #ffd700 100%);
+  box-shadow: inset 0 4px 8px rgba(0,0,0,0.3), 0 2px 2px rgba(0,0,0,0.2);
+}
+
+.key.black.active {
+  background: linear-gradient(180deg, #2a2005 0%, #544111 100%);
+  box-shadow: 2px 3px 6px rgba(0, 0, 0, 0.8);
+}
+
+.key.target.white {
+  background: linear-gradient(180deg, #ffffff 0%, #fffde6 70%, #fff7b3 100%);
+  box-shadow: 
+    inset 0 0 15px rgba(212, 175, 55, 0.5),
+    inset 0 -6px 4px #c2b9a1,
+    0 4px 5px rgba(0,0,0,0.4);
+}
+
+.middle-c {
+  display: none;
+}
+
+.bottom {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+}
+
+.info-card {
+  padding: 6px 10px;
+  font-size: 11px;
+}
+
+.info-card h3 {
+  margin: 0 0 2px;
+  color: #ffd700;
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.info-card p {
+  margin: 0;
+  line-height: 1.3;
+  color: #ccc;
+}
+
+.controls {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.control-btn {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 999px;
+  background: linear-gradient(180deg, #d4af37, #aa7c11);
+  color: white;
+  padding: 8px 20px;
+  font-weight: 900;
+  font-size: 13px;
+  cursor: pointer;
+  box-shadow: 0 0 15px rgba(212, 175, 55, 0.35);
+}
+
+.control-btn.secondary {
+  background: linear-gradient(180deg, rgba(43, 35, 14, 0.94), rgba(20, 16, 6, 0.96));
+  color: #f3e5ab;
+  border: 1px solid rgba(212, 175, 55, 0.3);
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.modal-overlay.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.modal-box {
+  background: linear-gradient(180deg, #16130b, #070603);
+  border: 2px solid #d4af37;
+  box-shadow: 0 0 35px rgba(212, 175, 55, 0.4), inset 0 0 20px rgba(170, 124, 17, 0.2);
+  border-radius: 16px;
+  width: min(440px, 90%);
+  padding: 30px;
+  text-align: center;
+  transform: scale(0.8);
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.modal-overlay.open .modal-box {
+  transform: scale(1);
+}
+
+.modal-trophy {
+  font-size: 64px;
+  margin-bottom: 10px;
+  filter: drop-shadow(0 0 12px rgba(255, 215, 0, 0.7));
+  animation: float 2.5s ease-in-out infinite;
+}
+
+.modal-title {
+  font-size: 28px;
+  font-weight: 900;
+  margin: 10px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.modal-title.pass {
+  color: #ffd700;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+.modal-title.fail {
+  color: #ff4d4d;
+  text-shadow: 0 0 10px rgba(255, 77, 77, 0.5);
+}
+
+.modal-body {
+  font-size: 15px;
+  color: #f3e5ab;
+  margin-bottom: 24px;
+  line-height: 1.4;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.modal-btn {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  padding: 10px 22px;
+  font-weight: 900;
+  font-size: 13px;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  transition: transform 0.1s ease, filter 0.1s ease;
+}
+
+.modal-btn:active {
+  transform: scale(0.96);
+}
+
+.modal-btn.primary {
+  background: linear-gradient(180deg, #ffd700, #aa7c11);
+  color: #000;
+  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.35);
+  border-color: #ffe875;
+}
+
+.modal-btn.secondary {
+  background: linear-gradient(180deg, #362b0b, #141005);
+  color: #f3e5ab;
+  border: 1px solid rgba(212, 175, 55, 0.4);
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes pulse {
+  50% {
+    box-shadow:
+      0 0 15px white,
+      0 0 25px rgba(212, 175, 55, 0.75);
+  }
+}
+
+@media (max-width: 900px) {
+  .bottom {
+    display: none;
+  }
+}
+</style>
+</head>
+
+<body>
+<div class="app">
+
+<header class="topbar">
+  <button class="icon-btn" id="pauseBtn">Ⅱ</button>
+  <div class="level">LESSON 1</div>
+  <div class="title">Twinkle Twinkle Little Star</div>
+
+  <div class="score-box">
+    <div class="score-label">Score</div>
+    <div id="score">000000</div>
+    <div class="stars" id="stars">
+      <span>☆</span><span>☆</span><span>☆</span>
+    </div>
+  </div>
+
+  <div class="lives">
+    <span class="heart">♥</span> x <span id="lives">3</span>
+  </div>
+
+  <button class="reset-top" id="resetTopBtn">⚙</button>
+</header>
+
+<section class="stage">
+  <aside class="sidebar">
+    <div class="panel now-playing">
+      <div class="clef">𝄞</div>
+      <div>
+        <div class="muted">Now Playing</div>
+        <div class="song-title">Twinkle Twinkle Little Star</div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div>
+        <p class="section-label">Progress</p>
+        <div class="progress-row">
+          <div class="meter"><span id="progressBar"></span></div>
+          <strong id="progressText">0%</strong>
+        </div>
+      </div>
+
+      <div class="note-list-container">
+        <p class="section-label">Notes To Play</p>
+        <div class="note-list" id="noteList"></div>
+      </div>
+
+      <div class="combo-box">
+        <div>
+          <p class="section-label">Combo</p>
+          <div id="combo">0</div>
+        </div>
+        <div id="feedback">READY</div>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="staff-wrap">
+      <div class="instruction">
+        <span class="sparkle">✦</span> Play the notes to complete the song! <span class="sparkle">✦</span>
+      </div>
+
+      <div class="staff">
+        <div class="staff-line"></div>
+        <div class="staff-line"></div>
+        <div class="staff-line"></div>
+        <div class="staff-line"></div>
+        <div class="staff-line"></div>
+
+        <div class="play-head" id="playHead"></div>
+        <div class="big-clef">𝄞</div>
+        <div class="time-sig"><div>4</div><div>4</div></div>
+        <div class="note-track" id="noteTrack"></div>
+      </div>
+    </div>
+
+    <div class="keyboard-wrap">
+      <div class="keyboard" id="keyboard"></div>
+    </div>
+  </main>
+</section>
+
+<section class="bottom">
+  <div class="info-card">
+    <h3>♪ How To Play</h3>
+    <p>Read the next note and press the matching piano key. Keys A to G work.</p>
+  </div>
+  <div class="info-card">
+    <h3>Note Guide</h3>
+    <p>Bright notes are current. Dim notes are already played.</p>
+  </div>
+  <div class="info-card">
+    <h3>Timing Guide</h3>
+    <p>Keep your streak going to earn higher scores.</p>
+  </div>
+  <div class="info-card">
+    <h3>Speed</h3>
+    <p>100%</p>
+  </div>
+  <div class="info-card">
+    <h3>Song Progress</h3>
+    <p><span id="timeNow">00:00</span> / 00:26</p>
+  </div>
+</section>
+
+<div class="controls">
+  <button class="control-btn" id="demoBtn">Play Demo</button>
+  <button class="control-btn secondary" id="resetBtn">Reset</button>
+</div>
+
+</div>
+
+<div class="modal-overlay" id="endGameModal">
+  <div class="modal-box">
+    <div class="modal-trophy" id="modalTrophy">🏆</div>
+    <div class="modal-title" id="modalTitle">Congratulations!</div>
+    <div class="modal-body" id="modalBody">You have successfully mastered Lesson 1! Awesome job!</div>
+    <div class="modal-actions" id="modalActions">
+    </div>
+  </div>
+</div>
+
+<script>
+const melody = [
+  "C","C","G","G","A","A","G",
+  "F","F","E","E","D","D","C",
+  "G","G","F","F","E","E","D",
+  "G","G","F","F","E","E","D",
+  "C","C","G","G","A","A","G",
+  "F","F","E","E","D","D","C"
+];
+
+const staffY = {
+  C: "80%",
+  D: "68%",
+  E: "56%",
+  F: "44%",
+  G: "32%",
+  A: "20%",
+  B: "8%"
+};
+
+const frequencies = {
+  C: 261.63, "C#": 277.18, D: 293.66, "D#": 311.13, E: 329.63,
+  F: 349.23, "F#": 369.99, G: 392.00, "G#": 415.30, A: 440.00,
+  "A#": 466.16, B: 493.88
+};
+
+const whiteNotes = ["C", "D", "E", "F", "G", "A", "B", "C"];
+const whiteKeyCount = 8;
+
+const blackAfterWhite = {
+  C: "C#", D: "D#", F: "F#", G: "G#", A: "A#"
+};
+
+const pianoKeys = [];
+
+whiteNotes.forEach((note, i) => {
+  pianoKeys.push({
+    type: "white",
+    note,
+    full: i === 7 ? "C5" : `${note}4`,
+    whiteIndex: i,
+    left: `${(i / whiteKeyCount) * 100}%`
+  });
+});
+
+whiteNotes.forEach((note, i) => {
+  if (blackAfterWhite[note] && i < 7) {
+    pianoKeys.push({
+      type: "black",
+      note: blackAfterWhite[note],
+      full: `${blackAfterWhite[note]}4`,
+      whiteIndex: i,
+      left: `${((i + 1) / whiteKeyCount) * 100}%`
+    });
+  }
+});
+
+let songIndex = 0;
+let score = 0;
+let combo = 0;
+let lives = 3;
+let paused = false;
+let demoTimer = null;
+let audioCtx = null;
+
+const scoreEl = document.querySelector("#score");
+const comboEl = document.querySelector("#combo");
+const livesEl = document.querySelector("#lives");
+const feedbackEl = document.querySelector("#feedback");
+const noteListEl = document.querySelector("#noteList");
+const noteTrackEl = document.querySelector("#noteTrack");
+const keyboardEl = document.querySelector("#keyboard");
+const progressBarEl = document.querySelector("#progressBar");
+const progressTextEl = document.querySelector("#progressText");
+const playHeadEl = document.querySelector("#playHead");
+const starsEl = document.querySelector("#stars");
+const timeNowEl = document.querySelector("#timeNow");
+const pauseBtn = document.querySelector("#pauseBtn");
+const demoBtn = document.querySelector("#demoBtn");
+const resetBtn = document.querySelector("#resetBtn");
+const resetTopBtn = document.querySelector("#resetTopBtn");
+
+const endGameModal = document.querySelector("#endGameModal");
+const modalTrophy = document.querySelector("#modalTrophy");
+const modalTitle = document.querySelector("#modalTitle");
+const modalBody = document.querySelector("#modalBody");
+const modalActions = document.querySelector("#modalActions");
+
+function setupGame() {
+  createNoteList();
+  createStaffNotes();
+  createPiano();
+  render();
+}
+
+function createNoteList() {
+  melody.forEach((note, index) => {
+    const pill = document.createElement("span");
+    pill.className = "note-pill";
+    pill.textContent = note;
+    pill.dataset.index = index;
+    noteListEl.appendChild(pill);
+  });
+}
+
+function createStaffNotes() {
+  melody.forEach((note, index) => {
+    const x = `${(index / Math.max(1, melody.length - 1)) * 88 + 2}%`;
+
+    const noteShape = document.createElement("span");
+    noteShape.className = "music-note";
+    noteShape.style.setProperty("--x", x);
+    noteShape.style.setProperty("--y", staffY[note]);
+    noteShape.dataset.index = index;
+    noteTrackEl.appendChild(noteShape);
+
+    const label = document.createElement("span");
+    label.className = "note-label";
+    label.style.setProperty("--x", x);
+    label.textContent = note;
+    label.dataset.index = index;
+    noteTrackEl.appendChild(label);
+  });
+}
+
+function createPiano() {
+  keyboardEl.style.setProperty("--white-count", whiteKeyCount);
+
+  pianoKeys.forEach((pianoKey) => {
+    const key = document.createElement("button");
+    key.type = "button";
+    key.className = `key ${pianoKey.type}`;
+    key.textContent = pianoKey.note;
+    key.dataset.note = pianoKey.note;
+    key.dataset.full = pianoKey.full;
+    key.dataset.whiteIndex = pianoKey.whiteIndex;
+    key.style.setProperty("--left", pianoKey.left);
+    key.setAttribute("aria-label", `Play ${pianoKey.full}`);
+
+    key.addEventListener("pointerdown", () => {
+      playAttempt(pianoKey.note, key);
+    });
+
+    keyboardEl.appendChild(key);
+  });
+}
+
+function getAudioContext() {
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  return audioCtx;
+}
+
+function playTone(note, correct = true) {
+  const ctx = getAudioContext();
+  const now = ctx.currentTime;
+
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  const filter = ctx.createBiquadFilter();
+
+  osc.type = correct ? "triangle" : "sawtooth";
+  osc.frequency.value = frequencies[note] || frequencies.C;
+
+  filter.type = "lowpass";
+  filter.frequency.setValueAtTime(correct ? 1800 : 900, now);
+
+  gain.gain.setValueAtTime(0.0001, now);
+  gain.gain.exponentialRampToValueAtTime(correct ? 0.24 : 0.12, now + 0.018);
+  gain.gain.exponentialRampToValueAtTime(0.0001, now + (correct ? 0.38 : 0.16));
+
+  osc.connect(filter);
+  filter.connect(gain);
+  gain.connect(ctx.destination);
+
+  osc.start(now);
+  osc.stop(now + 0.45);
+}
+
+function playAttempt(note, keyEl) {
+  if (paused || songIndex >= melody.length) return;
+
+  const expected = melody[songIndex];
+  const correct = note === expected;
+
+  flashKey(note, keyEl, correct);
+  playTone(note, correct);
+
+  if (correct) {
+    combo++;
+    score += 50; // Dynamic combo multiplier removed: static 50 points per accurate press
+    feedbackEl.textContent = combo > 8 ? "PERFECT!" : "GREAT!";
+    songIndex++;
+
+    if (songIndex === melody.length) {
+      feedbackEl.textContent = "COMPLETE!";
+      stopDemo();
+      showEndGamePopup(true);
+    }
+  } else {
+    combo = 0;
+    lives = Math.max(0, lives - 1);
+    // Score penalty line removed entirely: pressing incorrect keys does not decrease the score points
+    feedbackEl.textContent = "TRY AGAIN";
+    markMiss();
+
+    if (lives === 0) {
+      paused = true;
+      feedbackEl.textContent = "RESET?";
+      stopDemo();
+      showEndGamePopup(false);
+    }
+  }
+
+  render();
+}
+
+function flashKey(note, keyEl, correct) {
+  const keys = keyEl ? [keyEl] : [...keyboardEl.querySelectorAll(`[data-note="${note}"]`)];
+
+  keys.forEach((key) => {
+    key.classList.add("active");
+
+    setTimeout(() => {
+      key.classList.remove("active");
+    }, 160);
+  });
+}
+
+function markMiss() {
+  const pill = noteListEl.querySelector(`[data-index="${songIndex}"]`);
+  if (!pill) return;
+
+  pill.classList.add("miss");
+  setTimeout(() => {
+    pill.classList.remove("miss");
+  }, 260);
+}
+
+function render() {
+  scoreEl.textContent = String(score).padStart(6, "0");
+  comboEl.textContent = combo;
+  livesEl.textContent = lives;
+
+  const percent = Math.round((songIndex / melody.length) * 100);
+
+  progressBarEl.style.width = `${percent}%`;
+  progressTextEl.textContent = `${percent}%`;
+  timeNowEl.textContent = formatTime(Math.round((songIndex / melody.length) * 26));
+
+  playHeadEl.style.setProperty(
+    "--head",
+    `${(songIndex / Math.max(1, melody.length - 1)) * 88 + 2}%`
+  );
+
+  const activePill = noteListEl.querySelector(`[data-index="${songIndex}"]`);
+  if (activePill) {
+    activePill.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  [...noteListEl.children].forEach((el, index) => {
+    el.classList.toggle("done", index < songIndex);
+    el.classList.toggle("current", index === songIndex);
+  });
+
+  [...noteTrackEl.querySelectorAll(".music-note, .note-label")].forEach((el) => {
+    const index = Number(el.dataset.index);
+    el.classList.toggle("done", index < songIndex);
+    el.classList.toggle("current", index === songIndex);
+  });
+
+  [...keyboardEl.querySelectorAll(".key.white")].forEach((key) => {
+    key.classList.toggle("target", key.dataset.note === melody[songIndex]);
+  });
+
+  // Balanced target values for star scoring threshold because max score is now 42 * 50 = 2100
+  const starCount = score >= 2000 ? 3 : score >= 1200 ? 2 : score > 0 ? 1 : 0;
+
+  starsEl.innerHTML = [0, 1, 2]
+    .map((index) => {
+      const active = index < starCount;
+      return `<span class="${active ? "on" : ""}">${active ? "★" : "☆"}</span>`;
+    })
+    .join("");
+}
+
+function formatTime(seconds) {
+  return `00:${String(seconds).padStart(2, "0")}`;
+}
+
+function showEndGamePopup(isPassed) {
+  modalActions.innerHTML = "";
+  
+  if (isPassed) {
+    modalTrophy.style.display = "block";
+    modalTrophy.textContent = "🏆";
+    modalTitle.textContent = "Congratulations!";
+    modalTitle.className = "modal-title pass";
+    modalBody.textContent = `You cleared Lesson 1 beautifully! Final Score: ${score} points.`;
+    
+    const restartBtn = createModalButton("Restart", "secondary", () => { closePopup(); resetGame(); });
+    const nextLevelBtn = createModalButton("Next Level", "primary", () => { closePopup(); alert("Loading Next Lesson..."); resetGame(); });
+    const homeBtn = createModalButton("Home", "secondary", () => { closePopup(); alert("Returning to Dashboard Home."); });
+    
+    modalActions.appendChild(restartBtn);
+    modalActions.appendChild(nextLevelBtn);
+    modalActions.appendChild(homeBtn);
+  } else {
+    modalTrophy.style.display = "block";
+    modalTrophy.textContent = "❌";
+    modalTitle.textContent = "Try Again!";
+    modalTitle.className = "modal-title fail";
+    modalBody.textContent = "You ran out of musical lives! Don't look back, practice makes perfect.";
+    
+    const restartBtn = createModalButton("Restart", "primary", () => { closePopup(); resetGame(); });
+    const homeBtn = createModalButton("Home", "secondary", () => { closePopup(); alert("Returning to Dashboard Home."); });
+    
+    modalActions.appendChild(restartBtn);
+    modalActions.appendChild(homeBtn);
+  }
+  
+  endGameModal.classList.add("open");
+}
+
+function createModalButton(text, type, clickHandler) {
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = `modal-btn ${type}`;
+  btn.textContent = text;
+  btn.addEventListener("click", clickHandler);
+  return btn;
+}
+
+function closePopup() {
+  endGameModal.classList.remove("open");
+}
+
+function resetGame() {
+  songIndex = 0;
+  score = 0;
+  combo = 0;
+  lives = 3;
+  paused = false;
+
+  feedbackEl.textContent = "READY";
+
+  stopDemo();
+  render();
+}
+
+function startDemo() {
+  if (demoTimer) {
+    stopDemo();
+    return;
+  }
+
+  paused = false;
+  demoBtn.textContent = "Stop Demo";
+
+  demoTimer = setInterval(() => {
+    if (songIndex >= melody.length || lives === 0) {
+      stopDemo();
+      return;
+    }
+
+    playAttempt(melody[songIndex]);
+  }, 520);
+}
+
+function stopDemo() {
+  if (demoTimer) {
+    clearInterval(demoTimer);
+  }
+  demoTimer = null;
+  demoBtn.textContent = "Play Demo";
+}
+
+document.addEventListener("keydown", (event) => {
+  const key = event.key.toUpperCase();
+
+  if (["A", "B", "C", "D", "E", "F", "G"].includes(key)) {
+    playAttempt(key);
+  }
+
+  if (event.code === "Space") {
+    event.preventDefault();
+    paused = !paused;
+    feedbackEl.textContent = paused ? "PAUSED" : "READY";
+
+    if (paused) {
+      stopDemo();
+    }
+  }
+});
+
+pauseBtn.addEventListener("click", () => {
+  paused = !paused;
+  feedbackEl.textContent = paused ? "PAUSED" : "READY";
+
+  if (paused) {
+    stopDemo();
+  }
+});
+
+demoBtn.addEventListener("click", startDemo);
+resetBtn.addEventListener("click", resetGame);
+resetTopBtn.addEventListener("click", resetGame);
+
+setupGame();
+</script>
+</body>
+</html>

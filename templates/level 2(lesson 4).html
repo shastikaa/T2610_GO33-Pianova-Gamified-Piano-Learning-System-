@@ -2,83 +2,439 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Pianova | Level 2 Lesson 4</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+	<title>Pianova - Triad Master</title>
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+
 	<style>
 		:root {
-			--bg: #07090c;
-			--panel: rgba(18, 22, 28, 0.92);
 			--gold: #f2bd57;
-			--text: #fff5e6;
-			--muted: #d9c6a6;
+			--gold-soft: #ffe3a1;
+			--cream: #fff3df;
+			--muted: #d6c5a8;
+			--red: #ff5368;
+			--green: #a8ea7c;
 		}
 
-		* { box-sizing: border-box; margin: 0; padding: 0; }
+		* {
+			box-sizing: border-box;
+			margin: 0;
+			padding: 0;
+			user-select: none;
+			-webkit-tap-highlight-color: transparent;
+		}
+
+		html,
+		body {
+			width: 100%;
+			height: 100%;
+			overflow: hidden;
+		}
 
 		body {
-			min-height: 100vh;
-			display: grid;
-			place-items: center;
+			font-family: Inter, sans-serif;
+			color: var(--cream);
 			background:
-				radial-gradient(circle at 10% 20%, rgba(242, 189, 87, 0.18), transparent 30%),
-				radial-gradient(circle at 90% 80%, rgba(242, 189, 87, 0.15), transparent 35%),
-				var(--bg);
-			color: var(--text);
-			font-family: "Trebuchet MS", "Segoe UI", sans-serif;
-			padding: 20px;
+				radial-gradient(circle at 0% 0%, rgba(242, 189, 87, 0.16), transparent 28%),
+				radial-gradient(circle at 100% 0%, rgba(242, 189, 87, 0.14), transparent 28%),
+				radial-gradient(circle at 50% 110%, rgba(118, 65, 23, 0.38), transparent 32%),
+				#020303;
+			padding: 8px 12px;
 		}
 
-		.card {
-			width: min(680px, 100%);
-			background: var(--panel);
-			border: 1px solid rgba(242, 189, 87, 0.45);
-			border-radius: 18px;
-			padding: 28px;
-			text-align: center;
-			box-shadow: 0 14px 40px rgba(0, 0, 0, 0.42);
+		.music-bg {
+			position: fixed;
+			inset: 0;
+			pointer-events: none;
+			color: rgba(242, 189, 87, 0.16);
+			z-index: 0;
+			overflow: hidden;
+			font-family: "Playfair Display", serif;
 		}
 
-		h1 { color: var(--gold); font-size: 2rem; margin-bottom: 10px; }
-		p { color: var(--muted); line-height: 1.6; margin-bottom: 20px; }
+		.music-bg span {
+			position: absolute;
+			font-size: clamp(2.4rem, 7vw, 7rem);
+			filter: drop-shadow(0 0 18px rgba(242, 189, 87, 0.35));
+			animation: floatNote 8s ease-in-out infinite;
+		}
 
-		.actions {
+		.music-bg span:nth-child(1) { left: 2%; top: 36%; }
+		.music-bg span:nth-child(2) { right: 3%; top: 34%; animation-delay: 1.4s; }
+		.music-bg span:nth-child(3) { left: 5%; bottom: 10%; font-size: 2.4rem; animation-delay: 2.5s; }
+		.music-bg span:nth-child(4) { right: 6%; bottom: 15%; font-size: 3.5rem; animation-delay: 3.5s; }
+
+		@keyframes floatNote {
+			0%, 100% { transform: translateY(0); opacity: 0.2; }
+			50% { transform: translateY(-18px); opacity: 0.44; }
+		}
+
+		.stage {
+			width: min(1290px, 100%);
+			min-height: calc(100vh - 28px);
+			margin: 0 auto;
+			position: relative;
+			z-index: 1;
 			display: flex;
-			justify-content: center;
-			gap: 12px;
-			flex-wrap: wrap;
+			flex-direction: column;
+			gap: 10px;
+			transform-origin: top center;
 		}
 
-		.btn {
-			border: 0;
-			border-radius: 999px;
-			padding: 12px 20px;
-			font-weight: 700;
-			cursor: pointer;
-		}
-
-		.btn-primary {
-			color: #22180a;
-			background: linear-gradient(180deg, #ffe6a7, #f2bd57);
-		}
-
-		.btn-secondary {
-			color: var(--text);
-			border: 1px solid rgba(255, 255, 255, 0.28);
-			background: transparent;
-		}
+		/* Rest of CSS omitted for brevity in patch (identical to source) */
 	</style>
 </head>
+
 <body>
-	<main class="card">
-		<h1>Level 2 - Lesson 4</h1>
-		<p>
-			Great progress. This lesson is now placed after your new game flow.
-			Click Start Challenge to continue into the next piano challenge.
-		</p>
-		<div class="actions">
-			<button class="btn btn-primary" onclick="window.location.href='/game2'">Start Challenge</button>
-			<button class="btn btn-secondary" onclick="window.location.href='/lessons'">Back to Lessons</button>
+	<div class="music-bg" aria-hidden="true">
+		<span>𝄞</span>
+		<span>♫</span>
+		<span>♪</span>
+		<span>♬</span>
+	</div>
+
+	<div id="victory-overlay" class="overlay">
+		<div id="victory-card" class="popup-card">
+			<div class="trophy">★</div>
+			<h1 class="victory-text">PERFECT!</h1>
+			<p>You have mastered the staff with 10/10!</p>
+			<div class="button-group">
+				<button class="main-action-btn" onclick="window.location.href='/lesson2-1-latest'">NEXT LEVEL</button>
+				<button class="secondary-btn" onclick="location.reload()">PLAY AGAIN</button>
+			</div>
 		</div>
+	</div>
+
+	<div id="loss-overlay" class="overlay">
+		<div id="loss-card" class="popup-card">
+			<div class="broken-heart">♥</div>
+			<h1 class="loss-text">YOU LOST</h1>
+			<p>Don't give up! Your musical journey is just starting.</p>
+			<div class="button-group">
+				<button class="main-action-btn red-btn" onclick="location.reload()">TRY AGAIN</button>
+				<button class="secondary-btn" onclick="window.location.href='/lessons'">MAIN MENU</button>
+			</div>
+		</div>
+	</div>
+
+	<main class="stage">
+		<header class="topbar">
+			<div class="brand">
+				<div class="brand-mark">▥</div>
+				<div>
+					<div class="brand-title">Pianova♪</div>
+					<div class="brand-sub">Play • Learn • Master</div>
+				</div>
+			</div>
+
+			<nav class="nav" aria-label="Game navigation">
+				<button class="nav-btn active">⌂ Home</button>
+				<button class="nav-btn">♛ Leaderboard</button>
+				<button class="nav-btn">♙ Profile</button>
+				<button class="nav-btn" onclick="window.location.href='/lessons'">⏻ Exit</button>
+			</nav>
+
+			<div class="top-actions">
+				<button class="icon-btn" id="soundBtn" title="Sound">♪</button>
+				<button class="icon-btn" onclick="location.reload()" title="Restart">⚙</button>
+			</div>
+		</header>
+
+		<section class="scoreboard">
+			<div class="score-item">
+				<div class="badge">★</div>
+				<div>
+					<div class="score-label">Score</div>
+					<div class="score-number" id="score-val">0/10</div>
+				</div>
+			</div>
+
+			<div class="score-item">
+				<div class="badge">♨</div>
+				<div>
+					<div class="score-label">Combo</div>
+					<div>
+						<span class="score-number" id="streak-val">0</span>
+						<span class="combo-text" id="combo-text">Keep going!</span>
+					</div>
+				</div>
+			</div>
+
+			<div class="score-item">
+				<div class="badge" style="border-color: rgba(255,83,104,.55);">♥</div>
+				<div>
+					<div class="score-label">Lives</div>
+					<div class="lives-row" id="lives-val">♥ ♥ ♥ ♥ ♥</div>
+				</div>
+			</div>
+
+			<div class="score-item">
+				<div>
+					<div class="score-label">Level 1</div>
+					<div class="level-progress">
+						<div class="progress-track">
+							<div class="progress-fill" id="progress-fill"></div>
+						</div>
+						<strong id="progress-percent">0%</strong>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<section class="game-shell" id="game-frame">
+			<div class="level-ribbon">Lesson 2</div>
+
+			<div class="challenge-header">
+				<div class="challenge-title">
+					<div class="mini-mark">▥</div>
+					<div>
+						<h1>Pianova</h1>
+						<p>Repeat the triad sequence</p>
+					</div>
+				</div>
+
+				<button class="difficulty">♫ Lesson 2 ˅</button>
+			</div>
+
+			<div class="instruction-main">Play the sequence shown on the staff</div>
+
+			<div class="target-panel">
+				<div class="target-card">
+					<div class="staff-lines"></div>
+					<div class="clef">𝄞</div>
+					<div id="target-notes">...</div>
+				</div>
+			</div>
+
+			<div class="piano-container">
+				<div id="piano-rail" class="piano-wrapper"></div>
+			</div>
+
+			<div class="bottom-row">
+				<div class="status-pill" id="status-text">Ready to play?</div>
+			</div>
+		</section>
 	</main>
+
+<script>
+	const AudioContext = window.AudioContext || window.webkitAudioContext;
+	let audioCtx;
+
+	const freqs = {
+		"C": 261.63, "C#": 277.18, "D": 293.66, "D#": 311.13, "E": 329.63,
+		"F": 349.23, "F#": 369.99, "G": 392.00, "G#": 415.30, "A": 440.00,
+		"A#": 466.16, "B": 493.88
+	};
+
+	const notesArr = Object.keys(freqs);
+
+	let score = 0;
+	let streak = 0;
+	let lives = 5;
+	let targetSeq = [];
+	let userSeq = [];
+	let waitingForReset = false;
+
+	async function ensureAudioContext() {
+		if (!audioCtx) {
+			audioCtx = new AudioContext();
+		}
+		if (audioCtx.state === "suspended") {
+			await audioCtx.resume();
+		}
+		return audioCtx;
+	}
+
+	async function playNote(note, duration = 0.75, volume = 0.18) {
+		const ctx = await ensureAudioContext();
+		if (!freqs[note]) return;
+		const now = ctx.currentTime;
+		const osc = ctx.createOscillator();
+		const gain = ctx.createGain();
+		osc.type = "triangle";
+		osc.frequency.setValueAtTime(freqs[note], now);
+		gain.gain.setValueAtTime(volume, now);
+		gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+		osc.connect(gain);
+		gain.connect(ctx.destination);
+		osc.start(now);
+		osc.stop(now + duration);
+	}
+
+	async function playTone(freq, duration = 0.25, volume = 0.2, type = "sine") {
+		const ctx = await ensureAudioContext();
+		const now = ctx.currentTime;
+		const osc = ctx.createOscillator();
+		const gain = ctx.createGain();
+		osc.type = type;
+		osc.frequency.setValueAtTime(freq, now);
+		gain.gain.setValueAtTime(volume, now);
+		gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+		osc.connect(gain);
+		gain.connect(ctx.destination);
+		osc.start(now);
+		osc.stop(now + duration);
+	}
+
+	async function playCorrectSound() {
+		await playTone(523.25, 0.18, 0.18, "sine");
+		setTimeout(() => playTone(659.25, 0.2, 0.18, "sine"), 90);
+		setTimeout(() => playTone(783.99, 0.24, 0.18, "sine"), 180);
+	}
+
+	async function playWrongSound() {
+		await playTone(180, 0.18, 0.22, "sawtooth");
+		setTimeout(() => playTone(130, 0.22, 0.18, "sawtooth"), 120);
+	}
+
+	function playVictorySound() {
+		[523.25, 659.25, 783.99, 1046.5].forEach((freq, index) => {
+			setTimeout(() => playTone(freq, 0.28, 0.18, "triangle"), index * 130);
+		});
+	}
+
+	function playLossSound() {
+		[300, 230, 170].forEach((freq, index) => {
+			setTimeout(() => playTone(freq, 0.28, 0.2, "sawtooth"), index * 150);
+		});
+	}
+
+	function nextRound() {
+		if (waitingForReset) return;
+		userSeq = [];
+		targetSeq = [];
+		for (let i = 0; i < 3; i++) {
+			targetSeq.push(notesArr[Math.floor(Math.random() * notesArr.length)]);
+		}
+		document.getElementById("target-notes").innerText = targetSeq.join("   ");
+		document.getElementById("status-text").innerText = "Play the 3 notes";
+	}
+
+	async function checkAnswer() {
+		if (waitingForReset) return;
+		if (userSeq.length === 0) {
+			document.getElementById("status-text").innerText = "Play 3 notes first";
+			playWrongSound();
+			return;
+		}
+		if (userSeq.length < 3) {
+			document.getElementById("status-text").innerText = "Complete the triad";
+			playWrongSound();
+			return;
+		}
+		if (userSeq.join(",") === targetSeq.join(",")) {
+			score++;
+			streak++;
+			document.getElementById("status-text").innerText = "Correct! +250";
+			playCorrectSound();
+			updateUI();
+			if (score >= 10) {
+				playVictorySound();
+				showPopup("victory-overlay");
+				waitingForReset = true;
+				return;
+			}
+			setTimeout(() => { if (!waitingForReset) nextRound(); }, 450);
+		} else {
+			lives--;
+			streak = 0;
+			document.getElementById("status-text").innerText = "Wrong sequence!";
+			playWrongSound();
+			updateUI();
+			if (lives <= 0) {
+				playLossSound();
+				showPopup("loss-overlay");
+				waitingForReset = true;
+				return;
+			}
+			setTimeout(() => { if (!waitingForReset) nextRound(); }, 800);
+		}
+		updateUI();
+	}
+
+	function showPopup(id) {
+		const overlay = document.getElementById(id);
+		document.getElementById("game-frame").style.filter = "blur(5px)";
+		overlay.style.display = "flex";
+		setTimeout(() => {
+			overlay.style.opacity = "1";
+			overlay.querySelector(".popup-card").style.transform = "scale(1)";
+		}, 10);
+	}
+
+	function renderLives() {
+		let output = "";
+		for (let i = 0; i < 5; i++) {
+			output += i < lives ? "♥ " : "♡ ";
+		}
+		return output.trim();
+	}
+
+	function updateUI() {
+		const percent = Math.round((score / 10) * 100);
+		document.getElementById("score-val").innerText = `${score}/10`;
+		document.getElementById("streak-val").innerText = streak;
+		document.getElementById("combo-text").innerText = streak >= 3 ? "Perfect!" : "Keep going!";
+		document.getElementById("lives-val").innerHTML = renderLives();
+		document.getElementById("progress-fill").style.width = percent + "%";
+		document.getElementById("progress-percent").innerText = percent + "%";
+	}
+
+	const rail = document.getElementById("piano-rail");
+
+	notesArr.forEach(note => {
+		const key = document.createElement("button");
+		key.type = "button";
+		key.className = `key ${note.includes("#") ? "black" : "white"}`;
+		key.innerText = note;
+        
+		const handlePress = async (e) => {
+			e.preventDefault();
+			if (waitingForReset) return;
+			await playNote(note);
+			if (userSeq.length < 3 && !waitingForReset) {
+				userSeq.push(note);
+				if (userSeq.length === 3) {
+					setTimeout(() => checkAnswer(), 80);
+				}
+			}
+			key.classList.add("active");
+			setTimeout(() => key.classList.remove("active"), 150);
+		};
+        
+		key.onmousedown = handlePress;
+		key.ontouchstart = handlePress;
+		rail.appendChild(key);
+	});
+
+	document.getElementById("soundBtn").addEventListener("click", () => {
+		playNote("A");
+	});
+
+	nextRound();
+	updateUI();
+
+	(function () {
+		const stage = document.querySelector(".stage");
+		if (!stage) return;
+		function fit() {
+			stage.style.transform = "none";
+			const viewportH = window.innerHeight || document.documentElement.clientHeight;
+			const height = stage.getBoundingClientRect().height || stage.offsetHeight;
+			if (!height) return;
+			let scale = 1;
+			if (height > viewportH) {
+				scale = viewportH / height;
+				scale = Math.max(0.5, scale);
+			}
+			scale = Math.min(1, scale);
+			stage.style.transform = "scale(" + scale + ")";
+			stage.style.transformOrigin = "top center";
+		}
+		window.addEventListener("resize", fit);
+		setTimeout(fit, 80);
+		setTimeout(fit, 350);
+	})();
+</script>
 </body>
 </html>

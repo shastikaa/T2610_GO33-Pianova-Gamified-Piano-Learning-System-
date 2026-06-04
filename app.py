@@ -440,10 +440,26 @@ def save_game2():
 @role_required('user')
 def certificate_page():
     certificate = get_latest_certificate_for_user(session['user_id'])
+    issued_for = session.get('user', 'Student')
+    certificate_title = 'Beginner Piano Course'
+
+    if certificate is not None:
+        raw_issued_for = (certificate['issued_for'] or '').strip()
+        raw_certificate_title = (certificate['title'] or '').strip()
+
+        # Ignore placeholder-like values stored in old records.
+        if raw_issued_for and not (raw_issued_for.startswith('{{') and raw_issued_for.endswith('}}')):
+            issued_for = raw_issued_for
+
+        if raw_certificate_title and not (raw_certificate_title.startswith('{{') and raw_certificate_title.endswith('}}')):
+            certificate_title = raw_certificate_title
+
     return render_template(
         'certificate.html',
         username=session.get('user', 'Student'),
         certificate=certificate,
+        issued_for=issued_for,
+        certificate_title=certificate_title,
     )
 
 

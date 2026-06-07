@@ -1204,9 +1204,9 @@ function showEndGamePopup(isPassed) {
     modalTitle.className = "modal-title pass";
     modalBody.textContent = `You completed both verses! Total Score: ${score} points.`;
     
-    const nextLevelBtn = createModalButton("Next Level", "primary", () => { closePopup(); resetGame(); });
+    const nextLevelBtn = createModalButton("Next Level", "primary", () => { closePopup(); window.location.href = '/lesson3-4'; });
     const replayBtn = createModalButton("Replay", "secondary", () => { closePopup(); resetGame(); });
-    const homeBtn = createModalButton("Home", "secondary", () => { closePopup(); resetGame(); });
+    const homeBtn = createModalButton("Home", "secondary", () => { closePopup(); window.location.href = '/lessons'; });
     
     modalActions.appendChild(nextLevelBtn);
     modalActions.appendChild(replayBtn);
@@ -1218,7 +1218,7 @@ function showEndGamePopup(isPassed) {
     modalBody.textContent = "Don't break your focus! Listen to the beat and try again.";
     
     const tryAgainBtn = createModalButton("Try Again", "primary", () => { closePopup(); resetGame(); });
-    const homeBtn = createModalButton("Home", "secondary", () => { closePopup(); resetGame(); });
+    const homeBtn = createModalButton("Home", "secondary", () => { closePopup(); window.location.href = '/lessons'; });
     
     modalActions.appendChild(tryAgainBtn);
     modalActions.appendChild(homeBtn);

@@ -21,17 +21,24 @@
       align-items: center;
       flex-direction: column;
       font-family: 'Poppins', 'Segoe UI', system-ui, -apple-system, 'Inter', sans-serif;
-      padding: 1.2rem;
+      padding: 0.7rem 1.2rem 1.2rem;
     }
 
     .top-shell {
       max-width: 1500px;
       width: 100%;
       border-radius: 2rem;
-      border: 1px solid rgba(255, 205, 126, 0.35);
-      background: linear-gradient(180deg, rgba(10, 16, 26, 0.96), rgba(8, 12, 20, 0.92));
-      box-shadow: 0 14px 30px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.05);
-      margin-bottom: 0.9rem;
+      border: 1px solid rgba(255, 205, 126, 0.44);
+      background:
+        radial-gradient(circle at 12% -25%, rgba(255, 194, 88, 0.22), transparent 42%),
+        radial-gradient(circle at 94% 110%, rgba(61, 138, 215, 0.18), transparent 44%),
+        linear-gradient(180deg, rgba(10, 16, 26, 0.98), rgba(8, 12, 20, 0.95));
+      box-shadow:
+        0 16px 34px rgba(0,0,0,0.4),
+        0 0 0 1px rgba(255,255,255,0.02) inset,
+        inset 0 1px 0 rgba(255,255,255,0.07);
+      margin-bottom: 1.05rem;
+      transform: translateY(-4px);
       overflow: hidden;
     }
 
@@ -40,7 +47,7 @@
       justify-content: space-between;
       align-items: center;
       gap: 1rem;
-      padding: 0.95rem 1.2rem;
+      padding: 0.9rem 1.25rem;
       border-bottom: 1px solid rgba(255,255,255,0.08);
       flex-wrap: wrap;
     }
@@ -69,18 +76,19 @@
       color: #f3dfbc;
       text-decoration: none;
       border: 1px solid rgba(255,255,255,0.12);
-      background: #0c1016;
-      padding: 0.55rem 0.95rem;
+      background: linear-gradient(180deg, rgba(15, 20, 31, 0.94), rgba(10, 14, 23, 0.98));
+      padding: 0.58rem 1rem;
       border-radius: 0.95rem;
       font-weight: 700;
       font-size: 0.95rem;
-      transition: 0.2s ease;
+      transition: 0.22s ease;
     }
 
     .top-link.active,
     .top-link:hover {
       background: linear-gradient(145deg, #5a4323, #2f2518);
       border-color: rgba(255, 210, 130, 0.42);
+      box-shadow: 0 7px 14px rgba(0,0,0,0.22);
     }
 
     .top-stats {
@@ -93,9 +101,9 @@
     .top-stat-card {
       border: 1px solid rgba(255,255,255,0.11);
       border-radius: 1rem;
-      background: rgba(9, 14, 24, 0.95);
+      background: linear-gradient(180deg, rgba(12, 18, 29, 0.98), rgba(8, 12, 21, 0.94));
       padding: 0.8rem 0.95rem;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 7px 14px rgba(0,0,0,0.2);
     }
 
     .top-stat-title {
@@ -147,84 +155,90 @@
     .game-container {
       max-width: 1500px;
       width: 100%;
-      background: rgba(255, 248, 225, 0.95);
+      background: rgba(9, 14, 22, 0.95);
+      border: 1px solid rgba(255, 205, 126, 0.28);
       border-radius: 3.5rem;
-      box-shadow: 0 25px 45px rgba(0, 0, 0, 0.4), inset 0 1px 2px rgba(255, 255, 255, 0.3);
+      box-shadow: 0 25px 45px rgba(0, 0, 0, 0.4), inset 0 1px 2px rgba(255, 255, 255, 0.06);
       overflow: hidden;
-      backdrop-filter: blur(0px);
+      backdrop-filter: blur(3px);
+      margin-top: 0.25rem;
       transition: transform 0.2s ease;
     }
 
     /* header area with gamified vibe */
     .lesson-header {
-      background: #2c1e2f;
-      background-image: radial-gradient(circle at 10% 20%, rgba(255,215,130,0.15) 2%, transparent 2.5%);
-      background-size: 28px 28px;
-      padding: 1.5rem 2rem;
+      background:
+        radial-gradient(circle at 9% 50%, rgba(255, 176, 74, 0.2), transparent 36%),
+        linear-gradient(120deg, #332128 0%, #1f2d45 68%, #1a3550 100%);
+      padding: 1.25rem 2rem 1.4rem;
       display: flex;
       flex-wrap: wrap;
       justify-content: space-between;
-      align-items: baseline;
-      border-bottom: 4px solid #ffcd7e;
+      align-items: center;
+      row-gap: 0.8rem;
+      border-bottom: 2px solid rgba(255, 207, 120, 0.74);
     }
 
     .title-badge {
       display: flex;
-      align-items: baseline;
+      align-items: center;
       gap: 1rem;
       flex-wrap: wrap;
     }
 
     h1 {
-      font-size: 2.7rem;
+      font-size: 2.5rem;
       font-weight: 800;
-      letter-spacing: -0.5px;
+      letter-spacing: 0.4px;
       background: linear-gradient(135deg, #FFE6B0, #FFB347);
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
-      text-shadow: 0 2px 3px rgba(0,0,0,0.2);
+      text-shadow: 0 3px 10px rgba(0,0,0,0.28);
     }
 
     .gamified-badge {
-      background: #ffb347;
-      padding: 0.45rem 1.2rem;
+      background: linear-gradient(135deg, #ffdb8b, #f7ac45);
+      padding: 0.42rem 1.1rem;
       border-radius: 40px;
-      font-weight: 600;
-      font-size: 0.95rem;
+      border: 1px solid rgba(255, 238, 197, 0.45);
+      font-weight: 700;
+      font-size: 0.9rem;
       color: #2c1e2f;
-      box-shadow: inset 0 -1px 0 rgba(0,0,0,0.1), 0 3px 8px rgba(0,0,0,0.2);
+      box-shadow: inset 0 -1px 0 rgba(0,0,0,0.1), 0 6px 14px rgba(0,0,0,0.25);
       backdrop-filter: blur(2px);
     }
 
     .level-progress {
-      background: #1f2a2e;
-      padding: 0.7rem 1.35rem;
+      background: linear-gradient(180deg, rgba(17, 25, 36, 0.95), rgba(11, 18, 28, 0.95));
+      border: 1px solid rgba(255, 219, 141, 0.42);
+      padding: 0.62rem 1.2rem;
       border-radius: 60px;
       display: flex;
       gap: 0.8rem;
-      align-items: baseline;
+      align-items: center;
+      box-shadow: 0 10px 22px rgba(0,0,0,0.24);
     }
 
     .level-text {
       color: #ffdd99;
       font-weight: 600;
       letter-spacing: 1px;
-      font-size: 1.05rem;
+      font-size: 1rem;
     }
 
     .xp-points {
       background: #3b2b2a;
-      padding: 0.35rem 0.95rem;
+      padding: 0.32rem 0.9rem;
       border-radius: 40px;
       color: #f9c270;
       font-weight: 700;
-      font-size: 1rem;
+      font-size: 0.95rem;
     }
 
     /* main chart layout */
     .chart-panel {
-      padding: 2.6rem 2.6rem 2.3rem 2.6rem;
+      padding: 2.2rem 2.4rem 2.15rem 2.4rem;
       background: #0a0a0a;
     }
 
@@ -1245,6 +1259,13 @@
       box-shadow: 0 4px 0 #8b4b1f;
     }
 
+    .finish-btn:disabled {
+      cursor: not-allowed;
+      opacity: 0.55;
+      filter: grayscale(0.2);
+      box-shadow: 0 8px 0 #5c361c;
+    }
+
     .feedback-toast {
       text-align: center;
       margin-top: 0.5rem;
@@ -1639,6 +1660,14 @@
       filter: brightness(1.06);
     }
 
+    .lesson-next-btn:disabled {
+      cursor: not-allowed;
+      opacity: 0.55;
+      filter: grayscale(0.2);
+      transform: none;
+      box-shadow: 0 8px 0 #5c361c, 0 10px 18px rgba(0, 0, 0, 0.24);
+    }
+
     .feedback-toast,
     .lesson-next-feedback,
     .match-feedback,
@@ -1679,29 +1708,76 @@
     }
 
     .quit-button {
-      padding: 0.6rem 1.2rem;
-      background-color: #ff4444;
+      padding: 0.58rem 1.15rem;
+      background: linear-gradient(135deg, #ff5959, #f43838);
       color: white;
-      border: none;
+      border: 1px solid rgba(255, 227, 227, 0.22);
       border-radius: 40px;
       cursor: pointer;
       font-weight: 700;
       font-size: 0.95rem;
-      transition: background-color 0.3s;
-      box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+      transition: background-color 0.3s, transform 0.2s ease, box-shadow 0.2s ease;
+      box-shadow: 0 8px 15px rgba(0,0,0,0.23);
     }
 
     .quit-button:hover {
-      background-color: #cc0000;
+      background: linear-gradient(135deg, #ff6d6d, #db2e2e);
+      transform: translateY(-1px);
+      box-shadow: 0 11px 18px rgba(0,0,0,0.28);
     }
 
     @media (max-width: 880px) {
+      body {
+        padding: 0.55rem 0.65rem 0.85rem;
+      }
+
+      .top-shell {
+        margin-bottom: 0.8rem;
+        transform: none;
+      }
+
+      .top-nav {
+        padding: 0.75rem 0.85rem;
+      }
+
+      .top-link-row {
+        width: 100%;
+      }
+
+      .top-link {
+        flex: 1 1 112px;
+        text-align: center;
+      }
+
       .top-stats {
         grid-template-columns: repeat(2, minmax(140px, 1fr));
+        padding: 0.75rem 0.85rem 0.95rem;
       }
 
       .top-stat-value {
         font-size: 1.35rem;
+      }
+
+      .game-container {
+        border-radius: 2rem;
+      }
+
+      .lesson-header {
+        padding: 1rem 1rem 1.1rem;
+      }
+
+      h1 {
+        font-size: 2rem;
+      }
+
+      .level-progress {
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      .chart-panel {
+        padding: 1.4rem 1rem 1.2rem;
       }
     }
   </style>
@@ -1714,11 +1790,11 @@
       <div class="top-brand-sub">Play • Learn • Master</div>
     </div>
     <div class="top-link-row">
-      <a class="top-link active" href="/">Home</a>
-      <a class="top-link" href="/game2">Practice</a>
+      <a class="top-link" href="/dashboard">Dashboard</a>
       <a class="top-link" href="/lessons">Lessons</a>
-      <a class="top-link" href="/dashboard">Leaderboard</a>
-      <a class="top-link" href="/dashboard">Profile</a>
+      <a class="top-link active" href="/game1">Level 1</a>
+      <a class="top-link" href="/game2">Practice</a>
+      <a class="top-link" href="/logout">Logout</a>
     </div>
   </div>
 
@@ -1745,7 +1821,7 @@
 <div class="game-container">
   <div class="lesson-header">
     <div class="title-badge">
-      <h1>🎹 LEARNTHENOTES</h1>
+      <h1>🎹 LEARN THE NOTES</h1>
       <div class="gamified-badge">✨ GAMIFIED PIANO LEARNING ✨</div>
     </div>
     <div class="level-progress">
@@ -2027,7 +2103,7 @@
       <div class="basic-level-kicker">BASIC LEVEL</div>
       <div class="basic-complete-title">COMPLETE!</div>
       <div class="basic-divider"></div>
-      <p>You completed all 4 core lessons and mastered the note-reading foundation.</p>
+      <p>You completed all 4 core lessons and mastered the note-reading foundation. Certificate is awarded after completing Advanced Level 4.</p>
       <div class="basic-complete-badges">
         <span class="basic-complete-badge"><span class="badge-check">✓</span><span class="badge-icon">𝄞</span>Treble<br>Lines<span class="badge-stars">★★★</span></span>
         <span class="basic-complete-badge"><span class="badge-check">✓</span><span class="badge-icon">𝄞</span>Treble<br>Spaces<span class="badge-stars">★★★</span></span>
@@ -2055,6 +2131,11 @@
     const finishButton = document.getElementById('finishLevelBtn');
     const feedbackDiv = document.getElementById('feedbackMsg');
     let levelCompleted = false;
+    let lesson1Perfect = false;
+
+    if (finishButton) {
+      finishButton.disabled = true;
+    }
 
     // Confetti burst simulation (lightweight, DOM friendly)
     function createConfetti() {
@@ -2269,6 +2350,11 @@
     }
 
     function finishLevelAction() {
+      if (!lesson1Perfect) {
+        showRewardMessage('Complete all Lesson 1 answers correctly before going to Lesson 2.', true);
+        return;
+      }
+
       if (levelCompleted) {
         // Switch to page 2
         switchToLesson2();
@@ -2328,9 +2414,19 @@
     const finishLesson2Btn = document.getElementById('finishLesson2Btn');
     const lesson2FeedbackMsg = document.getElementById('lesson2FeedbackMsg');
     let lesson2Completed = false;
+    let lesson2Perfect = false;
+
+    if (finishLesson2Btn) {
+      finishLesson2Btn.disabled = true;
+    }
 
     if (finishLesson2Btn) {
       finishLesson2Btn.addEventListener('click', () => {
+        if (!lesson2Perfect) {
+          showRewardMessage('Complete all Lesson 2 answers correctly before going to Lesson 3.', true);
+          return;
+        }
+
         if (lesson2Completed) {
           switchToLesson3();
           return;
@@ -2372,11 +2468,21 @@
     const finishLesson3Btn = document.getElementById('finishLesson3Btn');
     const lesson3FeedbackMsg = document.getElementById('lesson3FeedbackMsg');
     let lesson3Completed = false;
+    let lesson3Perfect = false;
     let lesson4Perfect = false;
     let basicLevelCompleted = false;
 
     if (finishLesson3Btn) {
+      finishLesson3Btn.disabled = true;
+    }
+
+    if (finishLesson3Btn) {
       finishLesson3Btn.addEventListener('click', () => {
+        if (!lesson3Perfect) {
+          showRewardMessage('Complete all Lesson 3 answers correctly before going to Lesson 4.', true);
+          return;
+        }
+
         if (lesson3Completed) {
           switchToLesson4();
           return;
@@ -2453,8 +2559,59 @@
     const finishLesson4Btn = document.getElementById('finishLesson4Btn');
     const lesson4FeedbackMsg = document.getElementById('lesson4FeedbackMsg');
 
+    async function saveBasicLevelCompletion(scoreValue) {
+      try {
+        const response = await fetch('/api/complete-level1', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ score: scoreValue })
+        });
+
+        if (!response.ok) {
+          throw new Error(`Request failed with status ${response.status}`);
+        }
+
+        return await response.json();
+      } catch (error) {
+        console.error('Unable to save basic level completion:', error);
+        return null;
+      }
+    }
+
+    function syncLessonProgressAfterLevel1() {
+      const storageKey = 'pianoLessonsProgress';
+      try {
+        const raw = localStorage.getItem(storageKey);
+        const parsed = raw ? JSON.parse(raw) : null;
+
+        const nextState = Array.isArray(parsed) && parsed.length === 4
+          ? parsed
+          : [
+              { id: 1, completed: false, locked: false },
+              { id: 2, completed: false, locked: true },
+              { id: 3, completed: false, locked: true },
+              { id: 4, completed: false, locked: true },
+            ];
+
+        const level1 = nextState.find((lesson) => lesson.id === 1);
+        if (level1) {
+          level1.completed = true;
+          level1.locked = false;
+        }
+
+        const level2 = nextState.find((lesson) => lesson.id === 2);
+        if (level2) {
+          level2.locked = false;
+        }
+
+        localStorage.setItem(storageKey, JSON.stringify(nextState));
+      } catch (error) {
+        console.warn('Unable to sync lessons progress after Level 1 completion:', error);
+      }
+    }
+
     if (finishLesson4Btn) {
-      finishLesson4Btn.addEventListener('click', () => {
+      finishLesson4Btn.addEventListener('click', async () => {
         if (basicLevelCompleted) {
           openBasicCompleteOverlay();
           return;
@@ -2485,11 +2642,17 @@
         finishLesson4Btn.innerHTML = '🏆 BASIC COMPLETE';
 
         if (lesson4FeedbackMsg) {
-          lesson4FeedbackMsg.textContent = 'Excellent! You finished the basic level.';
+          lesson4FeedbackMsg.textContent = 'Excellent! You finished the basic level. Certificate is awarded after Advanced Level 4.';
         }
 
-        showRewardMessage('LEGENDARY! You completed the Basic Level!', false);
+        await saveBasicLevelCompletion(100);
+        syncLessonProgressAfterLevel1();
+        showRewardMessage('LEGENDARY! You completed the Basic Level! Opening Lesson 2 now.', false);
         openBasicCompleteOverlay();
+
+        setTimeout(() => {
+          window.location.href = '/lesson2-1-latest';
+        }, 1400);
       });
     }
 
@@ -2582,6 +2745,12 @@
 
       function updateDragFeedback() {
         const correctCount = dragGame.querySelectorAll('.drop-slot.slot-correct').length;
+        lesson1Perfect = droppedCount === 6 && correctCount === 6;
+
+        if (finishButton) {
+          finishButton.disabled = !lesson1Perfect;
+        }
+
         if (droppedCount < 6) {
           if (feedback) feedback.textContent = `Dropped: ${droppedCount}/6 — Correct: ${correctCount}`;
         } else if (correctCount === 6) {
@@ -2595,6 +2764,8 @@
 
       function resetDragGame() {
         droppedCount = 0;
+        lesson1Perfect = false;
+        if (finishButton) finishButton.disabled = true;
         usedTiles.clear();
         draggedTile = null;
         tiles.forEach((t) => {
@@ -2676,6 +2847,9 @@
 
       function updateDragFeedback2() {
         const correctCount = dragGame2.querySelectorAll('.drop-slot.slot-correct').length;
+        lesson2Perfect = droppedCount2 === 4 && correctCount === 4;
+        if (finishLesson2Btn) finishLesson2Btn.disabled = !lesson2Perfect;
+
         if (droppedCount2 < 4) {
           if (feedback2) feedback2.textContent = `Dropped: ${droppedCount2}/4 — Correct: ${correctCount}`;
         } else if (correctCount === 4) {
@@ -2689,6 +2863,8 @@
 
       function resetDragGame2() {
         droppedCount2 = 0;
+        lesson2Perfect = false;
+        if (finishLesson2Btn && !lesson2Completed) finishLesson2Btn.disabled = true;
         usedTiles2.clear();
         draggedTile2 = null;
         tiles2.forEach((t) => {
@@ -2839,6 +3015,9 @@
 
       function updateDragFeedback3() {
         const correctCount = dragGame3.querySelectorAll('.drop-slot.slot-correct').length;
+        lesson3Perfect = droppedCount3 === 5 && correctCount === 5;
+        if (finishLesson3Btn) finishLesson3Btn.disabled = !lesson3Perfect;
+
         if (droppedCount3 < 5) {
           if (feedback3) feedback3.textContent = `Dropped: ${droppedCount3}/5 — Correct: ${correctCount}`;
         } else if (correctCount === 5) {
@@ -2852,6 +3031,8 @@
 
       function resetDragGame3() {
         droppedCount3 = 0;
+        lesson3Perfect = false;
+        if (finishLesson3Btn && !lesson3Completed) finishLesson3Btn.disabled = true;
         usedTiles3.clear();
         draggedTile3 = null;
         tiles3.forEach((t) => {

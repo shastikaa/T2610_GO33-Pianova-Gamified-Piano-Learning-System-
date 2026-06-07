@@ -1,4 +1,5 @@
 import sqlite3
+from datetime import date, timedelta
 from pathlib import Path
 
 from flask import current_app, g
@@ -192,6 +193,7 @@ def _create_tables(cursor):
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             user_id INTEGER NOT NULL,
             level_id INTEGER,
+            cert_ref_id TEXT UNIQUE,
             certificate_no TEXT UNIQUE,
             title TEXT NOT NULL DEFAULT 'Pianova Completion Certificate',
             issued_for TEXT,
@@ -245,6 +247,7 @@ def _ensure_backward_compatibility_columns(cursor):
     _add_column_if_missing(cursor, 'progress', 'updated_at', 'TEXT')
 
     _add_column_if_missing(cursor, 'certificates', 'level_id', 'INTEGER')
+    _add_column_if_missing(cursor, 'certificates', 'cert_ref_id', 'TEXT')
     _add_column_if_missing(cursor, 'certificates', 'certificate_no', 'TEXT')
     _add_column_if_missing(cursor, 'certificates', 'title', "TEXT NOT NULL DEFAULT 'Pianova Completion Certificate'")
     _add_column_if_missing(cursor, 'certificates', 'issued_for', 'TEXT')
@@ -264,6 +267,24 @@ def _backfill_timestamp_columns(cursor):
     cursor.execute("UPDATE certificates SET created_at = COALESCE(created_at, CURRENT_TIMESTAMP)")
 
 
+def _backfill_certificate_reference_ids(cursor):
+    rows = cursor.execute(
+        """
+        SELECT id
+        FROM certificates
+        WHERE cert_ref_id IS NULL OR TRIM(cert_ref_id) = ''
+        ORDER BY id ASC
+        """
+    ).fetchall()
+
+    for row in rows:
+        cert_ref_id = f"CERT-{int(row[0]):06d}"
+        cursor.execute(
+            "UPDATE certificates SET cert_ref_id = ? WHERE id = ?",
+            (cert_ref_id, row[0]),
+        )
+
+
 def _create_indexes(cursor):
     cursor.execute("CREATE INDEX IF NOT EXISTS idx_users_role ON users(role)")
     cursor.execute("CREATE INDEX IF NOT EXISTS idx_tasks_level ON tasks(level_id)")
@@ -280,6 +301,7 @@ def _create_indexes(cursor):
     cursor.execute("CREATE INDEX IF NOT EXISTS idx_user_level_progress_user ON user_level_progress(user_id)")
     cursor.execute("CREATE INDEX IF NOT EXISTS idx_user_level_progress_level ON user_level_progress(level_id)")
     cursor.execute("CREATE INDEX IF NOT EXISTS idx_certificates_user ON certificates(user_id)")
+    cursor.execute("CREATE UNIQUE INDEX IF NOT EXISTS idx_certificates_ref_id_unique ON certificates(cert_ref_id) WHERE cert_ref_id IS NOT NULL")
     cursor.execute("CREATE UNIQUE INDEX IF NOT EXISTS idx_certificates_certificate_no_unique ON certificates(certificate_no) WHERE certificate_no IS NOT NULL")
     cursor.execute("CREATE INDEX IF NOT EXISTS idx_practice_sessions_user ON practice_sessions(user_id)")
 
@@ -349,6 +371,7 @@ def init_db(app):
     _create_tables(cursor)
     _ensure_backward_compatibility_columns(cursor)
     _backfill_timestamp_columns(cursor)
+    _backfill_certificate_reference_ids(cursor)
     _create_indexes(cursor)
 
     seed_user(cursor, 'admin', 'admin123', 'admin')
@@ -587,6 +610,7 @@ def issue_certificate(user_id, level_id=None, issued_for=None, score_snapshot=No
             id,
             user_id,
             level_id,
+            cert_ref_id,
             certificate_no,
             title,
             issued_for,
@@ -609,6 +633,7 @@ def issue_certificate(user_id, level_id=None, issued_for=None, score_snapshot=No
         INSERT INTO certificates (
             user_id,
             level_id,
+            cert_ref_id,
             certificate_no,
             title,
             issued_for,
@@ -616,11 +641,16 @@ def issue_certificate(user_id, level_id=None, issued_for=None, score_snapshot=No
             completion_date,
             created_at
         )
-        VALUES (?, ?, ?, 'Pianova Completion Certificate', ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+        VALUES (?, ?, NULL, ?, 'Pianova Completion Certificate', ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
         """,
         (user_id, level_id, certificate_no, issued_for, score_snapshot),
     )
     certificate_id = db.execute("SELECT last_insert_rowid()").fetchone()[0]
+    cert_ref_id = f"CERT-{int(certificate_id):06d}"
+    db.execute(
+        "UPDATE certificates SET cert_ref_id = ? WHERE id = ?",
+        (cert_ref_id, certificate_id),
+    )
     db.commit()
     return db.execute(
         """
@@ -628,6 +658,7 @@ def issue_certificate(user_id, level_id=None, issued_for=None, score_snapshot=No
             id,
             user_id,
             level_id,
+            cert_ref_id,
             certificate_no,
             title,
             issued_for,
@@ -648,6 +679,7 @@ def get_latest_certificate_for_user(user_id):
             id,
             user_id,
             level_id,
+            cert_ref_id,
             certificate_no,
             title,
             issued_for,
@@ -680,6 +712,7 @@ def get_admin_metrics():
     total_users = db.execute("SELECT COUNT(*) FROM users WHERE role = 'user'").fetchone()[0]
     total_admins = db.execute("SELECT COUNT(*) FROM users WHERE role = 'admin'").fetchone()[0]
     total_scores = db.execute("SELECT COUNT(*) FROM scores").fetchone()[0]
+    total_certificates = db.execute("SELECT COUNT(*) FROM certificates").fetchone()[0]
     completed_lessons = db.execute(
         "SELECT COUNT(*) FROM progress WHERE status = 'completed'"
     ).fetchone()[0]
@@ -690,6 +723,7 @@ def get_admin_metrics():
         'total_users': total_users,
         'total_admins': total_admins,
         'total_scores': total_scores,
+        'total_certificates': total_certificates,
         'completed_lessons': completed_lessons,
         'recent_users': recent_users,
     }
@@ -734,6 +768,89 @@ def get_recent_progress(limit=25):
         """,
         (limit,),
     ).fetchall()
+
+
+def get_recent_certificates(limit=25):
+    return get_db().execute(
+        """
+        SELECT
+            c.id,
+            c.cert_ref_id,
+            c.certificate_no,
+            u.username,
+            COALESCE(l.level_name, 'N/A') AS level_name,
+            c.completion_date
+        FROM certificates c
+        JOIN users u ON u.id = c.user_id
+        LEFT JOIN levels l ON l.id = c.level_id
+        ORDER BY c.id DESC
+        LIMIT ?
+        """,
+        (limit,),
+    ).fetchall()
+
+
+def get_certificate_account_by_ref(cert_ref_id):
+    normalized_ref = (cert_ref_id or '').strip()
+    if not normalized_ref:
+        return None
+
+    return get_db().execute(
+        """
+        SELECT
+            c.id,
+            c.cert_ref_id,
+            c.certificate_no,
+            c.completion_date,
+            c.level_id,
+            u.id AS user_id,
+            u.username,
+            u.role,
+            COALESCE(l.level_name, 'N/A') AS level_name
+        FROM certificates c
+        JOIN users u ON u.id = c.user_id
+        LEFT JOIN levels l ON l.id = c.level_id
+        WHERE UPPER(c.cert_ref_id) = UPPER(?)
+        LIMIT 1
+        """,
+        (normalized_ref,),
+    ).fetchone()
+
+
+def get_weekly_practice_hours(user_id, days=7):
+    safe_days = max(1, min(int(days), 30))
+    db = get_db()
+    lower_bound = f'-{safe_days - 1} days'
+
+    rows = db.execute(
+        """
+        SELECT DATE(started_at) AS session_date, COALESCE(SUM(duration_seconds), 0) AS total_seconds
+        FROM practice_sessions
+        WHERE user_id = ?
+          AND DATE(started_at) >= DATE('now', ?)
+        GROUP BY DATE(started_at)
+        """,
+        (user_id, lower_bound),
+    ).fetchall()
+
+    totals_by_date = {row['session_date']: int(row['total_seconds']) for row in rows}
+    today = date.today()
+    points = []
+
+    for offset in range(safe_days - 1, -1, -1):
+        day_value = today - timedelta(days=offset)
+        day_key = day_value.isoformat()
+        seconds = totals_by_date.get(day_key, 0)
+        points.append(
+            {
+                'label': day_value.strftime('%a'),
+                'date': day_key,
+                'seconds': seconds,
+                'hours': round(seconds / 3600.0, 2),
+            }
+        )
+
+    return points
 
 
 def get_user_metrics(user_id, current_level):

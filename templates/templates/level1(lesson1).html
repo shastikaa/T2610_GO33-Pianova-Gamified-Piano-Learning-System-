@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pianova | Lesson 1</title>
+
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&display=swap");
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+    }
+
+    body {
+      background: linear-gradient(145deg, #1e2a3a 0%, #0f1a24 100%);
+      color: #ffe8bf;
+      font-family: "Manrope", "Segoe UI", Arial, sans-serif;
+      padding: 0.7rem;
+      overflow: auto;
+    }
+
+    .page {
+      max-width: 1900px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+
+    .top-shell {
+      border-radius: 2rem;
+      border: 1px solid rgba(255, 205, 126, 0.44);
+      background:
+        radial-gradient(circle at 12% -25%, rgba(255, 194, 88, 0.22), transparent 42%),
+        radial-gradient(circle at 94% 110%, rgba(61, 138, 215, 0.18), transparent 44%),
+        linear-gradient(180deg, rgba(10, 16, 26, 0.98), rgba(8, 12, 20, 0.95));
+      box-shadow:
+        0 16px 34px rgba(0, 0, 0, 0.4),
+        0 0 0 1px rgba(255, 255, 255, 0.02) inset,
+        inset 0 1px 0 rgba(255, 255, 255, 0.07);
+      overflow: hidden;
+    }
+
+    .top-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.9rem 1.2rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      flex-wrap: wrap;
+    }
+
+    .top-brand {
+      color: #ffe0ad;
+      font-weight: 800;
+      font-size: 2.4rem;
+      line-height: 1;
+    }
+
+    .top-brand-sub {
+      color: #e8d1ad;
+      font-size: 1.55rem;
+      opacity: 0.92;
+      margin-top: 0.2rem;
+    }
+
+    .top-link-row {
+      display: flex;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+    }
+
+    .top-link {
+      color: #f3dfbc;
+      text-decoration: none;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: linear-gradient(180deg, rgba(15, 20, 31, 0.94), rgba(10, 14, 23, 0.98));
+      padding: 0.52rem 0.95rem;
+      border-radius: 0.95rem;
+      font-weight: 800;
+      font-size: 1.35rem;
+      transition: 0.2s ease;
+    }
+
+    .top-link.active,
+    .top-link:hover {
+      background: linear-gradient(145deg, #5a4323, #2f2518);
+      border-color: rgba(255, 210, 130, 0.42);
+    }
+
+    .top-stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(140px, 1fr));
+      gap: 0.7rem;
+      padding: 0.78rem 1.1rem 0.92rem;
+    }
+
+    .top-stat-card {
+      border: 1px solid rgba(255, 255, 255, 0.11);
+      border-radius: 1rem;
+      background: linear-gradient(180deg, rgba(12, 18, 29, 0.98), rgba(8, 12, 21, 0.94));
+      padding: 0.72rem 0.9rem;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    }
+
+    .top-stat-title {
+      color: #edd5ad;
+      font-size: 1.35rem;
+      margin-bottom: 0.2rem;
+      font-weight: 700;
+    }
+
+    .top-stat-value {
+      color: #ffe7be;
+      font-size: 2.4rem;
+      font-weight: 800;
+      line-height: 1.1;
+    }
+
+    .top-hearts {
+      color: #ff6f91;
+      letter-spacing: 2px;
+      font-size: 1.75rem;
+      font-weight: 700;
+    }
+
+    .top-level-track {
+      width: 100%;
+      height: 7px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.14);
+      margin-top: 0.3rem;
+      overflow: hidden;
+    }
+
+    .top-level-fill {
+      width: 0%;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #ffd167, #ffa149);
+    }
+
+    .top-level-percent {
+      margin-top: 0.24rem;
+      color: #edd5ad;
+      font-weight: 700;
+      font-size: 1.15rem;
+    }
+
+    .lesson-shell {
+      height: auto;
+      border-radius: 2rem;
+      border: 1px solid rgba(255, 205, 126, 0.35);
+      background: rgba(9, 14, 22, 0.95);
+      box-shadow: 0 18px 34px rgba(0, 0, 0, 0.35);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .lesson-header {
+      background:
+        radial-gradient(circle at 9% 50%, rgba(255, 176, 74, 0.2), transparent 36%),
+        linear-gradient(120deg, #332128 0%, #1f2d45 68%, #1a3550 100%);
+      border-bottom: 2px solid rgba(255, 207, 120, 0.74);
+      padding: 1.15rem 1.35rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .lesson-title-wrap {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .lesson-title {
+      font-size: 1.65rem;
+      font-weight: 800;
+      color: #ffcb74;
+      letter-spacing: 0.8px;
+    }
+
+    .lesson-subtitle {
+      color: #fbe0b1;
+      opacity: 0.95;
+      font-size: 1.1rem;
+    }
+
+    .status-wrap {
+      display: flex;
+      gap: 0.65rem;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .next-btn {
+      border: 1px solid rgba(255, 236, 206, 0.4);
+      border-radius: 999px;
+      background: linear-gradient(135deg, #ff5959, #f43838);
+      color: #fff;
+      font-size: 1.15rem;
+      font-weight: 800;
+      padding: 0.58rem 1.2rem;
+      cursor: pointer;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+
+    .next-btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .cards-wrap {
+      padding: 0.95rem;
+      flex: none;
+    }
+
+    .cards {
+      height: auto;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0.7rem;
+      align-items: stretch;
+    }
+
+    .note-card {
+      border: 1px solid #b97828;
+      border-radius: 1rem;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(0, 0, 0, 0.1)), #080808;
+      padding: 0.62rem 0.62rem;
+      min-height: 285px;
+      text-align: center;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+
+    .note-card:hover,
+    .note-card.active {
+      transform: translateY(-2px);
+      border-color: #ffd75d;
+      box-shadow:
+        0 0 18px rgba(255, 210, 76, 0.45),
+        inset 0 0 18px rgba(255, 210, 76, 0.08);
+    }
+
+    .note-card h2 {
+      color: #ffc84a;
+      font-size: 1rem;
+      letter-spacing: 0.5px;
+      font-weight: 800;
+    }
+
+    .divider {
+      width: 78%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, #b97828, transparent);
+      margin: 0.5rem auto;
+      position: relative;
+    }
+
+    .divider::after {
+      content: "";
+      width: 8px;
+      height: 8px;
+      background: #ffc84a;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%) rotate(45deg);
+    }
+
+    .symbol {
+      height: 54px;
+      display: grid;
+      place-items: center;
+      color: #f6f6f6;
+      font-size: 44px;
+      line-height: 1;
+    }
+
+    .semibreve {
+      font-size: 44px;
+      font-weight: 800;
+      transform: scaleX(1.45);
+    }
+
+    .beat {
+      border: 1px solid #c47e2a;
+      border-radius: 999px;
+      color: #ffc84a;
+      padding: 0.24rem 0.68rem;
+      margin: 0.28rem 0 0.38rem;
+      font-size: 0.84rem;
+      font-weight: 800;
+    }
+
+    .desc {
+      color: #f5f5f5;
+      font-size: 0.83rem;
+      line-height: 1.18;
+      max-width: 150px;
+    }
+
+    .desc span {
+      color: #ffc84a;
+      font-weight: 800;
+    }
+
+    .sound-btn {
+      margin-top: 0.6rem;
+      width: 100%;
+      border: 1px solid #b97828;
+      background: rgba(255, 200, 74, 0.05);
+      color: #ffc84a;
+      border-radius: 999px;
+      padding: 0.46rem 0.5rem;
+      font-size: 0.84rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .sound-btn:hover {
+      background: rgba(255, 200, 74, 0.16);
+    }
+
+    .piano-section {
+      margin-top: 0.9rem;
+      border: 1px solid rgba(255, 187, 70, 0.45);
+      border-radius: 1rem;
+      background: linear-gradient(180deg, rgba(8, 13, 21, 0.95), rgba(5, 10, 18, 0.98));
+      padding: 1rem 1rem 1.05rem;
+    }
+
+    .piano-head {
+      display: flex;
+      align-items: center;
+      gap: 0.9rem;
+      flex-wrap: wrap;
+      margin-bottom: 0.7rem;
+    }
+
+    .piano-head h2 {
+      color: #ffc84a;
+      font-size: 1.65rem;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+    }
+
+    .piano-head p {
+      color: #f8e5bd;
+      font-size: 1.15rem;
+      opacity: 0.95;
+    }
+
+    .keyboard-scroll {
+      overflow: hidden;
+      padding-bottom: 0;
+    }
+
+    .keyboard {
+      width: 100%;
+      min-width: 0;
+      display: flex;
+      background: #111;
+      border: 1px solid rgba(255, 209, 125, 0.36);
+      border-radius: 0.9rem;
+      padding: 0.35rem;
+      box-shadow: inset 0 0 18px rgba(255, 213, 95, 0.08);
+    }
+
+    .white-key {
+      position: relative;
+      width: calc((100% - 21px) / 22);
+      height: 210px;
+      margin-right: 1px;
+      flex: 0 0 auto;
+      min-width: 0;
+    }
+
+    .white-key:last-child {
+      margin-right: 0;
+    }
+
+    .piano-key {
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+      font-weight: 800;
+    }
+
+    .piano-key.white {
+      width: 100%;
+      height: 100%;
+      border-radius: 0.42rem;
+      border: 1px solid rgba(18, 25, 35, 0.8);
+      background: linear-gradient(180deg, #f8f5ef, #e1dbd2);
+      color: #191919;
+      font-size: 1.18rem;
+      padding-top: 154px;
+      transition: transform 0.08s ease, box-shadow 0.08s ease;
+    }
+
+    .piano-key.white:active,
+    .piano-key.white.playing {
+      background: linear-gradient(180deg, #ffd979, #e4b23f);
+      transform: translateY(1px);
+    }
+
+    .piano-key.black {
+      position: absolute;
+      top: 0;
+      right: -28%;
+      width: 56%;
+      height: 132px;
+      border-radius: 0 0 0.42rem 0.42rem;
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      background: linear-gradient(180deg, #242c39, #0e1520);
+      color: #f5cf7b;
+      font-size: 0.85rem;
+      padding-top: 90px;
+      letter-spacing: 0;
+      z-index: 3;
+      box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
+      transition: transform 0.08s ease, background 0.08s ease;
+    }
+
+    .piano-key.black:active,
+    .piano-key.black.playing {
+      background: linear-gradient(180deg, #3a4455, #151d29);
+      transform: translateY(1px);
+    }
+
+    @media (max-width: 1100px) {
+      body {
+        overflow: auto;
+      }
+
+      .top-stats {
+        grid-template-columns: repeat(2, minmax(140px, 1fr));
+      }
+
+      .lesson-shell {
+        height: auto;
+        min-height: 0;
+      }
+
+      .cards {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        height: auto;
+      }
+
+      .note-card {
+        min-height: 260px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .lesson-header {
+        padding: 0.8rem;
+      }
+
+      .top-link-row {
+        width: 100%;
+      }
+
+      .top-link {
+        flex: 1 1 100px;
+        text-align: center;
+        font-size: 0.92rem;
+      }
+
+      .top-brand {
+        font-size: 1.75rem;
+      }
+
+      .top-brand-sub {
+        font-size: 1.1rem;
+      }
+
+      .top-stat-title {
+        font-size: 1rem;
+      }
+
+      .top-stat-value {
+        font-size: 1.55rem;
+      }
+
+      .top-hearts {
+        font-size: 1.2rem;
+      }
+
+      .top-level-percent {
+        font-size: 0.9rem;
+      }
+
+      .cards-wrap {
+        padding: 0.8rem;
+      }
+
+      .cards {
+        grid-template-columns: 1fr;
+      }
+
+      .lesson-title {
+        font-size: 1.2rem;
+      }
+
+      .lesson-subtitle {
+        font-size: 0.9rem;
+      }
+
+      .next-btn {
+        font-size: 0.95rem;
+        padding: 0.45rem 0.9rem;
+      }
+
+      .piano-head h2 {
+        font-size: 1.2rem;
+      }
+
+      .piano-head p {
+        font-size: 0.92rem;
+      }
+
+      .white-key {
+        height: 130px;
+      }
+
+      .piano-key.white {
+        font-size: 0.75rem;
+        padding-top: 94px;
+      }
+
+      .piano-key.black {
+        height: 86px;
+        font-size: 0.52rem;
+        padding-top: 58px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="lesson-shell">
+    <header class="lesson-header">
+      <div class="lesson-title-wrap">
+        <h1 class="lesson-title">🎹 LESSON 1: NOTE VALUES</h1>
+        <p class="lesson-subtitle">Learn each note, then continue to the game</p>
+      </div>
+      <div class="status-wrap">
+        <button class="next-btn" id="nextBtn" type="button">NEXT ▶</button>
+      </div>
+    </header>
+
+    <div class="cards-wrap">
+      <section class="cards">
+        <article class="note-card" data-sound="semibreve">
+          <h2>SEMIBREVE</h2>
+          <div class="divider"></div>
+          <div class="symbol semibreve">○</div>
+          <div class="beat">4 BEATS</div>
+          <p class="desc">This note is held for <span>4</span> counts.</p>
+          <button class="sound-btn" type="button">🔊 PLAY SOUND</button>
+        </article>
+
+        <article class="note-card active" data-sound="minim">
+          <h2>MINIM</h2>
+          <div class="divider"></div>
+          <div class="symbol">𝅗𝅥</div>
+          <div class="beat">2 BEATS</div>
+          <p class="desc">This note is held for <span>2</span> counts.</p>
+          <button class="sound-btn" type="button">🔊 PLAY SOUND</button>
+        </article>
+
+        <article class="note-card" data-sound="crotchet">
+          <h2>CROTCHET</h2>
+          <div class="divider"></div>
+          <div class="symbol">♩</div>
+          <div class="beat">1 BEAT</div>
+          <p class="desc">This note is held for <span>1</span> count.</p>
+          <button class="sound-btn" type="button">🔊 PLAY SOUND</button>
+        </article>
+
+        <article class="note-card" data-sound="quaver">
+          <h2>QUAVER</h2>
+          <div class="divider"></div>
+          <div class="symbol">♪</div>
+          <div class="beat">1/2 BEAT</div>
+          <p class="desc">This is a quick note. It gets <span>1/2</span> beat.</p>
+          <button class="sound-btn" type="button">🔊 PLAY SOUND</button>
+        </article>
+      </section>
+
+      <section class="piano-section">
+        <div class="piano-head">
+          <h2>🎹 TRY ON THE PIANO</h2>
+          <p>Tap any key to hear the sound</p>
+        </div>
+
+        <div class="keyboard-scroll">
+          <div class="keyboard">
+            <div class="white-key">
+              <button class="piano-key white" data-note="C4" type="button">C</button>
+              <button class="piano-key black" data-note="C#4" type="button">C#</button>
+            </div>
+            <div class="white-key">
+              <button class="piano-key white" data-note="D4" type="button">D</button>
+              <button class="piano-key black" data-note="D#4" type="button">D#</button>
+            </div>
+            <div class="white-key">
+              <button class="piano-key white" data-note="E4" type="button">E</button>
+            </div>
+            <div class="white-key">
+              <button class="piano-key white" data-note="F4" type="button">F</button>
+              <button class="piano-key black" data-note="F#4" type="button">F#</button>
+            </div>
+            <div class="white-key">
+              <button class="piano-key white" data-note="G4" type="button">G</button>
+              <button class="piano-key black" data-note="G#4" type="button">G#</button>
+            </div>
+            <div class="white-key">
+              <button class="piano-key white" data-note="A4" type="button">A</button>
+              <button class="piano-key black" data-note="A#4" type="button">A#</button>
+            </div>
+            <div class="white-key">
+              <button class="piano-key white" data-note="B4" type="button">B</button>
+            </div>
+            <div class="white-key">
+              <button class="piano-key white" data-note="C5" type="button">C</button>
+              <button class="piano-key black" data-note="C#5" type="button">C#</button>
+            </div>
+            <div class="white-key">
+              <button class="piano-key white" data-note="D5" type="button">D</button>
+              <button class="piano-key black" data-note="D#5" type="button">D#</button>
+            </div>
+            <div class="white-key">
+              <button class="piano-key white" data-note="E5" type="button">E</button>
+            </div>
+            <div class="white-key">
+              <button class="piano-key white" data-note="F5" type="button">F</button>
+              <button class="piano-key black" data-note="F#5" type="button">F#</button>
+            </div>
+            <div class="white-key">
+              <button class="piano-key white" data-note="G5" type="button">G</button>
+              <button class="piano-key black" data-note="G#5" type="button">G#</button>
+            </div>
+            <div class="white-key">
+              <button class="piano-key white" data-note="A5" type="button">A</button>
+              <button class="piano-key black" data-note="A#5" type="button">A#</button>
+            </div>
+            <div class="white-key">
+              <button class="piano-key white" data-note="B5" type="button">B</button>
+            </div>
+            <div class="white-key">
+              <button class="piano-key white" data-note="C6" type="button">C</button>
+              <button class="piano-key black" data-note="C#6" type="button">C#</button>
+            </div>
+            <div class="white-key">
+              <button class="piano-key white" data-note="D6" type="button">D</button>
+              <button class="piano-key black" data-note="D#6" type="button">D#</button>
+            </div>
+            <div class="white-key">
+              <button class="piano-key white" data-note="E6" type="button">E</button>
+            </div>
+            <div class="white-key">
+              <button class="piano-key white" data-note="F6" type="button">F</button>
+              <button class="piano-key black" data-note="F#6" type="button">F#</button>
+            </div>
+            <div class="white-key">
+              <button class="piano-key white" data-note="G6" type="button">G</button>
+              <button class="piano-key black" data-note="G#6" type="button">G#</button>
+            </div>
+            <div class="white-key">
+              <button class="piano-key white" data-note="A6" type="button">A</button>
+              <button class="piano-key black" data-note="A#6" type="button">A#</button>
+            </div>
+            <div class="white-key">
+              <button class="piano-key white" data-note="B6" type="button">B</button>
+            </div>
+            <div class="white-key">
+              <button class="piano-key white" data-note="C7" type="button">C</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+    </section>
+  </main>
+
+  <script>
+    const cards = document.querySelectorAll(".note-card");
+    const nextBtn = document.getElementById("nextBtn");
+    const pianoKeys = document.querySelectorAll(".piano-key");
+
+    function playTone(type) {
+      const audio = new AudioContext();
+      const oscillator = audio.createOscillator();
+      const gain = audio.createGain();
+
+      const tones = {
+        semibreve: { frequency: 261.63, duration: 1.2 },
+        minim: { frequency: 329.63, duration: 0.9 },
+        crotchet: { frequency: 392.0, duration: 0.55 },
+        quaver: { frequency: 523.25, duration: 0.28 }
+      };
+
+      const note = tones[type];
+
+      oscillator.frequency.value = note.frequency;
+      oscillator.type = "sine";
+
+      gain.gain.setValueAtTime(0.75, audio.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audio.currentTime + note.duration);
+
+      oscillator.connect(gain);
+      gain.connect(audio.destination);
+
+      oscillator.start();
+      oscillator.stop(audio.currentTime + note.duration);
+    }
+
+    function playPianoTone(noteName) {
+      const noteMap = {
+        C4: 261.63,
+        "C#4": 277.18,
+        D4: 293.66,
+        "D#4": 311.13,
+        E4: 329.63,
+        F4: 349.23,
+        "F#4": 369.99,
+        G4: 392.0,
+        "G#4": 415.3,
+        A4: 440.0,
+        "A#4": 466.16,
+        B4: 493.88,
+        C5: 523.25,
+        "C#5": 554.37,
+        D5: 587.33,
+        "D#5": 622.25,
+        E5: 659.25,
+        F5: 698.46,
+        "F#5": 739.99,
+        G5: 783.99,
+        "G#5": 830.61,
+        A5: 880.0,
+        "A#5": 932.33,
+        B5: 987.77,
+        C6: 1046.5,
+        "C#6": 1108.73,
+        D6: 1174.66,
+        "D#6": 1244.51,
+        E6: 1318.51,
+        F6: 1396.91,
+        "F#6": 1479.98,
+        G6: 1567.98,
+        "G#6": 1661.22,
+        A6: 1760.0,
+        "A#6": 1864.66,
+        B6: 1975.53,
+        C7: 2093.0
+      };
+
+      const frequency = noteMap[noteName];
+      if (!frequency) {
+        return;
+      }
+
+      const audio = new AudioContext();
+      const oscillator = audio.createOscillator();
+      const gain = audio.createGain();
+
+      oscillator.frequency.value = frequency;
+      oscillator.type = "triangle";
+
+      gain.gain.setValueAtTime(0.6, audio.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audio.currentTime + 0.65);
+
+      oscillator.connect(gain);
+      gain.connect(audio.destination);
+
+      oscillator.start();
+      oscillator.stop(audio.currentTime + 0.65);
+    }
+
+    function learnCard(card) {
+      cards.forEach((item) => item.classList.remove("active"));
+      card.classList.add("active");
+      playTone(card.dataset.sound);
+    }
+
+    cards.forEach((card) => {
+      card.addEventListener("click", () => learnCard(card));
+
+      const btn = card.querySelector(".sound-btn");
+      btn.addEventListener("click", (event) => {
+        event.stopPropagation();
+        learnCard(card);
+      });
+    });
+
+    pianoKeys.forEach((key) => {
+      key.addEventListener("click", () => {
+        key.classList.add("playing");
+        playPianoTone(key.dataset.note);
+        setTimeout(() => key.classList.remove("playing"), 110);
+      });
+    });
+
+    nextBtn.addEventListener("click", () => {
+      window.location.href = "/level1-lesson1exercise";
+    });
+  </script>
+</body>
+</html>

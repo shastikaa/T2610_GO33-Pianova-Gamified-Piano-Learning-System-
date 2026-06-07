@@ -359,9 +359,10 @@
         }
         .stat-card strong {
             display: block;
-            font-size: 1.95rem;
+            font-size: clamp(1.7rem, 2.3vw, 1.95rem);
             line-height: 1;
             color: #1a1a1a;
+            word-break: break-word;
         }
         .stat-note {
             margin-top: 6px;
@@ -757,8 +758,8 @@
             <section class="content">
                 <div class="topbar">
                     <div class="circle">🔔</div>
-                    <div class="avatar">{{ username[:1]|upper }}</div>
-                    <div class="user">{{ username }}</div>
+                    <div class="avatar" id="topbarAvatarValue">{{ username[:1]|upper }}</div>
+                    <div class="user" id="topbarUsernameValue">{{ username }}</div>
                     <div style="font-weight:800;color:#4a311a;">▾</div>
                 </div>
 
@@ -767,7 +768,7 @@
                         <div class="hero-copy">
                             <h2>
                                 Hi there,
-                                <span class="name">{{ username }}! 👋</span>
+                                <span class="name" id="heroUsernameValue">{{ username }}! 👋</span>
                             </h2>
                             <p>Let's make beautiful music today!</p>
                             <div class="hero-actions">
@@ -792,7 +793,7 @@
                         <div class="stat-icon">📖</div>
                         <div>
                             <h3>Lessons Completed</h3>
-                            <strong>{{ metrics.completed_lessons }}</strong>
+                            <strong id="lessonsCompletedValue">{{ metrics.completed_lessons }}</strong>
                             <div class="stat-note">Keep it up! ✨</div>
                         </div>
                     </article>
@@ -800,7 +801,7 @@
                         <div class="stat-icon">⭐</div>
                         <div>
                             <h3>Total Score</h3>
-                            <strong>{{ metrics.score_total }}</strong>
+                            <strong id="totalScoreValue">{{ metrics.score_total }}</strong>
                             <div class="stat-note">Great progress! 🎉</div>
                         </div>
                     </article>
@@ -808,9 +809,9 @@
                         <div class="stat-icon">👑</div>
                         <div>
                             <h3>Current Level</h3>
-                            <strong>{{ metrics.current_level }}</strong>
-                            <div class="stat-note">
-                                {% if metrics.current_level <= 1 %}Beginner 🎵{% elif metrics.current_level == 2 %}Young Pianist 🎵{% elif metrics.current_level == 3 %}Intermediate 🎶{% else %}Advanced 🌟{% endif %}
+                            <strong id="currentLevelValue">{{ metrics.current_level }}</strong>
+                            <div class="stat-note" id="currentLevelLabelValue">
+                                {{ current_level_label }}
                             </div>
                         </div>
                     </article>
@@ -821,9 +822,9 @@
                         <div class="panel-header">
                             <div>
                                 <h3>Your Progress</h3>
-                                <p class="panel-subtle">See how you're improving every day!</p>
+                                <p class="panel-subtle">Daily practice hours tracked from your play sessions.</p>
                             </div>
-                            <div class="chip">This Week ▾</div>
+                            <div class="chip" id="practiceHoursWeekChip">{{ weekly_practice_time }} This Week</div>
                         </div>
 
                         <div class="progress-graph" aria-label="Weekly progress chart">
@@ -834,36 +835,40 @@
                                         <stop offset="100%" stop-color="#f0b51c" stop-opacity="0.02"/>
                                     </linearGradient>
                                 </defs>
-                                <path d="{{ progress_chart.fill_path }}" fill="url(#lineGlow)"></path>
-                                <path d="{{ progress_chart.path }}" fill="none" stroke="#f0b51c" stroke-width="4" stroke-linecap="round"></path>
-                                <g fill="#f0b51c" stroke="#ffe7a3" stroke-width="3">
+                                <path id="progressFillPath" d="{{ progress_chart.fill_path }}" fill="url(#lineGlow)"></path>
+                                <path id="progressLinePath" d="{{ progress_chart.path }}" fill="none" stroke="#f0b51c" stroke-width="4" stroke-linecap="round"></path>
+                                <g id="progressDots" fill="#f0b51c" stroke="#ffe7a3" stroke-width="3">
                                     {% for point in progress_chart.dots %}
                                     <circle cx="{{ point.x }}" cy="{{ point.y }}" r="7" />
                                     {% endfor %}
                                 </g>
                             </svg>
                         </div>
-                        <div class="axis-labels">
-                            {% for point in progress_chart.dots %}
-                            <span>{{ point.label }}</span>
-                            {% endfor %}
+                        <div class="axis-labels" id="axisLabels">
+                            <span>Mon</span>
+                            <span>Tue</span>
+                            <span>Wed</span>
+                            <span>Thu</span>
+                            <span>Fri</span>
+                            <span>Sat</span>
+                            <span>Sun</span>
                         </div>
 
                         <div class="mini-grid">
                             <article class="mini-card">
                                 <div class="mini-badge">🕒</div>
                                 <div>
-                                    <span>Practice Time</span>
-                                    <strong>{{ practice_time }}</strong>
-                                    <div class="mini-foot">This Week</div>
+                                    <span>Total Practice Time</span>
+                                    <strong id="practiceTimeValue">{{ practice_time }}</strong>
+                                    <div class="mini-foot">All Time</div>
                                 </div>
                             </article>
                             <article class="mini-card">
                                 <div class="mini-badge">🎯</div>
                                 <div>
-                                    <span>Lessons Completed</span>
-                                    <strong>{{ metrics.completed_lessons }}</strong>
-                                    <div class="mini-foot">This Week</div>
+                                    <span>Practice Hours</span>
+                                    <strong id="practiceHoursWeekValue">{{ weekly_practice_time }}</strong>
+                                    <div class="mini-foot">Tracked This Week</div>
                                 </div>
                             </article>
                         </div>
@@ -878,10 +883,10 @@
                             <div class="lesson-card-mini">
                                 <div class="lesson-art" aria-hidden="true"></div>
                                 <div>
-                                    <div class="lesson-kicker">{{ next_lesson.label }}</div>
-                                    <div class="lesson-title-mini">{{ next_lesson.title }}</div>
-                                    <p class="lesson-desc">{{ next_lesson.description }}</p>
-                                    <a class="continue-btn" href="{{ lessons_card_url if lessons_card_url is defined else url_for('lessons') }}">{{ next_lesson.button_text }}</a>
+                                    <div class="lesson-kicker" id="nextLessonLabelValue">{{ next_lesson.label }}</div>
+                                    <div class="lesson-title-mini" id="nextLessonTitleValue">{{ next_lesson.title }}</div>
+                                    <p class="lesson-desc" id="nextLessonDescValue">{{ next_lesson.description }}</p>
+                                    <a class="continue-btn" href="{{ lessons_card_url if lessons_card_url is defined else url_for('lessons') }}" id="nextLessonButtonValue">{{ next_lesson.button_text }}</a>
                                 </div>
                             </div>
                         </section>
@@ -925,5 +930,153 @@
             </section>
         </div>
     </main>
+    <script>
+        (function () {
+            function hasJinjaPlaceholder(value) {
+                if (typeof value !== 'string') {
+                    return false;
+                }
+
+                var jinjaPrint = String.fromCharCode(123, 123);
+                var jinjaBlock = String.fromCharCode(123, 37);
+                return value.indexOf(jinjaPrint) !== -1 || value.indexOf(jinjaBlock) !== -1;
+            }
+
+            function normalizeUsername(value) {
+                var raw = (value || '').trim();
+                if (!raw) return 'Student';
+                return raw;
+            }
+
+            function setTextIfPlaceholder(id, fallbackText) {
+                var el = document.getElementById(id);
+                if (!el) return;
+                if (hasJinjaPlaceholder((el.textContent || '').trim())) {
+                    el.textContent = fallbackText;
+                }
+            }
+
+            function setAttrIfPlaceholder(id, attrName, fallbackValue) {
+                var el = document.getElementById(id);
+                if (!el) return;
+                var attrValue = el.getAttribute(attrName) || '';
+                if (hasJinjaPlaceholder(attrValue)) {
+                    el.setAttribute(attrName, fallbackValue);
+                }
+            }
+
+            setTextIfPlaceholder('lessonsCompletedValue', '5');
+            setTextIfPlaceholder('totalScoreValue', '120');
+            setTextIfPlaceholder('currentLevelValue', '2');
+            setTextIfPlaceholder('currentLevelLabelValue', 'Young Pianist 🎵');
+            setTextIfPlaceholder('practiceTimeValue', '0m');
+            setTextIfPlaceholder('miniLessonsCompletedValue', '5');
+            setTextIfPlaceholder('nextLessonLabelValue', 'Lesson 2');
+            setTextIfPlaceholder('nextLessonTitleValue', 'Basic Notes');
+            setTextIfPlaceholder('nextLessonDescValue', 'Learn the basics of music notes.');
+            setTextIfPlaceholder('nextLessonButtonValue', 'Continue');
+            setTextIfPlaceholder('practiceHoursWeekValue', '0m');
+            setTextIfPlaceholder('practiceHoursWeekChip', '0m This Week');
+
+            function applyPracticeChart(payload) {
+                if (!payload || !payload.chart) return;
+
+                var linePath = document.getElementById('progressLinePath');
+                var fillPath = document.getElementById('progressFillPath');
+                var dotsGroup = document.getElementById('progressDots');
+                var axisLabels = document.getElementById('axisLabels');
+
+                if (linePath && payload.chart.path) {
+                    linePath.setAttribute('d', payload.chart.path);
+                }
+                if (fillPath && payload.chart.fill_path) {
+                    fillPath.setAttribute('d', payload.chart.fill_path);
+                }
+
+                if (dotsGroup && Array.isArray(payload.chart.dots)) {
+                    dotsGroup.innerHTML = '';
+                    payload.chart.dots.forEach(function (dot) {
+                        var circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                        circle.setAttribute('cx', String(dot.x));
+                        circle.setAttribute('cy', String(dot.y));
+                        circle.setAttribute('r', '7');
+                        dotsGroup.appendChild(circle);
+                    });
+                }
+
+                if (axisLabels && Array.isArray(payload.chart.dots)) {
+                    axisLabels.innerHTML = '';
+                    payload.chart.dots.forEach(function (dot) {
+                        var span = document.createElement('span');
+                        span.textContent = dot.label;
+                        axisLabels.appendChild(span);
+                    });
+                }
+
+                if (payload.weekly_practice_time) {
+                    var weekChip = document.getElementById('practiceHoursWeekChip');
+                    var weekValue = document.getElementById('practiceHoursWeekValue');
+                    if (weekChip) weekChip.textContent = payload.weekly_practice_time + ' This Week';
+                    if (weekValue) weekValue.textContent = payload.weekly_practice_time;
+                }
+
+                if (payload.total_practice_time) {
+                    var totalValue = document.getElementById('practiceTimeValue');
+                    if (totalValue) totalValue.textContent = payload.total_practice_time;
+                }
+            }
+
+            fetch('/api/weekly-practice', { credentials: 'same-origin' })
+                .then(function (response) {
+                    if (!response.ok) throw new Error('Weekly practice request failed');
+                    return response.json();
+                })
+                .then(applyPracticeChart)
+                .catch(function () {
+                    // Keep server-rendered values if API call fails.
+                });
+
+            var heroUsername = document.getElementById('heroUsernameValue');
+            var topbarUsername = document.getElementById('topbarUsernameValue');
+            var topbarAvatar = document.getElementById('topbarAvatarValue');
+
+            function applyUsername(username, initial) {
+                var safeName = normalizeUsername(username);
+                var safeInitial = (initial || safeName.charAt(0) || 'S').toUpperCase();
+
+                if (heroUsername) {
+                    heroUsername.textContent = safeName + '! 👋';
+                }
+                if (topbarUsername) {
+                    topbarUsername.textContent = safeName;
+                }
+                if (topbarAvatar) {
+                    topbarAvatar.textContent = safeInitial;
+                }
+            }
+
+            var needsUsernameFallback = false;
+            if (heroUsername && hasJinjaPlaceholder((heroUsername.textContent || '').trim())) {
+                needsUsernameFallback = true;
+            }
+            if (topbarUsername && hasJinjaPlaceholder((topbarUsername.textContent || '').trim())) {
+                needsUsernameFallback = true;
+            }
+
+            if (needsUsernameFallback) {
+                fetch('/api/current-user', { credentials: 'same-origin' })
+                    .then(function (response) {
+                        if (!response.ok) throw new Error('Unable to load current user');
+                        return response.json();
+                    })
+                    .then(function (payload) {
+                        applyUsername(payload.username, payload.initial);
+                    })
+                    .catch(function () {
+                        applyUsername('Student', 'S');
+                    });
+            }
+        })();
+    </script>
 </body>
 </html>

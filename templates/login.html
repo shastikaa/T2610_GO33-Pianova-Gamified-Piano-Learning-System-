@@ -526,9 +526,7 @@
 </head>
 <body>
 
-    <video class="bg-video" autoplay muted loop playsinline>
-        <source src="{{ url_for('static', filename='bg.mp4') }}" type="video/mp4">
-    </video>
+    <img class="bg-video" src="{{ url_for('static', filename='background.jpg') }}" alt="" aria-hidden="true">
     <div class="bg-overlay"></div>
 
     <div class="main-content">
@@ -560,7 +558,7 @@
                     <span class="logo-accent">♭</span>
                     <div class="logo-circle">
                         <div class="logo-piano-circle">
-                            <img src="{{ url_for('static', filename='images_theepak/pianova_logo.png') }}" alt="Pianova Logo">
+                            <img id="heroLogoImage" src="{{ url_for('static', filename='images_theepak/pianova_logo.png') }}" alt="Pianova Logo" onerror="this.onerror=null;this.src='../static/images_theepak/pianova_logo.png';">
                         </div>
                     </div>
                     <div class="logo-name">Pianova</div>
@@ -594,12 +592,14 @@
         <div class="login-card">
             <div class="card-logo-wrap">
                 <div class="card-logo-circle">
-                    <img src="{{ url_for('static', filename='images_theepak/pianova_logo.png') }}" alt="Pianova">
+                    <img id="cardLogoImage" src="{{ url_for('static', filename='images_theepak/pianova_logo.png') }}" alt="Pianova" onerror="this.onerror=null;this.src='../static/images_theepak/pianova_logo.png';">
                 </div>
             </div>
             <p class="card-tagline">Play &nbsp;&middot;&nbsp; Learn &nbsp;&middot;&nbsp; Grow</p>
             <p class="card-subtext">Sign in to continue your piano learning journey.</p>
 
+            <div id="flashMessagesMount"></div>
+            <template id="flashMessagesTemplate">
             {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
                     {% for category, message in messages %}
@@ -607,6 +607,7 @@
                     {% endfor %}
                 {% endif %}
             {% endwith %}
+            </template>
 
             <form method="post">
                 <div class="input-group">
@@ -668,6 +669,46 @@
     </div>
 
     <script>
+        (function () {
+            function hasTemplateSyntax(value) {
+                if (typeof value !== 'string') {
+                    return false;
+                }
+
+                var jinjaPrint = String.fromCharCode(123, 123);
+                var jinjaBlock = String.fromCharCode(123, 37);
+                return value.indexOf(jinjaPrint) !== -1 || value.indexOf(jinjaBlock) !== -1;
+            }
+
+            function applySrcFallback(id, fallbackPath) {
+                var el = document.getElementById(id);
+                if (!el) return;
+
+                var src = el.getAttribute('src') || '';
+                if (hasTemplateSyntax(src)) {
+                    el.setAttribute('src', fallbackPath);
+                }
+            }
+
+            function renderFlashMessagesFromTemplate() {
+                var mount = document.getElementById('flashMessagesMount');
+                var tpl = document.getElementById('flashMessagesTemplate');
+                if (!mount || !tpl) return;
+
+                var html = tpl.innerHTML || '';
+                if (hasTemplateSyntax(html)) {
+                    mount.innerHTML = '';
+                    return;
+                }
+
+                mount.innerHTML = html.trim();
+            }
+
+            applySrcFallback('heroLogoImage', '../static/images_theepak/pianova_logo.png');
+            applySrcFallback('cardLogoImage', '../static/images_theepak/pianova_logo.png');
+            renderFlashMessagesFromTemplate();
+        })();
+
         // 10 octaves: C0 – B9  (offsets relative to BASE_W=48, per-octave stride=336)
         const NOTES = [
             // ── Octave 0 ──
@@ -935,7 +976,7 @@
             [220.00,261.63,329.63],  // A min
         ];
 
-        function playNote(freq, startTime, duration) {
+        function playLoopNote(freq, startTime, duration) {
             const osc = bgCtx.createOscillator();
             const gainNode = bgCtx.createGain();
             const filter = bgCtx.createBiquadFilter();
@@ -982,7 +1023,7 @@
 
             // Schedule melody
             MELODY.forEach(note => {
-                playNote(note.f, t, note.d);
+                playLoopNote(note.f, t, note.d);
                 t += note.d * BEAT;
             });
 

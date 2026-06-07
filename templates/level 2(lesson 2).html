@@ -1399,11 +1399,13 @@
                         <div>
                             <div class="homepage-logo">Farewell</div>
                             <div class="homepage-sub">Thanks for playing Pianova. See you soon!</div>
-                            <button id="quitReturnBtn" class="home-btn">RETURN TO HOME</button>
+                            <button id="quitReturnBtn" class="home-btn">RETURN TO LESSONS</button>
                         </div>
                     </div>
                 `;
-                document.getElementById('quitReturnBtn')?.addEventListener('click', () => showHomepage());
+                document.getElementById('quitReturnBtn')?.addEventListener('click', () => {
+                    window.location.href = '/lessons';
+                });
             });
         }
 

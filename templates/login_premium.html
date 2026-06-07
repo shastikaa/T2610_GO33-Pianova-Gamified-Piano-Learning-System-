@@ -693,9 +693,7 @@
     </style>
 </head>
 <body>
-    <video class="bg-video" autoplay muted loop playsinline>
-        <source src="{{ url_for('static', filename='bg.mp4') }}" type="video/mp4">
-    </video>
+    <img class="bg-video" src="{{ url_for('static', filename='background.jpg') }}" alt="" aria-hidden="true">
     <div class="bg-overlay"></div>
 
     <div class="main-content">

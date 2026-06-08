@@ -577,12 +577,6 @@
       background: linear-gradient(135deg, #fff0b4, var(--gold) 58%, #a66c20);
     }
 
-    .btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-      filter: grayscale(0.2);
-    }
-
     .feedback {
       min-width: 220px;
       color: #f7ead1;
@@ -873,7 +867,6 @@
         <button class="btn primary" id="hearBtn">Hear Note</button>
         <div class="feedback" id="feedback">Random note ready</div>
         <button class="btn" id="restartBtn">Restart</button>
-        <button class="btn primary" id="nextLessonBtn" disabled>Next Lesson</button>
       </div>
     </section>
   </main>
@@ -1061,10 +1054,7 @@
 
     function nextLevel() {
       if (levelIndex >= levels.length - 1) {
-        setFeedback("Great work! Loading next lesson...", "good");
-        setTimeout(() => {
-          window.location.href = "/lesson2-4";
-        }, 450);
+        restart("You finished all lessons!");
         return;
       }
 
@@ -1087,13 +1077,6 @@
       document.getElementById("lessonTitle").textContent = levels[levelIndex].title;
       document.getElementById("progressFill").style.width = `${progress}%`;
       document.getElementById("progressText").textContent = `${progress}%`;
-
-      const nextLessonBtn = document.getElementById("nextLessonBtn");
-      if (nextLessonBtn) {
-        const unlocked = question >= QUESTIONS_PER_LEVEL;
-        nextLessonBtn.disabled = !unlocked;
-        nextLessonBtn.title = unlocked ? "" : `Complete ${QUESTIONS_PER_LEVEL} correct answers to unlock`;
-      }
     }
 
     function setFeedback(text, type) {
@@ -1133,9 +1116,6 @@
     });
 
     document.getElementById("restartBtn").addEventListener("click", () => restart());
-    document.getElementById("nextLessonBtn").addEventListener("click", () => {
-      window.location.href = "/lesson2-4";
-    });
     document.getElementById("shuffleBtn").addEventListener("click", () => newQuestion());
     document.getElementById("soundBtn").addEventListener("click", () => playNote(target));
     document.getElementById("exitBtn").addEventListener("click", () => {

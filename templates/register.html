@@ -187,9 +187,7 @@
     </style>
 </head>
 <body>
-    <video class="video-bg" autoplay muted loop playsinline>
-        <source src="{{ url_for('static', filename='bg.mp4') }}" type="video/mp4">
-    </video>
+    <img class="video-bg" src="{{ url_for('static', filename='background.jpg') }}" alt="" aria-hidden="true">
     <div class="backdrop"></div>
     <div class="dust"></div>
     <main class="layout">

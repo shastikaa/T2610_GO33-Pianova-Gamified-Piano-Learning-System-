@@ -3,16 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Pianova | Gamified Piano Mastery</title>
+    <title>Pianova - Triad Master</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+
     <style>
         :root {
-            --bg: #020303;
-            --panel: rgba(7, 9, 12, 0.92);
-            --panel-soft: rgba(13, 15, 20, 0.84);
             --gold: #f2bd57;
             --gold-soft: #ffe3a1;
-            --gold-deep: #9a6425;
             --cream: #fff3df;
             --muted: #d6c5a8;
             --red: #ff5368;
@@ -27,59 +24,68 @@
             -webkit-tap-highlight-color: transparent;
         }
 
+        html,
         body {
-            min-height: 100vh;
-            overflow-x: hidden;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
             font-family: Inter, sans-serif;
             color: var(--cream);
             background:
-                radial-gradient(circle at 7% 38%, rgba(242, 189, 87, 0.18), transparent 27%),
-                radial-gradient(circle at 96% 45%, rgba(242, 189, 87, 0.22), transparent 26%),
-                radial-gradient(circle at 50% 105%, rgba(118, 65, 23, 0.42), transparent 32%),
+                radial-gradient(circle at 0% 0%, rgba(242, 189, 87, 0.16), transparent 28%),
+                radial-gradient(circle at 100% 0%, rgba(242, 189, 87, 0.14), transparent 28%),
+                radial-gradient(circle at 50% 110%, rgba(118, 65, 23, 0.38), transparent 32%),
                 #020303;
-            padding: 26px 16px;
+            padding: 8px 12px;
         }
 
         .music-bg {
             position: fixed;
             inset: 0;
             pointer-events: none;
-            overflow: hidden;
-            color: rgba(242, 189, 87, 0.28);
+            color: rgba(242, 189, 87, 0.16);
             z-index: 0;
+            overflow: hidden;
+            font-family: "Playfair Display", serif;
         }
 
         .music-bg span {
             position: absolute;
-            font-family: "Playfair Display", serif;
-            font-size: clamp(2rem, 6vw, 6rem);
-            filter: drop-shadow(0 0 18px rgba(242, 189, 87, 0.5));
+            font-size: clamp(2.4rem, 7vw, 7rem);
+            filter: drop-shadow(0 0 18px rgba(242, 189, 87, 0.35));
             animation: floatNote 8s ease-in-out infinite;
         }
 
-        .music-bg span:nth-child(1) { left: 2%; top: 35%; animation-delay: 0s; }
-        .music-bg span:nth-child(2) { right: 2%; top: 28%; animation-delay: 1.4s; }
-        .music-bg span:nth-child(3) { left: 4%; bottom: 12%; font-size: 2.4rem; animation-delay: 2.8s; }
-        .music-bg span:nth-child(4) { right: 5%; bottom: 16%; font-size: 3.2rem; animation-delay: 3.6s; }
+        .music-bg span:nth-child(1) { left: 2%; top: 36%; }
+        .music-bg span:nth-child(2) { right: 3%; top: 34%; animation-delay: 1.4s; }
+        .music-bg span:nth-child(3) { left: 5%; bottom: 10%; font-size: 2.4rem; animation-delay: 2.5s; }
+        .music-bg span:nth-child(4) { right: 6%; bottom: 15%; font-size: 3.5rem; animation-delay: 3.5s; }
 
         @keyframes floatNote {
-            0%, 100% { transform: translateY(0); opacity: 0.22; }
-            50% { transform: translateY(-18px); opacity: 0.55; }
+            0%, 100% { transform: translateY(0); opacity: 0.2; }
+            50% { transform: translateY(-18px); opacity: 0.44; }
         }
 
         .stage {
-            width: min(1180px, 100%);
+            width: min(1290px, 100%);
+            min-height: calc(100vh - 28px);
             margin: 0 auto;
             position: relative;
             z-index: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            transform-origin: top center;
         }
 
         .topbar {
             display: grid;
             grid-template-columns: auto 1fr auto;
-            gap: 28px;
             align-items: center;
-            margin-bottom: 22px;
+            gap: 28px;
         }
 
         .brand {
@@ -99,129 +105,122 @@
         }
 
         .brand-mark {
-            width: 56px;
-            height: 56px;
-            border-radius: 18px;
-            font-size: 1.75rem;
+            width: 68px;
+            height: 68px;
+            border-radius: 22px;
+            font-size: 1.8rem;
         }
 
         .brand-title {
             font-family: "Playfair Display", serif;
-            font-size: clamp(2rem, 4vw, 2.65rem);
-            line-height: 0.95;
+            font-size: clamp(2.4rem, 4vw, 3.4rem);
+            line-height: 0.86;
             color: var(--gold-soft);
             text-shadow: 0 0 20px rgba(242, 189, 87, 0.42);
         }
 
         .brand-sub {
             color: var(--muted);
-            margin-top: 4px;
-            font-size: 0.98rem;
-            letter-spacing: 0.02em;
+            margin-top: 6px;
+            font-size: 1.05rem;
+            font-weight: 600;
         }
 
         .nav {
             justify-self: center;
             display: flex;
-            gap: 12px;
-            padding: 8px;
-            border-radius: 18px;
-            background: rgba(5, 7, 10, 0.62);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            box-shadow: inset 0 0 18px rgba(255, 255, 255, 0.02);
+            gap: 16px;
+            padding: 10px;
+            border-radius: 24px;
+            background: rgba(2, 3, 4, 0.78);
+            border: 1px solid rgba(255, 255, 255, 0.08);
         }
 
         .nav-btn,
         .icon-btn,
-        .difficulty,
-        .home-btn,
-        .btn-premium {
+        .difficulty {
             font: inherit;
             border: 1px solid transparent;
             cursor: pointer;
         }
 
         .nav-btn {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 13px 18px;
-            border-radius: 15px;
+            padding: 15px 24px;
+            border-radius: 17px;
             color: #eee8dc;
             background: transparent;
-            font-weight: 700;
+            font-weight: 800;
             white-space: nowrap;
+            font-size: 1.05rem;
         }
 
         .nav-btn.active {
             color: var(--gold-soft);
-            background: linear-gradient(145deg, rgba(242, 189, 87, 0.18), rgba(255, 255, 255, 0.03));
-            box-shadow: inset 0 0 18px rgba(242, 189, 87, 0.08);
+            background: rgba(242, 189, 87, 0.13);
         }
 
         .top-actions {
             display: flex;
             justify-content: flex-end;
-            gap: 12px;
+            gap: 16px;
         }
 
         .icon-btn {
-            width: 54px;
-            height: 54px;
+            width: 68px;
+            height: 68px;
             border-radius: 50%;
             display: grid;
             place-items: center;
             color: var(--gold-soft);
-            background: rgba(5, 6, 8, 0.68);
-            border-color: rgba(242, 189, 87, 0.65);
-            box-shadow: 0 0 18px rgba(242, 189, 87, 0.18);
-            font-size: 1.25rem;
+            background: rgba(5, 6, 8, 0.72);
+            border-color: rgba(242, 189, 87, 0.72);
+            box-shadow: 0 0 22px rgba(242, 189, 87, 0.2);
+            font-size: 1.35rem;
         }
 
         .scoreboard {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            margin-bottom: 18px;
             border-radius: 28px;
             overflow: hidden;
-            background: linear-gradient(145deg, rgba(12, 14, 19, 0.96), rgba(3, 4, 5, 0.92));
+            background: linear-gradient(180deg, rgba(13, 16, 22, 0.96), rgba(4, 5, 7, 0.96));
             border: 1px solid rgba(255, 255, 255, 0.09);
             box-shadow: 0 18px 40px rgba(0, 0, 0, 0.36), inset 0 0 34px rgba(255, 255, 255, 0.03);
         }
 
         .score-item {
-            min-height: 98px;
-            padding: 20px 28px;
+            min-height: 104px;
+            padding: 20px 34px;
             display: flex;
             align-items: center;
-            gap: 17px;
+            gap: 20px;
             border-right: 1px solid rgba(255, 255, 255, 0.09);
         }
 
         .score-item:last-child { border-right: 0; }
 
         .badge {
-            width: 58px;
-            height: 58px;
+            width: 72px;
+            height: 72px;
             display: grid;
             place-items: center;
             border-radius: 50%;
             background: radial-gradient(circle, rgba(255, 227, 161, 0.23), rgba(10, 11, 14, 0.92) 68%);
             border: 1px solid rgba(242, 189, 87, 0.68);
-            box-shadow: 0 0 22px rgba(242, 189, 87, 0.18), inset 0 0 14px rgba(255, 227, 161, 0.08);
-            font-size: 1.7rem;
+            font-size: 2rem;
         }
 
         .score-label {
             color: #f7ebd8;
-            font-size: 1rem;
-            margin-bottom: 4px;
+            font-size: 1.05rem;
+            font-weight: 800;
+            margin-bottom: 5px;
         }
 
         .score-number {
             color: var(--gold-soft);
             font-family: "Playfair Display", serif;
-            font-size: 2rem;
+            font-size: 2.15rem;
             font-weight: 800;
             line-height: 1;
         }
@@ -230,35 +229,26 @@
             color: var(--gold);
             font-size: 1rem;
             font-weight: 800;
-            margin-left: 4px;
+            margin-left: 8px;
         }
 
         .lives-row {
             display: flex;
             gap: 8px;
-            font-size: 1.55rem;
-            line-height: 1;
+            color: var(--red);
+            font-size: 1.35rem;
             text-shadow: 0 0 13px rgba(255, 83, 104, 0.55);
-        }
-
-        .heart { color: var(--red); }
-
-        .heart.lost {
-            color: #383b3f;
-            opacity: 0.86;
-            filter: grayscale(1);
-            text-shadow: none;
         }
 
         .level-progress {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 14px;
             margin-top: 10px;
         }
 
         .progress-track {
-            width: 118px;
+            width: 150px;
             height: 12px;
             overflow: hidden;
             border-radius: 999px;
@@ -276,15 +266,22 @@
         }
 
         .game-shell {
+            flex: 1;
+            min-height: 0;
             position: relative;
-            padding: 34px 58px 34px;
-            border-radius: 38px;
-            background: linear-gradient(180deg, rgba(9, 12, 15, 0.95), rgba(3, 4, 5, 0.96));
-            border: 1px solid rgba(242, 189, 87, 0.62);
+            padding: 18px 28px 16px;
+            border-radius: 36px;
+            background:
+                radial-gradient(circle at 50% 0%, rgba(242,189,87,0.08), transparent 30%),
+                linear-gradient(180deg, rgba(8,11,14,0.98), rgba(1,2,3,0.98));
+            border: 1px solid rgba(242, 189, 87, 0.72);
             box-shadow:
                 0 0 0 1px rgba(255, 227, 161, 0.11),
                 0 0 35px rgba(242, 189, 87, 0.25),
                 inset 0 0 46px rgba(255, 227, 161, 0.05);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
         }
 
         .level-ribbon {
@@ -292,19 +289,20 @@
             top: -2px;
             left: 50%;
             transform: translateX(-50%);
-            min-width: 220px;
-            height: 58px;
+            min-width: 180px;
+            height: 44px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 12px;
             color: #f7e7c7;
             background: linear-gradient(180deg, #080b0e, #0d0f13);
             border: 1px solid rgba(242, 189, 87, 0.72);
             border-top: 0;
             clip-path: polygon(0 0, 100% 0, 82% 100%, 18% 100%);
-            font-weight: 800;
+            font-weight: 900;
             letter-spacing: 0.03em;
+            text-transform: uppercase;
+            font-size: 1rem;
         }
 
         .challenge-header {
@@ -312,1144 +310,743 @@
             align-items: center;
             justify-content: space-between;
             gap: 20px;
-            margin-bottom: 22px;
+            margin-top: 10px;
+            margin-bottom: 18px;
         }
 
         .challenge-title {
             display: flex;
             align-items: center;
-            gap: 18px;
+            gap: 20px;
         }
 
         .mini-mark {
-            width: 58px;
-            height: 58px;
-            border-radius: 15px;
+            width: 68px;
+            height: 68px;
+            border-radius: 18px;
             font-size: 1.85rem;
         }
 
         .challenge-title h1 {
             font-family: "Playfair Display", serif;
             color: var(--gold-soft);
-            font-size: 2.15rem;
+            font-size: 2.75rem;
             line-height: 1;
-            text-shadow: 0 0 18px rgba(242, 189, 87, 0.34);
         }
 
         .challenge-title p {
             color: #f3ebdf;
-            margin-top: 6px;
-            font-size: 1.03rem;
+            margin-top: 5px;
+            font-size: 1.25rem;
+            font-weight: 800;
         }
 
         .difficulty {
             display: flex;
             align-items: center;
             gap: 10px;
-            padding: 17px 22px;
-            border-radius: 15px;
+            padding: 17px 24px;
+            border-radius: 17px;
             color: var(--gold-soft);
             background: rgba(9, 11, 14, 0.84);
-            border-color: rgba(242, 189, 87, 0.38);
-            box-shadow: inset 0 0 18px rgba(255, 227, 161, 0.05);
-            font-weight: 800;
+            border-color: rgba(242, 189, 87, 0.46);
+            font-weight: 900;
             font-size: 1rem;
+            pointer-events: none;
+            opacity: 0.85;
         }
 
-        .melody-panel {
-            border-radius: 20px;
-            padding: 22px 28px;
-            margin-bottom: 20px;
-            background:
-                linear-gradient(rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0.02)),
-                #111318;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            box-shadow: inset 0 0 36px rgba(255, 255, 255, 0.05), 0 20px 40px rgba(0, 0, 0, 0.35);
-        }
-
-        .melody-title {
+        .instruction-main {
             text-align: center;
             color: var(--gold-soft);
-            font-weight: 800;
-            letter-spacing: 0.12em;
-            font-size: 0.86rem;
-            margin-bottom: 16px;
+            font-size: 1.45rem;
+            font-weight: 900;
+            margin: 0 0 18px;
         }
 
-        .target-notes {
-            display: flex;
-            justify-content: center;
-            gap: 18px;
-            flex-wrap: wrap;
-        }
-
-        .note-card {
-            width: 82px;
-            min-height: 70px;
+        .target-panel {
+            height: 140px;
+            border-radius: 18px;
+            padding: 14px 28px;
+            margin-bottom: 12px;
+            background: linear-gradient(180deg, #30343a, #181b20);
+            border: 1px solid rgba(255, 255, 255, 0.15);
             display: grid;
             place-items: center;
-            border-radius: 16px;
-            background: linear-gradient(180deg, #11151b, #080a0d);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: var(--gold-soft);
-            font-size: 1.65rem;
-            font-weight: 800;
-            box-shadow: inset 0 0 16px rgba(255, 255, 255, 0.03);
-            transition: 0.2s ease;
         }
 
-        .note-card.active {
-            color: #120c04;
-            background: linear-gradient(135deg, #fff0ad, #f2bd57 55%, #b87a2a);
-            box-shadow: 0 0 18px rgba(242, 189, 87, 0.42), inset 0 0 12px rgba(255, 255, 255, 0.22);
-            transform: translateY(-2px);
+        .target-card {
+            width: min(950px, 100%);
+            height: 100%;
+            border-radius: 18px;
+            background: #f3e7d1;
+            box-shadow: inset 0 0 18px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #111;
+            position: relative;
+            overflow: hidden;
         }
 
-        .piano-premium {
-            padding: 11px;
-            margin-bottom: 12px;
-            border-radius: 22px;
-            background: #080a0d;
-            border: 1px solid rgba(255, 255, 255, 0.11);
-            box-shadow: inset 0 0 24px rgba(255, 255, 255, 0.04);
-            overflow-x: auto;
+        .staff-lines {
+            position: absolute;
+            left: 80px;
+            right: 80px;
+            top: 50%;
+            height: 72px;
+            transform: translateY(-50%);
+            background: repeating-linear-gradient(
+                to bottom,
+                transparent 0 12px,
+                #282828 13px 15px,
+                transparent 16px 17px
+            );
+        }
+
+        .clef {
+            position: absolute;
+            left: 110px;
+            top: 50%;
+            transform: translateY(-45%);
+            font-family: "Playfair Display", serif;
+            font-size: 5.5rem;
+            line-height: 1;
+            color: #252525;
+        }
+
+        #target-notes {
+            position: relative;
+            z-index: 2;
+            color: #111;
+            font-size: 2rem;
+            font-weight: 900;
+            font-family: Inter, sans-serif;
+            letter-spacing: 8px;
         }
 
         .piano-container {
+            background: #090b0e;
+            padding: 12px;
+            border-radius: 24px;
             display: flex;
             justify-content: center;
-            min-width: max-content;
+            min-height: 170px;
+            border: 1px solid rgba(255,255,255,0.08);
+            overflow-x: auto;
+            overflow-y: hidden;
         }
 
-        .piano-keys {
-            --white-key-width: 102px;
-            --white-key-height: 246px;
-            --black-key-width: 68px;
-            --black-key-height: 132px;
+        .piano-wrapper {
+            display: flex;
             position: relative;
-            width: calc(var(--white-key-width) * 9);
-            min-width: calc(var(--white-key-width) * 9);
-            height: var(--white-key-height);
-            display: grid;
-            grid-template-columns: repeat(9, var(--white-key-width));
-            overflow: hidden;
-            border-radius: 16px;
-            background: #fff6e7;
+            height: 100%;
+            width: min(1050px, 100%);
+            justify-content: center;
         }
 
-        .white-key,
-        .black-key {
-            font: inherit;
-            border: 0;
+        .key {
             cursor: pointer;
             position: relative;
+            transition: 0.1s;
+            border: 0;
+            font: inherit;
         }
 
-        .white-key {
-            z-index: 1;
-            height: var(--white-key-height);
+        .white {
+            width: 82px;
+            height: 160px;
             background: linear-gradient(180deg, #fff8ed, #ead8bd);
-            border-right: 2px solid rgba(36, 24, 12, 0.42);
-            box-shadow: inset 0 -12px 18px rgba(117, 75, 35, 0.16);
-            transition: transform 0.08s ease, filter 0.08s ease, box-shadow 0.08s ease;
+            border-right: 2px solid rgba(36, 24, 12, 0.38);
+            border-radius: 0 0 8px 8px;
+            z-index: 1;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding-bottom: 18px;
+            color: #090909;
+            font-size: 1.25rem;
+            font-weight: 900;
+            box-shadow: inset 0 -10px 16px rgba(117,75,35,0.16);
         }
 
-        .white-key:first-child { border-radius: 14px 0 0 14px; }
-        .white-key:nth-of-type(9) { border-radius: 0 14px 14px 0; border-right: 0; }
-
-        .white-key.feature-key {
-            background: linear-gradient(180deg, #fff7ed, #ffe5c9 60%, #ead8bd);
+        .black {
+            width: 58px;
+            height: 110px;
+            background: linear-gradient(180deg, #1d2025, #030405 72%);
+            z-index: 2;
+            margin-left: -29px;
+            margin-right: -29px;
+            border-radius: 0 0 8px 8px;
+            color: var(--gold-soft);
+            font-size: 0.95rem;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding-bottom: 26px;
+            font-weight: 900;
+            border: 1px solid rgba(255,255,255,0.14);
+            box-shadow: 0 6px 0 #000, 0 12px 18px rgba(0,0,0,0.58);
         }
 
-        .white-key:active,
-        .white-key.active-premium {
+        .white.active {
             transform: translateY(6px);
             filter: brightness(1.08);
-            box-shadow: inset 0 0 24px rgba(242, 189, 87, 0.3);
+            box-shadow: inset 0 0 24px rgba(242,189,87,0.35);
         }
 
-        .black-key {
-            position: absolute;
-            top: 0;
-            z-index: 3;
-            width: var(--black-key-width);
-            height: var(--black-key-height);
-            border-radius: 0 0 9px 9px;
-            color: var(--gold-soft);
-            background: linear-gradient(180deg, #1d2025, #030405 72%);
-            border: 1px solid rgba(255, 255, 255, 0.18);
-            box-shadow: 0 6px 0 #000, 0 12px 22px rgba(0, 0, 0, 0.6);
-            transition: transform 0.08s ease, filter 0.08s ease, box-shadow 0.08s ease;
-        }
-
-        .black-key:active,
-        .black-key.active-premium {
+        .black.active {
             transform: translateY(5px);
             filter: brightness(1.18);
-            box-shadow: 0 2px 0 #000, 0 8px 16px rgba(0, 0, 0, 0.55);
+            box-shadow: 0 2px 0 #000, 0 8px 16px rgba(0,0,0,0.55);
         }
 
-        .key-label {
-            position: absolute;
-            left: 0;
-            right: 0;
-            bottom: 26px;
-            text-align: center;
-            font-size: 1.42rem;
-            font-weight: 800;
-            color: #080808;
-            pointer-events: none;
-        }
-
-        .black-key .key-label {
-            display: block;
-            top: 74px;
-            bottom: auto;
-            color: var(--gold-soft);
-            font-size: 1.12rem;
-        }
-
-        .key-hotkey {
-            display: block;
-            margin-top: 6px;
-            font-size: 0.62rem;
-            color: rgba(0, 0, 0, 0.45);
-            letter-spacing: 0.1em;
-        }
-
-        .black-key .key-hotkey { color: rgba(255, 227, 161, 0.55); }
-
-        .instruction {
-            text-align: center;
-            color: #f4bd72;
-            font-size: 1.02rem;
-            margin: 10px 0 18px;
-        }
-
-        .input-preview {
-            border-radius: 17px;
-            background: rgba(9, 12, 16, 0.82);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 18px 20px;
-            margin-bottom: 18px;
-        }
-
-        .preview-header {
-            text-align: center;
-            color: var(--gold-soft);
-            font-weight: 800;
-            font-size: 0.95rem;
-            margin-bottom: 14px;
-        }
-
-        .preview-bubbles {
-            display: flex;
-            justify-content: center;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .bubble {
-            width: 48px;
-            height: 48px;
-            display: grid;
-            place-items: center;
-            border-radius: 50%;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            background: #13161a;
-            color: var(--muted);
-            font-weight: 800;
-        }
-
-        .bubble.filled {
-            color: #120c04;
-            background: radial-gradient(circle, #fff1a5 0%, #ffc73e 55%, #b66e18 100%);
-            box-shadow: 0 0 13px rgba(255, 199, 62, 0.7);
-        }
-
-        .premium-actions {
-            display: flex;
-            justify-content: center;
-            gap: 18px;
-            flex-wrap: wrap;
-            margin: 18px 0 0;
-        }
-
-        .btn-premium,
-        .home-btn {
-            border-radius: 17px;
-            padding: 14px 26px;
-            font-weight: 800;
-            color: var(--gold-soft);
-            background: rgba(6, 8, 11, 0.82);
-            border-color: rgba(242, 189, 87, 0.62);
-            box-shadow: inset 0 0 16px rgba(255, 227, 161, 0.04);
-        }
-
-        .btn-gold,
-        .home-btn-primary {
-            color: #130d05;
-            background: linear-gradient(135deg, #fff0ad, #f2bd57 55%, #b87a2a);
-            border-color: rgba(255, 227, 161, 0.8);
-            box-shadow: 0 0 24px rgba(242, 189, 87, 0.24);
-        }
-
-        .feedback {
-            min-height: 48px;
-            display: grid;
-            place-items: center;
-            margin-top: 18px;
-            border-radius: 17px;
-            background: rgba(9, 12, 16, 0.82);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: var(--gold-soft);
-            font-weight: 800;
-            text-align: center;
-        }
-
-        .info-grid {
-            display: grid;
-            grid-template-columns: 1fr 1.4fr 1fr;
-            gap: 20px;
-            margin-top: 20px;
-        }
-
-        .info-card {
-            min-height: 104px;
-            border-radius: 17px;
-            background: rgba(9, 12, 16, 0.82);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 20px 22px;
+        .bottom-row {
             display: flex;
             align-items: center;
-            gap: 15px;
-        }
-
-        .info-icon {
-            font-size: 1.8rem;
-            color: var(--gold-soft);
-            text-shadow: 0 0 12px rgba(242, 189, 87, 0.38);
-        }
-
-        .info-card h3 {
-            color: var(--gold-soft);
-            font-size: 1.05rem;
-            margin-bottom: 7px;
-        }
-
-        .info-card p {
-            color: #eee3d1;
-            font-size: 0.93rem;
-            line-height: 1.35;
-        }
-
-        .streak-dots {
-            display: flex;
-            gap: 12px;
-            margin-top: 14px;
-        }
-
-        .dot {
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            border: 1px solid rgba(255, 255, 255, 0.18);
-            background: #13161a;
-        }
-
-        .dot.filled {
-            background: radial-gradient(circle, #fff1a5 0%, #ffc73e 55%, #b66e18 100%);
-            box-shadow: 0 0 13px rgba(255, 199, 62, 0.7);
-        }
-
-        .homepage-container,
-        .completion-premium {
-            min-height: 650px;
-            display: grid;
-            place-items: center;
-            text-align: center;
-            border-radius: 38px;
-            background: linear-gradient(180deg, rgba(9, 12, 15, 0.91), rgba(3, 4, 5, 0.95));
-            border: 1px solid rgba(242, 189, 87, 0.48);
-            box-shadow: 0 0 34px rgba(242, 189, 87, 0.18);
-            padding: 42px;
-        }
-
-        .homepage-logo {
-            font-family: "Playfair Display", serif;
-            font-size: clamp(3.8rem, 9vw, 7rem);
-            color: var(--gold-soft);
-            text-shadow: 0 0 28px rgba(242, 189, 87, 0.5);
-            margin-bottom: 12px;
-        }
-
-        .homepage-sub {
-            color: #f3e6ce;
-            font-size: 1.25rem;
-            margin-bottom: 34px;
-        }
-
-        .home-buttons {
-            display: flex;
             justify-content: center;
             gap: 18px;
-            flex-wrap: wrap;
+            margin-top: 18px;
         }
 
-        .particle {
+        .status-pill {
+            min-height: 56px;
+            flex: 1;
+            max-width: 380px;
+            border-radius: 28px;
+            background: rgba(9, 12, 16, 0.82);
+            border: 1px solid rgba(255,255,255,0.06);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gold-soft);
+            font-weight: 800;
+            text-align: center;
+            padding: 12px 18px;
+            font-size: 1rem;
+        }
+
+        .overlay {
             position: fixed;
-            pointer-events: none;
-            border-radius: 50%;
-            animation: particleFade 0.6s ease-out forwards;
-            z-index: 1000;
+            inset: 0;
+            background: rgba(0,0,0,0.88);
+            backdrop-filter: blur(15px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            opacity: 0;
+            transition: opacity 0.5s ease;
         }
 
-        @keyframes particleFade {
-            0% { transform: scale(1); opacity: 0.9; }
-            100% { transform: scale(0); opacity: 0; }
+        .popup-card {
+            background: #0d0d0d;
+            border-radius: 40px;
+            padding: 50px;
+            text-align: center;
+            max-width: 550px;
+            width: 90%;
+            transform: scale(0.8);
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        @keyframes pointsPop {
-            0% { transform: scale(1); text-shadow: 0 0 0 #ffd966; }
-            50% { transform: scale(1.14); text-shadow: 0 0 15px #ffdf80; }
-            100% { transform: scale(1); text-shadow: 0 0 5px #ffd966; }
+        #victory-card {
+            border: 2px solid var(--gold);
+            box-shadow: 0 0 60px rgba(240, 195, 77, 0.4);
         }
 
-        .points-animation { animation: pointsPop 0.4s ease-in-out; }
+        #loss-card {
+            border: 2px solid var(--red);
+            box-shadow: 0 0 60px rgba(255, 77, 77, 0.3);
+        }
 
-        @media (max-width: 1050px) {
+        .trophy {
+            font-size: 5rem;
+            margin-bottom: 20px;
+            color: var(--gold);
+            filter: drop-shadow(0 0 20px var(--gold));
+        }
+
+        .broken-heart {
+            font-size: 80px;
+            margin-bottom: 20px;
+            color: var(--red);
+            filter: drop-shadow(0 0 15px var(--red));
+        }
+
+        .popup-card h1 {
+            font-family: "Playfair Display", serif;
+            font-size: 3.5rem;
+            margin-bottom: 10px;
+        }
+
+        .victory-text { color: var(--gold); }
+        .loss-text { color: var(--red); }
+
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 30px;
+        }
+
+        .main-action-btn,
+        .secondary-btn {
+            border-radius: 35px;
+            font-family: Inter, sans-serif;
+            font-weight: 900;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .main-action-btn {
+            background: var(--gold);
+            color: #000;
+            border: none;
+            padding: 18px;
+            font-size: 1.2rem;
+        }
+
+        .main-action-btn.red-btn {
+            background: var(--red);
+            color: #fff;
+        }
+
+        .secondary-btn {
+            background: transparent;
+            color: #e6d8bd;
+            border: 1px solid rgba(242,189,87,0.4);
+            padding: 12px;
+        }
+
+        @media (max-width: 1150px) {
             .topbar { grid-template-columns: 1fr; }
             .brand, .top-actions { justify-content: center; }
             .nav {
                 width: 100%;
-                justify-content: flex-start;
-                overflow-x: auto;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 10px;
             }
             .scoreboard { grid-template-columns: repeat(2, 1fr); }
-            .score-item:nth-child(2) { border-right: 0; }
-            .score-item:nth-child(-n + 2) { border-bottom: 1px solid rgba(255, 255, 255, 0.09); }
-            .game-shell { padding: 34px 28px 30px; }
-            .info-grid { grid-template-columns: 1fr; }
-            .piano-container { justify-content: flex-start; }
+            .score-item { padding: 16px 20px; }
+            .challenge-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+            .difficulty {
+                width: 100%;
+                justify-content: center;
+                padding: 14px 20px;
+            }
+            .piano-wrapper { width: min(820px, 100%); }
+            .white { width: 72px; height: 150px; }
+            .black {
+                width: 48px;
+                height: 98px;
+                margin-left: -24px;
+                margin-right: -24px;
+            }
+            .bottom-row { flex-wrap: wrap; gap: 12px; }
+            .status-pill { flex: 1 1 100%; max-width: none; }
         }
 
         @media (max-width: 760px) {
-            body { padding: 12px 9px; }
+            body { padding: 8px 10px; }
             .brand-title { font-size: 2rem; }
-            .brand-mark,
-            .icon-btn {
-                width: 46px;
-                height: 46px;
+            .nav-btn { padding: 10px 14px; font-size: 0.95rem; }
+            .icon-btn { width: 56px; height: 56px; font-size: 1.15rem; }
+            .score-item { min-height: 84px; padding: 12px 16px; }
+            .badge { width: 56px; height: 56px; font-size: 1.7rem; }
+            .challenge-title h1 { font-size: 2rem; }
+            .challenge-title p, .instruction-main { font-size: 1rem; }
+            .target-panel { height: 120px; padding: 12px 18px; }
+            .staff-lines { left: 50px; right: 50px; height: 58px; }
+            .clef { left: 80px; font-size: 4.2rem; }
+            .white { width: 62px; height: 130px; font-size: 1.05rem; }
+            .black {
+                width: 42px;
+                height: 92px;
+                margin-left: -21px;
+                margin-right: -21px;
+                font-size: 0.82rem;
+                padding-bottom: 18px;
             }
-            .scoreboard { grid-template-columns: 1fr; }
-            .score-item {
-                min-height: 86px;
-                border-right: 0;
-                border-bottom: 1px solid rgba(255, 255, 255, 0.09);
-                padding: 16px 20px;
-            }
-            .score-item:last-child { border-bottom: 0; }
-            .game-shell {
-                border-radius: 26px;
-                padding: 28px 14px 22px;
-            }
-            .challenge-header {
-                flex-direction: column;
-                align-items: stretch;
-                margin-top: 20px;
-            }
-            .difficulty { justify-content: center; }
-            .note-card {
-                width: 62px;
-                min-height: 56px;
-                font-size: 1.2rem;
-            }
-            .piano-keys {
-                --white-key-width: 74px;
-                --white-key-height: 205px;
-                --black-key-width: 50px;
-                --black-key-height: 112px;
-            }
-            .key-label {
-                bottom: 20px;
-                font-size: 1.08rem;
-            }
-            .black-key .key-label {
-                top: 62px;
-                font-size: 0.92rem;
-            }
-            .homepage-container,
-            .completion-premium {
-                min-height: 560px;
-                padding: 30px 18px;
-            }
+            .bottom-row { gap: 10px; }
+            .status-pill { padding: 10px 14px; font-size: 0.95rem; }
         }
 
-        @media (min-width: 900px) and (max-height: 820px) {
-            body { padding-top: 8px; }
-            .topbar { margin-bottom: 16px; }
-            .brand-mark,
-            .icon-btn {
-                width: 48px;
-                height: 48px;
-            }
-            .brand-title { font-size: 2.15rem; }
-            .brand-sub { font-size: 0.9rem; }
-            .nav-btn { padding: 10px 15px; }
-            .scoreboard { margin-bottom: 14px; }
-            .score-item {
-                min-height: 78px;
-                padding: 14px 24px;
-            }
-            .badge {
-                width: 50px;
-                height: 50px;
-                font-size: 1.45rem;
-            }
-            .score-number { font-size: 1.72rem; }
-            .game-shell { padding: 25px 56px 24px; }
-            .challenge-header { margin-bottom: 12px; }
-            .mini-mark {
-                width: 50px;
-                height: 50px;
-            }
-            .challenge-title h1 { font-size: 1.75rem; }
-            .difficulty { padding: 13px 18px; }
-            .melody-panel {
-                padding: 16px 24px;
-                margin-bottom: 14px;
-            }
-            .note-card {
-                width: 68px;
-                min-height: 56px;
-                font-size: 1.25rem;
-            }
-            .piano-keys {
-                --white-key-width: 96px;
-                --white-key-height: 190px;
-                --black-key-width: 62px;
-                --black-key-height: 112px;
-            }
-            .key-label {
-                bottom: 20px;
-                font-size: 1.18rem;
-            }
-            .black-key .key-label {
-                top: 60px;
-                font-size: 0.98rem;
-            }
-            .input-preview { padding: 14px 18px; }
-            .bubble {
-                width: 40px;
-                height: 40px;
-            }
-            .info-card {
-                min-height: 82px;
-                padding: 14px 18px;
-            }
+        @media (max-height: 820px) {
+            body { padding: 10px 18px; }
+            .stage { min-height: calc(100vh - 20px); gap: 10px; }
+            .brand-mark, .icon-btn { width: 58px; height: 58px; }
+            .brand-title { font-size: 2.5rem; }
+            .score-item { min-height: 84px; padding: 14px 28px; }
+            .badge { width: 58px; height: 58px; }
+            .game-shell { padding: 28px 42px 20px; }
+            .target-panel { height: 150px; margin-bottom: 14px; }
+            .piano-container { min-height: 180px; }
+            .white { width: 96px; height: 170px; }
+            .black { width: 68px; height: 110px; }
+            .challenge-title h1 { font-size: 2.4rem; }
+            .challenge-title p { font-size: 1.1rem; }
+            .bottom-row { flex-wrap: wrap; gap: 12px; }
+            .status-pill { flex: 1 1 100%; }
         }
     </style>
 </head>
+
 <body>
     <div class="music-bg" aria-hidden="true">
-        <span>𝄞</span>
-        <span>♫</span>
-        <span>♪</span>
-        <span>♬</span>
+        <span>ð„ž</span>
+        <span>â™«</span>
+        <span>â™ª</span>
+        <span>â™¬</span>
     </div>
-    <main class="stage" id="appRoot"></main>
 
-    <script>
-        let audioCtx = null;
-        const freqMap = { 'C4':261.63, 'C#4':277.18, 'D4':293.66, 'D#4':311.13, 'E4':329.63, 'F4':349.23, 'F#4':369.99, 'G4':392.00, 'G#4':415.30, 'A4':440.00, 'A#4':466.16, 'B4':493.88, 'C5':523.25, 'D5':587.33 };
+    <div id="victory-overlay" class="overlay">
+        <div id="victory-card" class="popup-card">
+            <div class="trophy">â˜…</div>
+            <h1 class="victory-text">PERFECT!</h1>
+            <p>You have mastered the staff with 10/10!</p>
+            <div class="button-group">
+                <button class="main-action-btn" onclick="window.location.href='/lesson2-1-latest'">NEXT LEVEL</button>
+                <button class="secondary-btn" onclick="location.reload()">PLAY AGAIN</button>
+            </div>
+        </div>
+    </div>
 
-        const POINTS_PER_LESSON = 250;
-        const MAX_LIVES = 5;
-        let totalPoints = 0;
-        let lives = MAX_LIVES;
+    <div id="loss-overlay" class="overlay">
+        <div id="loss-card" class="popup-card">
+            <div class="broken-heart">â™¥</div>
+            <h1 class="loss-text">YOU LOST</h1>
+            <p>Don't give up! Your musical journey is just starting.</p>
+            <div class="button-group">
+                <button class="main-action-btn red-btn" onclick="location.reload()">TRY AGAIN</button>
+                <button class="secondary-btn" onclick="window.location.href='/lessons'">MAIN MENU</button>
+            </div>
+        </div>
+    </div>
 
-        const lessons = [
-            { level: 1, sequence: ['C4', 'D4', 'E4'], display: "C - D - E" },
-            { level: 2, sequence: ['C4', 'E4', 'G4', 'C5'], display: "C - E - G - C (Majestic)" },
-            { level: 3, sequence: ['F4', 'A4', 'C5', 'A4', 'F4'], display: "F - A - C - A - F" },
-            { level: 4, sequence: ['E4', 'G4', 'B4', 'C5', 'B4', 'G4'], display: "E - G - B - C - B - G" },
-            { level: 5, sequence: ['C4', 'D4', 'E4', 'F4', 'G4', 'A4', 'B4', 'C5'], display: "C Major Scale" }
-        ];
+    <main class="stage">
+        <header class="topbar">
+            <div class="brand">
+                <div class="brand-mark">â–¥</div>
+                <div>
+                    <div class="brand-title">Pianovaâ™ª</div>
+                    <div class="brand-sub">Play â€¢ Learn â€¢ Master</div>
+                </div>
+            </div>
 
-        const pianoNotes = [
-            { note: 'C4', type: 'white', keyChar: 'a', label: 'C' },
-            { note: 'C#4', type: 'black', keyChar: 'w', label: 'C#', afterWhite: 1 },
-            { note: 'D4', type: 'white', keyChar: 's', label: 'D' },
-            { note: 'D#4', type: 'black', keyChar: 'e', label: 'D#', afterWhite: 2 },
-            { note: 'E4', type: 'white', keyChar: 'd', label: 'E' },
-            { note: 'F4', type: 'white', keyChar: 'f', label: 'F' },
-            { note: 'F#4', type: 'black', keyChar: 't', label: 'F#', afterWhite: 4 },
-            { note: 'G4', type: 'white', keyChar: 'g', label: 'G' },
-            { note: 'G#4', type: 'black', keyChar: 'y', label: 'G#', afterWhite: 5 },
-            { note: 'A4', type: 'white', keyChar: 'h', label: 'A' },
-            { note: 'A#4', type: 'black', keyChar: 'u', label: 'A#', afterWhite: 6 },
-            { note: 'B4', type: 'white', keyChar: 'j', label: 'B' },
-            { note: 'C5', type: 'white', keyChar: 'k', label: 'C' },
-            { note: 'D5', type: 'white', keyChar: 'l', label: 'D' }
-        ];
+            <nav class="nav" aria-label="Game navigation">
+                <button class="nav-btn active">âŒ‚ Home</button>
+                <button class="nav-btn">â™› Leaderboard</button>
+                <button class="nav-btn">â™™ Profile</button>
+                <button class="nav-btn" onclick="window.location.href='/lessons'">â» Exit</button>
+            </nav>
 
-        let currentLvl = 0;
-        let streak = 0;
-        let userInput = [];
-        let gameCompleted = false;
-        let levelSpan, streakSpan, targetContainer, previewContainer, feedbackDiv, progressFill, progressPercentSpan;
+            <div class="top-actions">
+                <button class="icon-btn" id="soundBtn" title="Sound">â™ª</button>
+                <button class="icon-btn" onclick="location.reload()" title="Restart">âš™</button>
+            </div>
+        </header>
 
-        function initAudio() {
-            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            if (audioCtx.state === 'suspended') audioCtx.resume();
-            return audioCtx;
-        }
+        <section class="scoreboard">
+            <div class="score-item">
+                <div class="badge">â˜…</div>
+                <div>
+                    <div class="score-label">Score</div>
+                    <div class="score-number" id="score-val">0/10</div>
+                </div>
+            </div>
 
-        function playNote(note) {
-            if (!freqMap[note]) return;
-            const ctx = initAudio();
-            const now = ctx.currentTime;
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            osc.type = 'triangle';
-            osc.frequency.value = freqMap[note];
-            gain.gain.setValueAtTime(0.34, now);
-            gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.78);
-            osc.connect(gain);
-            gain.connect(ctx.destination);
-            osc.start();
-            osc.stop(now + 0.78);
-        }
-
-        function playTone(freq, type = 'sine') {
-            const ctx = initAudio();
-            const now = ctx.currentTime;
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            osc.type = type;
-            osc.frequency.value = freq;
-            gain.gain.setValueAtTime(0.24, now);
-            gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.28);
-            osc.connect(gain);
-            gain.connect(ctx.destination);
-            osc.start();
-            osc.stop(now + 0.28);
-        }
-
-        function playSuccessSound() { playTone(880); }
-        function playErrorSound() { playTone(180, 'sawtooth'); }
-        function playPointsChime() { playTone(1046.5); }
-
-        function noteLabel(note) {
-            return note.replace('4', '').replace('5', '');
-        }
-
-        function addPoints(points, showAnimation = true) {
-            totalPoints += points;
-            updatePointsDisplay(showAnimation);
-            if (showAnimation && points > 0) playPointsChime();
-        }
-
-        function updatePointsDisplay(animate = false) {
-            const pointsSpan = document.getElementById('pointsDigit');
-            if (!pointsSpan) return;
-            pointsSpan.innerText = totalPoints;
-            if (animate) {
-                pointsSpan.classList.add('points-animation');
-                setTimeout(() => pointsSpan.classList.remove('points-animation'), 400);
-            }
-        }
-
-        function updateLivesDisplay() {
-            const livesContainer = document.getElementById('livesDisplay');
-            if (!livesContainer) return;
-            livesContainer.innerHTML = '';
-            for (let i = 0; i < MAX_LIVES; i++) {
-                const heart = document.createElement('span');
-                heart.className = `heart${i >= lives ? ' lost' : ''}`;
-                heart.textContent = i < lives ? '♥' : '♡';
-                livesContainer.appendChild(heart);
-            }
-        }
-
-        function loseLife() {
-            lives = Math.max(0, lives - 1);
-            updateLivesDisplay();
-            return lives;
-        }
-
-        function createParticles(x, y, isSuccess = true) {
-            const particleCount = isSuccess ? 14 : 8;
-            for (let i = 0; i < particleCount; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                const size = Math.random() * 7 + 4;
-                particle.style.width = `${size}px`;
-                particle.style.height = `${size}px`;
-                particle.style.left = `${x + (Math.random() - 0.5) * 60}px`;
-                particle.style.top = `${y + (Math.random() - 0.5) * 60}px`;
-                particle.style.background = isSuccess ? 'radial-gradient(circle, #ffe59b, #f2bd57)' : 'radial-gradient(circle, #ff8a98, #ff5368)';
-                document.body.appendChild(particle);
-                setTimeout(() => particle.remove(), 600);
-            }
-        }
-
-        function renderTopbar() {
-            return `
-                <header class="topbar">
-                    <div class="brand">
-                        <div class="brand-mark">▥</div>
-                        <div>
-                            <div class="brand-title">Pianova♪</div>
-                            <div class="brand-sub">Play • Learn • Master</div>
-                        </div>
-                    </div>
-                    <nav class="nav" aria-label="Game navigation">
-                        <button class="nav-btn active">⌂ Home</button>
-                        <button class="nav-btn">♫ Practice</button>
-                        <button class="nav-btn">▤ Lessons</button>
-                        <button class="nav-btn">♕ Leaderboard</button>
-                        <button class="nav-btn">♙ Profile</button>
-                    </nav>
-                    <div class="top-actions">
-                        <button class="icon-btn" id="soundBtn" title="Sound">♪</button>
-                        <button class="icon-btn" id="settingsBtn" title="Settings">⚙</button>
-                    </div>
-                </header>
-            `;
-        }
-
-        function renderScoreboard() {
-            const progress = lessons[currentLvl] ? Math.round((userInput.length / lessons[currentLvl].sequence.length) * 100) : 100;
-            return `
-                <section class="scoreboard">
-                    <div class="score-item">
-                        <div class="badge">★</div>
-                        <div>
-                            <div class="score-label">Score</div>
-                            <div class="score-number" id="pointsDigit">${totalPoints}</div>
-                        </div>
-                    </div>
-                    <div class="score-item">
-                        <div class="badge">♨</div>
-                        <div>
-                            <div class="score-label">Combo</div>
-                            <div><span class="score-number" id="streakDigit">${streak}</span><span class="combo-text">${streak >= 3 ? 'Perfect!' : 'Keep going!'}</span></div>
-                        </div>
-                    </div>
-                    <div class="score-item">
-                        <div class="badge" style="border-color: rgba(255,83,104,.55);">♥</div>
-                        <div>
-                            <div class="score-label">Lives</div>
-                            <div class="lives-row" id="livesDisplay"></div>
-                        </div>
-                    </div>
-                    <div class="score-item">
-                        <div>
-                            <div class="score-label">Level <span id="levelDigit">${lessons[currentLvl].level}</span></div>
-                            <div class="level-progress">
-                                <div class="progress-track"><div class="progress-fill" id="progressBarFill" style="width:${progress}%"></div></div>
-                                <strong id="progressPercent">${progress}%</strong>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-            `;
-        }
-
-        function buildCleanPiano() {
-            const whiteKeysHtml = pianoNotes
-                .filter(key => key.type === 'white')
-                .map(key => `
-                    <button class="white-key${key.feature ? ' feature-key' : ''}" data-note="${key.note}" type="button">
-                        <span class="key-label">${key.label}<span class="key-hotkey">${key.keyChar.toUpperCase()}</span></span>
-                    </button>
-                `)
-                .join('');
-
-            const blackKeysHtml = pianoNotes
-                .filter(key => key.type === 'black')
-                .map(key => `
-                    <button class="black-key" data-note="${key.note}" type="button" style="left: calc((var(--white-key-width) * ${key.afterWhite}) - (var(--black-key-width) / 2));">
-                        <span class="key-label">${key.label}<span class="key-hotkey">${key.keyChar.toUpperCase()}</span></span>
-                    </button>
-                `)
-                .join('');
-
-            return `<div class="piano-container"><div class="piano-keys">${whiteKeysHtml}${blackKeysHtml}</div></div>`;
-        }
-
-        function attachPianoEvents() {
-            document.querySelectorAll('.white-key, .black-key').forEach(el => {
-                const note = el.getAttribute('data-note');
-                if (note) {
-                    el.removeEventListener('click', pianoClickHandler);
-                    el.addEventListener('click', pianoClickHandler);
-                }
-            });
-        }
-
-        function pianoClickHandler() {
-            const note = this.getAttribute('data-note');
-            const rect = this.getBoundingClientRect();
-            createParticles(rect.left + rect.width / 2, rect.top + rect.height / 2, true);
-            processNoteInput(note);
-        }
-
-        function animateKeyVisual(note) {
-            const el = document.querySelector(`.white-key[data-note="${note}"], .black-key[data-note="${note}"]`);
-            if (!el) return;
-            el.classList.add('active-premium');
-            setTimeout(() => el.classList.remove('active-premium'), 150);
-        }
-
-        function updateProgressBar() {
-            if (!progressFill) return;
-            const currentSeq = lessons[currentLvl].sequence;
-            const progressPercent = (userInput.length / currentSeq.length) * 100;
-            progressFill.style.width = `${progressPercent}%`;
-            if (progressPercentSpan) progressPercentSpan.innerText = `${Math.round(progressPercent)}%`;
-        }
-
-        function renderTargets() {
-            if (gameCompleted) return;
-            const seq = lessons[currentLvl].sequence;
-            targetContainer.innerHTML = '';
-            seq.forEach((n, idx) => {
-                const card = document.createElement('div');
-                card.className = 'note-card';
-                if (idx === userInput.length) card.classList.add('active');
-                card.innerText = noteLabel(n);
-                targetContainer.appendChild(card);
-            });
-        }
-
-        function updatePreview() {
-            const seq = lessons[currentLvl].sequence;
-            previewContainer.innerHTML = '';
-            for (let i = 0; i < seq.length; i++) {
-                const bubble = document.createElement('div');
-                bubble.className = 'bubble';
-                if (userInput[i]) {
-                    bubble.classList.add('filled');
-                    bubble.innerText = noteLabel(userInput[i]);
-                } else {
-                    bubble.innerText = '';
-                }
-                previewContainer.appendChild(bubble);
-            }
-            updateProgressBar();
-        }
-
-        function updateStats() {
-            if (levelSpan) levelSpan.innerText = lessons[currentLvl].level;
-            if (streakSpan) streakSpan.innerText = streak;
-            updateLivesDisplay();
-            updatePointsDisplay(false);
-        }
-
-        function showMessage(msg, isErr = false) {
-            if (!feedbackDiv) return;
-            feedbackDiv.innerHTML = msg;
-            feedbackDiv.style.color = isErr ? 'var(--red)' : 'var(--green)';
-            setTimeout(() => {
-                if (feedbackDiv && feedbackDiv.innerHTML === msg) feedbackDiv.style.color = 'var(--gold-soft)';
-            }, 1700);
-        }
-
-        function showGameOver() {
-            gameCompleted = true;
-            const container = document.getElementById('dynamicContent');
-            container.innerHTML = `
-                <div class="completion-premium">
+            <div class="score-item">
+                <div class="badge">â™¨</div>
+                <div>
+                    <div class="score-label">Combo</div>
                     <div>
-                        <div class="badge" style="margin: 0 auto 22px; width: 86px; height: 86px; font-size: 2.5rem;">♡</div>
-                        <h2 style="color:var(--red); font-family:'Playfair Display'; font-size:3rem;">OUT OF LIVES</h2>
-                        <p style="color:var(--muted); margin: 14px 0 26px;">You scored <strong style="color:var(--gold-soft);">${totalPoints}</strong> points. Try again and keep the melody alive.</p>
-                        <div class="home-buttons">
-                            <button id="gameOverRestartBtn" class="home-btn home-btn-primary">RESTART GAME</button>
-                            <button id="gameOverHomeBtn" class="home-btn">QUIT TO HOME</button>
-                        </div>
+                        <span class="score-number" id="streak-val">0</span>
+                        <span class="combo-text" id="combo-text">Keep going!</span>
                     </div>
                 </div>
-            `;
-            document.getElementById('gameOverRestartBtn')?.addEventListener('click', () => fullReset());
-            document.getElementById('gameOverHomeBtn')?.addEventListener('click', () => showHomepage());
-        }
+            </div>
 
-        function showCompletionWithNext() {
-            gameCompleted = true;
-            const container = document.getElementById('dynamicContent');
-            container.innerHTML = `
-                <div class="completion-premium">
-                    <div>
-                        <div class="badge" style="margin: 0 auto 22px; width: 86px; height: 86px; font-size: 2.5rem;">★</div>
-                        <h2 style="color:var(--gold-soft); font-family:'Playfair Display'; font-size:3rem;">MAESTRO</h2>
-                        <p style="color:var(--muted); margin: 14px 0 10px;">You completed all 5 golden lessons with ${lives} lives left!</p>
-                        <p style="color:var(--gold-soft); font-size: 1.8rem; margin-bottom: 24px;">${totalPoints} POINTS</p>
-                        <div class="home-buttons">
-                            <button id="completeNextLessonBtn" class="home-btn home-btn-primary">NEXT LESSON</button>
-                            <button id="completeRestartBtn" class="home-btn">RESTART GAME</button>
-                            <button id="completeHomeBtn" class="home-btn">QUIT TO HOME</button>
+            <div class="score-item">
+                <div class="badge" style="border-color: rgba(255,83,104,.55);">â™¥</div>
+                <div>
+                    <div class="score-label">Lives</div>
+                    <div class="lives-row" id="lives-val">â™¥ â™¥ â™¥ â™¥ â™¥</div>
+                </div>
+            </div>
+
+            <div class="score-item">
+                <div>
+                    <div class="score-label">Level 1</div>
+                    <div class="level-progress">
+                        <div class="progress-track">
+                            <div class="progress-fill" id="progress-fill"></div>
                         </div>
+                        <strong id="progress-percent">0%</strong>
                     </div>
                 </div>
-            `;
-            document.getElementById('completeNextLessonBtn')?.addEventListener('click', () => {
-                window.location.href = '/lesson2-4';
-            });
-            document.getElementById('completeRestartBtn')?.addEventListener('click', () => fullReset());
-            document.getElementById('completeHomeBtn')?.addEventListener('click', () => showHomepage());
-        }
+            </div>
+        </section>
 
-        function advanceToNext() {
-            if (currentLvl + 1 >= lessons.length) {
-                showCompletionWithNext();
-                return;
-            }
-            currentLvl++;
-            userInput = [];
+        <section class="game-shell" id="game-frame">
+            <div class="level-ribbon">Lesson 2</div>
+
+            <div class="challenge-header">
+                <div class="challenge-title">
+                    <div class="mini-mark">â–¥</div>
+                    <div>
+                        <h1>Pianova</h1>
+                        <p>Repeat the triad sequence</p>
+                    </div>
+                </div>
+
+                <button class="difficulty">â™« Lesson 2 Ë…</button>
+            </div>
+
+            <div class="instruction-main">Play the sequence shown on the staff</div>
+
+            <div class="target-panel">
+                <div class="target-card">
+                    <div class="staff-lines"></div>
+                    <div class="clef">ð„ž</div>
+                    <div id="target-notes">...</div>
+                </div>
+            </div>
+
+            <div class="piano-container">
+                <div id="piano-rail" class="piano-wrapper"></div>
+            </div>
+
+            <div class="bottom-row">
+                <div class="status-pill" id="status-text">Ready to play?</div>
+            </div>
+        </section>
+    </main>
+
+<script>
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    let audioCtx;
+
+    const freqs = {
+        "C": 261.63, "C#": 277.18, "D": 293.66, "D#": 311.13, "E": 329.63,
+        "F": 349.23, "F#": 369.99, "G": 392.00, "G#": 415.30, "A": 440.00,
+        "A#": 466.16, "B": 493.88
+    };
+
+    const notesArr = Object.keys(freqs);
+
+    let score = 0;
+    let streak = 0;
+    let lives = 5;
+    let targetSeq = [];
+    let userSeq = [];
+    let waitingForReset = false;
+
+    async function ensureAudioContext() {
+        if (!audioCtx) {
+            audioCtx = new AudioContext();
+        }
+        if (audioCtx.state === "suspended") {
+            await audioCtx.resume();
+        }
+        return audioCtx;
+    }
+
+    async function playNote(note, duration = 0.75, volume = 0.42) {
+        const ctx = await ensureAudioContext();
+        if (!freqs[note]) return;
+        const now = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = "triangle";
+        osc.frequency.setValueAtTime(freqs[note], now);
+        gain.gain.setValueAtTime(volume, now);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + duration);
+    }
+
+    async function playTone(freq, duration = 0.25, volume = 0.5, type = "sine") {
+        const ctx = await ensureAudioContext();
+        const now = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, now);
+        gain.gain.setValueAtTime(volume, now);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + duration);
+    }
+
+    async function playCorrectSound() {
+        await playTone(523.25, 0.18, 0.5, "sine");
+        setTimeout(() => playTone(659.25, 0.2, 0.5, "sine"), 90);
+        setTimeout(() => playTone(783.99, 0.24, 0.5, "sine"), 180);
+    }
+
+    async function playWrongSound() {
+        await playTone(180, 0.18, 0.58, "sawtooth");
+        setTimeout(() => playTone(130, 0.22, 0.5, "sawtooth"), 120);
+    }
+
+    function playVictorySound() {
+        [523.25, 659.25, 783.99, 1046.5].forEach((freq, index) => {
+            setTimeout(() => playTone(freq, 0.28, 0.5, "triangle"), index * 130);
+        });
+    }
+
+    function playLossSound() {
+        [300, 230, 170].forEach((freq, index) => {
+            setTimeout(() => playTone(freq, 0.28, 0.55, "sawtooth"), index * 150);
+        });
+    }
+
+    function nextRound() {
+        if (waitingForReset) return;
+        userSeq = [];
+        targetSeq = [];
+        for (let i = 0; i < 3; i++) {
+            targetSeq.push(notesArr[Math.floor(Math.random() * notesArr.length)]);
+        }
+        document.getElementById("target-notes").innerText = targetSeq.join("   ");
+        document.getElementById("status-text").innerText = "Play the 3 notes";
+    }
+
+    async function checkAnswer() {
+        if (waitingForReset) return;
+        if (userSeq.length === 0) {
+            document.getElementById("status-text").innerText = "Wrong answer! Play 3 notes first.";
+            playWrongSound();
+            return;
+        }
+        if (userSeq.length < 3) {
+            document.getElementById("status-text").innerText = "Wrong answer! Complete the triad.";
+            playWrongSound();
+            return;
+        }
+        if (userSeq.join(",") === targetSeq.join(",")) {
+            score++;
             streak++;
-            updateStats();
-            renderTargets();
-            updatePreview();
-            showMessage(`LEVEL ${lessons[currentLvl].level} - ${lessons[currentLvl].display} +${POINTS_PER_LESSON} POINTS!`);
-            playSuccessSound();
-        }
-
-        function processNoteInput(note) {
-            if (gameCompleted) return;
-            playNote(note);
-            animateKeyVisual(note);
-            const expected = lessons[currentLvl].sequence[userInput.length];
-            if (!expected) {
-                showMessage("Sequence complete! Press verify or restart", false);
+            document.getElementById("status-text").innerText = "Correct answer! Great job.";
+            playCorrectSound();
+            updateUI();
+            if (score >= 10) {
+                playVictorySound();
+                showPopup("victory-overlay");
+                waitingForReset = true;
                 return;
             }
-            if (note === expected) {
-                userInput.push(note);
-                updatePreview();
-                renderTargets();
-                if (userInput.length === lessons[currentLvl].sequence.length) {
-                    addPoints(POINTS_PER_LESSON, true);
-                    showMessage(`PERFECT! +1 COMBO, +${POINTS_PER_LESSON} POINTS! LEVEL UP!`);
-                    playSuccessSound();
-                    advanceToNext();
-                } else {
-                    const nextExpected = lessons[currentLvl].sequence[userInput.length];
-                    showMessage(`Great! Next: ${noteLabel(nextExpected)}`, false);
-                    playSuccessSound();
-                }
-            } else {
-                const livesLeft = loseLife();
-                streak = 0;
-                updateStats();
-                playErrorSound();
-                userInput = [];
-                updatePreview();
-                renderTargets();
-                createParticles(window.innerWidth / 2, window.innerHeight / 2, false);
-                if (livesLeft <= 0) {
-                    showMessage("No lives left. Game over.", true);
-                    setTimeout(showGameOver, 550);
-                } else {
-                    showMessage(`Wrong. Expected ${noteLabel(expected)}. ${livesLeft} lives left.`, true);
-                }
-            }
-        }
-
-        function manualVerify() {
-            if (gameCompleted) return;
-            const seq = lessons[currentLvl].sequence;
-            if (userInput.length !== seq.length) {
-                showMessage(`Play all ${seq.length} notes`, true);
-                playErrorSound();
+            setTimeout(() => { if (!waitingForReset) nextRound(); }, 450);
+        } else {
+            lives--;
+            streak = 0;
+            document.getElementById("status-text").innerText = "Wrong answer! Try the next triad.";
+            playWrongSound();
+            updateUI();
+            if (lives <= 0) {
+                playLossSound();
+                showPopup("loss-overlay");
+                waitingForReset = true;
                 return;
             }
-            const correct = seq.every((note, index) => userInput[index] === note);
-            if (correct) {
-                addPoints(POINTS_PER_LESSON, true);
-                showMessage(`Flawless! +${POINTS_PER_LESSON} POINTS! Advancing.`);
-                playSuccessSound();
-                advanceToNext();
-                return;
-            }
-            const livesLeft = loseLife();
-            streak = 0;
-            updateStats();
-            playErrorSound();
-            userInput = [];
-            updatePreview();
-            renderTargets();
-            if (livesLeft <= 0) showGameOver();
-            else showMessage(`Wrong sequence. ${livesLeft} lives left.`, true);
+            setTimeout(() => { if (!waitingForReset) nextRound(); }, 800);
         }
+        updateUI();
+    }
 
-        function fullReset() {
-            gameCompleted = false;
-            currentLvl = 0;
-            streak = 0;
-            userInput = [];
-            totalPoints = 0;
-            lives = MAX_LIVES;
-            rebuildGameUI();
-            showMessage("Game restarted. Five hearts restored.");
+    function showPopup(id) {
+        const overlay = document.getElementById(id);
+        document.getElementById("game-frame").style.filter = "blur(5px)";
+        overlay.style.display = "flex";
+        setTimeout(() => {
+            overlay.style.opacity = "1";
+            overlay.querySelector(".popup-card").style.transform = "scale(1)";
+        }, 10);
+    }
+
+    function renderLives() {
+        let output = "";
+        for (let i = 0; i < 5; i++) {
+            output += i < lives ? "â™¥ " : "â™¡ ";
         }
+        return output.trim();
+    }
 
-        function rebuildGameUI() {
-            const mainDiv = document.getElementById('dynamicContent');
-            mainDiv.innerHTML = `
-                <section class="game-shell">
-                    <div class="level-ribbon">♕ Level <span id="levelDigit">1</span></div>
-                    <div class="challenge-header">
-                        <div class="challenge-title">
-                            <div class="mini-mark">▥</div>
-                            <div>
-                                <h1>Pianova</h1>
-                                <p>Repeat the golden melody</p>
-                            </div>
-                        </div>
-                        <button class="difficulty">♫ Beginner ˅</button>
-                    </div>
-                    <div class="melody-panel">
-                        <div class="melody-title">MASTERPIECE SEQUENCE</div>
-                        <div class="target-notes" id="targetNotesContainer"></div>
-                    </div>
-                    <div class="piano-premium">
-                        <div id="cleanPianoMount"></div>
-                    </div>
-                    <p class="instruction">Click the piano keys in the glowing sequence</p>
-                    <div class="input-preview">
-                        <div class="preview-header">Your Progression</div>
-                        <div class="preview-bubbles" id="previewBubbles"></div>
-                    </div>
-                    <div class="premium-actions">
-                        <button id="restartBtnUI" class="btn-premium">RESTART</button>
-                        <button id="verifyBtnUI" class="btn-premium btn-gold">VERIFY & CONTINUE</button>
-                    </div>
-                    <div class="feedback" id="feedbackMsg"></div>
-                    <div class="info-grid">
-                        <article class="info-card">
-                            <div class="info-icon">◎</div>
-                            <div>
-                                <h3>Objective</h3>
-                                <p>Repeat each sequence without losing all hearts</p>
-                            </div>
-                        </article>
-                        <article class="info-card">
-                            <div class="info-icon">★</div>
-                            <div style="width: 100%;">
-                                <h3>Lesson Combo</h3>
-                                <div class="streak-dots" id="streakDots"></div>
-                            </div>
-                        </article>
-                        <article class="info-card">
-                            <div class="info-icon">♢</div>
-                            <div>
-                                <h3>Tip</h3>
-                                <p>Follow the active golden card from left to right</p>
-                            </div>
-                        </article>
-                    </div>
-                </section>
-            `;
-            const mount = document.getElementById('cleanPianoMount');
-            mount.innerHTML = buildCleanPiano();
-            attachPianoEvents();
-            levelSpan = document.getElementById('levelDigit');
-            targetContainer = document.getElementById('targetNotesContainer');
-            previewContainer = document.getElementById('previewBubbles');
-            feedbackDiv = document.getElementById('feedbackMsg');
-            progressFill = document.getElementById('progressBarFill');
-            progressPercentSpan = document.getElementById('progressPercent');
-            document.getElementById('restartBtnUI').addEventListener('click', fullReset);
-            document.getElementById('verifyBtnUI').addEventListener('click', manualVerify);
-            renderTargets();
-            updatePreview();
-            updateStats();
-            renderStreakDots();
-        }
+    function updateUI() {
+        const percent = Math.round((score / 10) * 100);
+        document.getElementById("score-val").innerText = `${score}/10`;
+        document.getElementById("streak-val").innerText = streak;
+        document.getElementById("combo-text").innerText = streak >= 3 ? "Perfect!" : "Keep going!";
+        document.getElementById("lives-val").innerHTML = renderLives();
+        document.getElementById("progress-fill").style.width = percent + "%";
+        document.getElementById("progress-percent").innerText = percent + "%";
+    }
 
-        function renderStreakDots() {
-            const dots = document.getElementById('streakDots');
-            if (!dots) return;
-            dots.innerHTML = Array.from({ length: lessons.length }, (_, index) => `<span class="dot${index < streak ? ' filled' : ''}"></span>`).join('');
-        }
+    const rail = document.getElementById("piano-rail");
 
-        function showHomepage() {
-            const root = document.getElementById('appRoot');
-            root.innerHTML = `
-                <div class="homepage-container">
-                    <div>
-                        <div class="brand-mark" style="margin: 0 auto 22px;">▥</div>
-                        <div class="homepage-logo">Pianova</div>
-                        <div class="homepage-sub">Play • Learn • Master</div>
-                        <div class="home-buttons">
-                            <button id="homeStartBtn" class="home-btn home-btn-primary">START LESSONS</button>
-                            <button id="homeQuitBtn" class="home-btn">QUIT GAME</button>
-                        </div>
-                        <div style="margin-top: 34px; color: var(--muted); font-size: 0.92rem;">Earn 250 points per lesson • 5 heart lives • Keyboard & click</div>
-                    </div>
-                </div>
-            `;
-            document.getElementById('homeStartBtn')?.addEventListener('click', () => loadGame());
-            document.getElementById('homeQuitBtn')?.addEventListener('click', () => {
-                root.innerHTML = `
-                    <div class="homepage-container">
-                        <div>
-                            <div class="homepage-logo">Farewell</div>
-                            <div class="homepage-sub">Thanks for playing Pianova. See you soon!</div>
-                            <button id="quitReturnBtn" class="home-btn">RETURN TO HOME</button>
-                        </div>
-                    </div>
-                `;
-                document.getElementById('quitReturnBtn')?.addEventListener('click', () => showHomepage());
-            });
-        }
+    notesArr.forEach(note => {
+        const key = document.createElement("button");
+        key.type = "button";
+        key.className = `key ${note.includes("#") ? "black" : "white"}`;
+        key.innerText = note;
 
-        function loadGame() {
-            gameCompleted = false;
-            currentLvl = 0;
-            streak = 0;
-            userInput = [];
-            totalPoints = 0;
-            lives = MAX_LIVES;
-            const root = document.getElementById('appRoot');
-            root.innerHTML = `
-                ${renderTopbar()}
-                ${renderScoreboard()}
-                <div id="dynamicContent"></div>
-            `;
-            streakSpan = document.getElementById('streakDigit');
-            document.getElementById('soundBtn')?.addEventListener('click', () => playTone(880));
-            document.getElementById('settingsBtn')?.addEventListener('click', fullReset);
-            rebuildGameUI();
-            const unlock = () => {
-                if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
-            };
-            document.body.addEventListener('click', unlock, { once: true });
-        }
-
-        function setupGlobalKeyboard() {
-            window.addEventListener('keydown', (e) => {
-                const gameContent = document.getElementById('dynamicContent');
-                if (!gameContent || gameCompleted) return;
-                const key = e.key.toLowerCase();
-                const mapping = pianoNotes.find(p => p.keyChar === key);
-                if (mapping) {
-                    e.preventDefault();
-                    const keyElement = document.querySelector(`.white-key[data-note="${mapping.note}"], .black-key[data-note="${mapping.note}"]`);
-                    if (keyElement) {
-                        const rect = keyElement.getBoundingClientRect();
-                        createParticles(rect.left + rect.width / 2, rect.top + rect.height / 2, true);
-                    }
-                    processNoteInput(mapping.note);
+        const handlePress = async (e) => {
+            e.preventDefault();
+            if (waitingForReset) return;
+            await playNote(note);
+            if (userSeq.length < 3 && !waitingForReset) {
+                userSeq.push(note);
+                if (userSeq.length === 3) {
+                    setTimeout(() => checkAnswer(), 80);
                 }
-            });
-        }
+            }
+            key.classList.add("active");
+            setTimeout(() => key.classList.remove("active"), 150);
+        };
 
-        setupGlobalKeyboard();
-        showHomepage();
-    </script>
+        key.onmousedown = handlePress;
+        key.ontouchstart = handlePress;
+        rail.appendChild(key);
+    });
+
+    document.getElementById("soundBtn").addEventListener("click", () => {
+        playNote("A");
+    });
+
+    nextRound();
+    updateUI();
+
+    (function () {
+        const stage = document.querySelector(".stage");
+        if (!stage) return;
+        function fit() {
+            stage.style.transform = "none";
+            const viewportH = window.innerHeight || document.documentElement.clientHeight;
+            const height = stage.getBoundingClientRect().height || stage.offsetHeight;
+            if (!height) return;
+            let scale = 1;
+            if (height > viewportH) {
+                scale = viewportH / height;
+                scale = Math.max(0.5, scale);
+            }
+            scale = Math.min(1, scale);
+            stage.style.transform = "scale(" + scale + ")";
+            stage.style.transformOrigin = "top center";
+        }
+        window.addEventListener("resize", fit);
+        setTimeout(fit, 80);
+        setTimeout(fit, 350);
+    })();
+</script>
 </body>
 </html>

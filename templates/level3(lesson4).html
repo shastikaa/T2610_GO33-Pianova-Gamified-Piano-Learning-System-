@@ -1178,14 +1178,18 @@ function showEndGamePopup(isPassed) {
     modalTitle.className = "modal-title pass";
     modalBody.textContent = `You finished the song! Total Score: ${score}.`;
     const replayBtn = createModalButton("Replay", "primary", () => { closePopup(); resetGame(); });
+    const homeBtn = createModalButton("Home", "secondary", () => { closePopup(); window.location.href = '/lessons'; });
     modalActions.appendChild(replayBtn);
+    modalActions.appendChild(homeBtn);
   } else {
     modalTrophy.style.display = "block";
     modalTrophy.textContent = "❌";
     modalTitle.textContent = "Failed!";
     modalBody.textContent = "Try again!";
     const tryAgainBtn = createModalButton("Try Again", "primary", () => { closePopup(); resetGame(); });
+    const homeBtn = createModalButton("Home", "secondary", () => { closePopup(); window.location.href = '/lessons'; });
     modalActions.appendChild(tryAgainBtn);
+    modalActions.appendChild(homeBtn);
   }
   endGameModal.classList.add("open");
 }

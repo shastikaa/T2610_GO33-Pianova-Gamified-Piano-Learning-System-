@@ -1072,11 +1072,7 @@
         }
 
         function goNextLesson() {
-            if (window.location.protocol.startsWith('http')) {
-                window.location.href = '/lesson2-2';
-            } else {
-                window.location.href = 'level 2(lesson 2).html';
-            }
+            window.location.href = '/lesson2-2';
         }
 
         function goExit() {
@@ -1087,11 +1083,6 @@
             }
         }
 
-<<<<<<< HEAD
-        window.addEventListener('keydown', event => {
-            if (!isGameActive) return;
-            const found = pianoNotes.find(note => note.keyChar === event.key.toLowerCase());
-=======
         function restartGame() {
             score = 0;
             combo = 0;
@@ -1150,7 +1141,6 @@
             const key = event.key.toUpperCase();
             const found = pianoLayout.find(item => item.keyChar === key);
 
->>>>>>> 92d04cb (Save nested repo changes)
             if (!found) return;
 
             event.preventDefault();

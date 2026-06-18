@@ -1176,12 +1176,12 @@ function showEndGamePopup(isPassed) {
     modalBody.textContent = `You cleared Lesson 1 beautifully! Final Score: ${score} points.`;
     
     const restartBtn = createModalButton("Restart", "secondary", () => { closePopup(); resetGame(); });
-    const nextLevelBtn = createModalButton("Next Level", "primary", () => { closePopup(); alert("Loading Next Lesson..."); resetGame(); });
-    const modalExitBtn = createModalButton("Exit", "secondary", () => { closePopup(); handleExit(); });
+    const nextLevelBtn = createModalButton("Next Level", "primary", () => { closePopup(); window.location.href = '/lesson3-2'; });
+    const homeBtn = createModalButton("Home", "secondary", () => { closePopup(); window.location.href = '/lessons'; });
     
     modalActions.appendChild(restartBtn);
     modalActions.appendChild(nextLevelBtn);
-    modalActions.appendChild(modalExitBtn);
+    modalActions.appendChild(homeBtn);
   } else {
     modalTrophy.style.display = "block";
     modalTrophy.textContent = "❌";

@@ -187,6 +187,31 @@
             letter-spacing: 1px;
         }
 
+        .hero-actions {
+            margin-top: 14px;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .hero-action-link {
+            text-decoration: none;
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: #f5d78e;
+            border: 1px solid rgba(212, 175, 55, 0.45);
+            border-radius: 22px;
+            padding: 0.45rem 0.9rem;
+            background: rgba(212, 175, 55, 0.08);
+        }
+
+        .hero-action-link:hover {
+            background: rgba(212, 175, 55, 0.2);
+        }
+
         /* lessons container */
         .lessons-container {
             padding: 1.5rem;
@@ -495,6 +520,10 @@
     <div class="hero">
         <h1> Piano Lessons</h1>
         <p>master keys · progressive unlock system</p>
+        <div class="hero-actions">
+            <a class="hero-action-link" href="/dashboard">Dashboard</a>
+            <a class="hero-action-link" href="/logout">Logout</a>
+        </div>
     </div>
  <div class="lessons-container" id="lessonsContainer">
         <!-- Dynamic content injected via JS but structured exactly to your spec:
@@ -583,6 +612,13 @@
         localStorage.setItem("pianoLessonsProgress", JSON.stringify(progressArray));
     }
 
+    function gameUrlForLesson(lessonId) {
+        if (lessonId === 1) return '/game1';
+        if (lessonId === 2) return '/lesson2-1-latest';
+        if (lessonId === 4) return '/level4';
+        return '/game2';
+    }
+
     // Initialize global state: either from storage or fresh default
     let lessonsState = [];
 
@@ -616,6 +652,12 @@
             const lesson = lessonsState[i];
             const originalLesson = lessonsData.find(l => l.id === lesson.id);
             if (!originalLesson) continue;
+
+            // Testing override: keep Level 3 open so gameplay can be tested directly.
+            if (lesson.id === 3) {
+                lesson.locked = false;
+                continue;
+            }
             
             // if condition exists: check if required lesson is completed
             if (originalLesson.unlockCondition) {
@@ -730,6 +772,22 @@
             // I'll include an expandable details area that always visible for better info
             const headerDiv = document.createElement('div');
             headerDiv.className = 'lesson-header';
+
+            const lessonPlayHref = lessonMeta.id === 1
+                ? '/game1'
+                : lessonMeta.id === 2
+                    ? '/lesson2-1-latest'
+                    : lessonMeta.id === 3
+                        ? '/lesson3-1'
+                        : '/game2';
+
+            if (!isLocked) {
+                headerDiv.style.cursor = 'pointer';
+                headerDiv.title = `Open ${lessonMeta.name}`;
+                headerDiv.addEventListener('click', () => {
+                    window.location.href = lessonPlayHref;
+                });
+            }
             
             // left info
             const infoDiv = document.createElement('div');
@@ -764,7 +822,7 @@
                 // Play Game button → level 1 goes to game1, level 2 goes to lesson2-1, level 2+ goes to game2
                 const playBtn = document.createElement('a');
                 playBtn.className = 'btn-action btn-primary';
-                playBtn.href = lessonMeta.id === 1 ? '/game1' : lessonMeta.id === 2 ? '/lesson2-1-latest' : '/game2';
+                playBtn.href = lessonPlayHref;
                 playBtn.innerHTML = '🎮 Play Game';
                 playBtn.style.textDecoration = 'none';
                 rightActions.appendChild(playBtn);
@@ -782,7 +840,7 @@
                 // Play again link
                 const playAgainBtn = document.createElement('a');
                 playAgainBtn.className = 'btn-action btn-primary';
-                playAgainBtn.href = lessonMeta.id === 1 ? '/game1' : lessonMeta.id === 2 ? '/lesson2-1-latest' : '/game2';
+                playAgainBtn.href = lessonPlayHref;
                 playAgainBtn.innerHTML = '🎮 Play Again';
                 playAgainBtn.style.textDecoration = 'none';
                 rightActions.appendChild(playAgainBtn);

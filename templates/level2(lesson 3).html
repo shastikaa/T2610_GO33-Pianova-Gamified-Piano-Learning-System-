@@ -1,0 +1,1483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>Pianova | Lesson 3</title>
+  <style>
+    :root {
+      --bg: #030405;
+      --panel: #101319;
+      --gold: #f2b93e;
+      --gold-soft: #ffe4a3;
+      --cream: #f1e3cf;
+      --key-cream: #f7eedf;
+      --ink: #111111;
+      --green: #9be06e;
+      --red: #ff5368;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: var(--bg);
+    }
+
+    body {
+      min-height: 100dvh;
+      font-family: "Segoe UI", Inter, system-ui, -apple-system, BlinkMacSystemFont, Roboto, Arial, sans-serif;
+      color: var(--gold-soft);
+      background:
+        radial-gradient(circle at 7% 95%, rgba(242, 185, 62, 0.24), transparent 24%),
+        radial-gradient(circle at 94% 105%, rgba(242, 185, 62, 0.18), transparent 22%),
+        #020304;
+    }
+
+    .game-page {
+      width: min(1180px, calc(100vw - 48px));
+      height: min(720px, calc(100dvh - 18px));
+      margin: 0 auto;
+      padding: 0 0 clamp(4px, 0.8vh, 8px);
+      display: grid;
+      grid-template-rows: 64px 78px minmax(0, 1fr);
+      gap: 8px;
+      overflow: hidden;
+    }
+
+    .top-border {
+      min-height: 0;
+      display: grid;
+      grid-template-columns: minmax(210px, 1fr) auto minmax(110px, 1fr);
+      align-items: center;
+      gap: clamp(10px, 2vw, 28px);
+      padding: clamp(5px, 0.9vh, 8px) clamp(10px, 2vw, 24px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: clamp(18px, 2vw, 28px);
+      background:
+        linear-gradient(90deg, rgba(242, 185, 62, 0.12), transparent 26%, transparent 74%, rgba(242, 185, 62, 0.1)),
+        rgba(3, 4, 5, 0.92);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4), inset 0 0 24px rgba(255, 228, 163, 0.03);
+      overflow: hidden;
+    }
+
+    .brand-block {
+      display: flex;
+      align-items: center;
+      gap: clamp(10px, 1.4vw, 16px);
+      min-width: 0;
+    }
+
+    .brand-mark,
+    .round-action,
+    .stat-icon,
+    .module-mark {
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(242, 185, 62, 0.62);
+      background: linear-gradient(145deg, #14171b, #050607);
+      box-shadow: inset 0 0 18px rgba(255, 228, 163, 0.05), 0 0 18px rgba(242, 185, 62, 0.12);
+    }
+
+    .brand-mark {
+      width: clamp(36px, 3.5vw, 48px);
+      height: clamp(36px, 3.5vw, 48px);
+      border-radius: 14px;
+      color: var(--cream);
+      font-size: clamp(1.15rem, 2vw, 1.55rem);
+      flex: 0 0 auto;
+    }
+
+    .brand-title {
+      color: var(--gold-soft);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(1.45rem, 2.8vw, 2.15rem);
+      font-weight: 900;
+      line-height: 0.9;
+      white-space: nowrap;
+      text-shadow: 0 0 18px rgba(242, 185, 62, 0.3);
+    }
+
+    .brand-subtitle {
+      margin-top: 4px;
+      color: #dac7a6;
+      font-size: clamp(0.74rem, 1.15vw, 0.9rem);
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .main-nav {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 7px;
+      border-radius: 21px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(0, 0, 0, 0.62);
+      box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.02);
+    }
+
+    .nav-btn {
+      min-height: clamp(36px, 5vh, 48px);
+      padding: 0 clamp(10px, 1.5vw, 22px);
+      border: 0;
+      border-radius: 15px;
+      background: transparent;
+      color: #efe7db;
+      font: inherit;
+      font-size: clamp(0.74rem, 1.15vw, 0.98rem);
+      font-weight: 900;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .nav-btn.active {
+      color: var(--gold-soft);
+      background: rgba(242, 185, 62, 0.13);
+    }
+
+    .top-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: clamp(8px, 1.2vw, 16px);
+    }
+
+    .round-action {
+      width: clamp(36px, 3.5vw, 48px);
+      height: clamp(36px, 3.5vw, 48px);
+      border-radius: 50%;
+      color: var(--gold-soft);
+      font-size: clamp(0.92rem, 1.55vw, 1.2rem);
+      cursor: pointer;
+    }
+
+    .round-action.muted {
+      color: rgba(239, 231, 219, 0.62);
+      border-color: rgba(239, 231, 219, 0.28);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .dashboard-panel {
+      min-height: 0;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      border-radius: clamp(18px, 2vw, 24px);
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      background: linear-gradient(180deg, rgba(17, 20, 26, 0.96), rgba(7, 8, 10, 0.96));
+      overflow: hidden;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.36), inset 0 0 26px rgba(255, 255, 255, 0.03);
+    }
+
+    .stat-cell {
+      min-width: 0;
+      min-height: 76px;
+      padding: 8px clamp(10px, 2vw, 24px);
+      display: flex;
+      align-items: center;
+      gap: clamp(10px, 1.8vw, 22px);
+      border-right: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .stat-cell:last-child {
+      border-right: 0;
+    }
+
+    .stat-icon {
+      width: clamp(38px, 4vw, 52px);
+      height: clamp(38px, 4vw, 52px);
+      border-radius: 50%;
+      color: var(--cream);
+      font-size: clamp(1.25rem, 2.2vw, 1.7rem);
+      flex: 0 0 auto;
+    }
+
+    .stat-label {
+      color: #fff4de;
+      font-size: clamp(0.74rem, 1.1vw, 0.92rem);
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .stat-value {
+      margin-top: 5px;
+      color: var(--gold-soft);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(1.15rem, 2.2vw, 1.65rem);
+      font-weight: 900;
+      line-height: 0.95;
+    }
+
+    .combo-row {
+      display: flex;
+      align-items: flex-end;
+      gap: 10px;
+    }
+
+    .combo-note {
+      color: var(--gold);
+      font-size: clamp(0.72rem, 1.15vw, 0.98rem);
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .lives-text {
+      color: #ff6578;
+      font-family: "Segoe UI", Inter, system-ui, sans-serif;
+      font-size: clamp(0.95rem, 1.5vw, 1.25rem);
+      letter-spacing: 0.16em;
+      white-space: nowrap;
+    }
+
+    .progress-block {
+      width: 100%;
+      display: grid;
+      gap: 10px;
+    }
+
+    .progress-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .progress-track {
+      width: min(160px, 100%);
+      height: 11px;
+      border-radius: 999px;
+      background: #1e2228;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      flex: 1;
+    }
+
+    .progress-fill {
+      width: 10%;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #ffd56d, #fff0ae);
+      box-shadow: 0 0 12px rgba(255, 213, 109, 0.82);
+      transition: width 0.25s ease;
+    }
+
+    .game-board {
+      min-height: 0;
+      position: relative;
+      display: grid;
+      grid-template-rows: 68px auto 124px 166px 52px;
+      gap: 10px;
+      padding: 38px 34px 8px;
+      border-radius: clamp(22px, 2.6vw, 34px);
+      border: 1px solid rgba(242, 185, 62, 0.72);
+      background: linear-gradient(180deg, rgba(12, 15, 17, 0.96), rgba(2, 3, 4, 0.98));
+      box-shadow: 0 0 0 1px rgba(255, 228, 163, 0.1), 0 0 30px rgba(242, 185, 62, 0.14), inset 0 0 36px rgba(255, 228, 163, 0.04);
+      overflow: hidden;
+    }
+
+    .lesson-tab {
+      position: absolute;
+      top: -1px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: clamp(150px, 18vw, 220px);
+      height: clamp(36px, 5.4vh, 48px);
+      display: grid;
+      place-items: center;
+      color: #f9ecd5;
+      background: linear-gradient(180deg, #171611, #090a0b);
+      border: 1px solid rgba(242, 185, 62, 0.58);
+      border-top: 0;
+      clip-path: polygon(0 0, 100% 0, 82% 100%, 18% 100%);
+      font-size: clamp(0.78rem, 1.35vw, 1.1rem);
+      font-weight: 900;
+      z-index: 2;
+    }
+
+    .module-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      min-height: 0;
+      align-self: center;
+    }
+
+    .module-title {
+      display: flex;
+      align-items: center;
+      gap: clamp(12px, 1.8vw, 22px);
+      min-width: 0;
+    }
+
+    .module-mark {
+      width: clamp(44px, 4.6vw, 60px);
+      height: clamp(44px, 4.6vw, 60px);
+      border-radius: 15px;
+      color: var(--cream);
+      font-size: clamp(1.25rem, 2.2vw, 1.75rem);
+      flex: 0 0 auto;
+    }
+
+    .module-title h2 {
+      color: var(--gold-soft);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(1.5rem, 2.6vw, 2.05rem);
+      font-weight: 900;
+      line-height: 0.95;
+    }
+
+    .module-title p {
+      margin-top: 5px;
+      color: #f7ead9;
+      font-size: clamp(0.82rem, 1.4vw, 1.12rem);
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .lesson-pill {
+      min-height: clamp(42px, 6vh, 62px);
+      padding: 0 clamp(12px, 2vw, 26px);
+      border-radius: 16px;
+      border: 1px solid rgba(242, 185, 62, 0.48);
+      background: rgba(6, 8, 10, 0.8);
+      color: var(--gold-soft);
+      font: inherit;
+      font-size: clamp(0.78rem, 1.25vw, 1.02rem);
+      font-weight: 900;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .challenge-title {
+      color: var(--gold-soft);
+      font-size: clamp(0.92rem, 1.55vw, 1.25rem);
+      font-weight: 900;
+      text-align: center;
+      line-height: 1.15;
+      text-shadow: 0 2px 16px rgba(242, 185, 62, 0.24);
+    }
+
+    .staff-shell,
+    .keyboard-shell {
+      background: #11141a;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: clamp(18px, 2vw, 24px);
+      padding: clamp(10px, 1.5vw, 14px);
+      box-shadow: inset 0 0 28px rgba(255, 255, 255, 0.04), 0 14px 32px rgba(0, 0, 0, 0.4);
+      overflow: hidden;
+      min-height: 0;
+    }
+
+    .staff-shell {
+      align-self: stretch;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 0;
+      padding: 10px 14px;
+    }
+
+    .staff-board {
+      position: relative;
+      width: min(860px, 80%);
+      height: 104px;
+      min-height: 104px;
+      border-radius: 0;
+      background:
+        linear-gradient(90deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0) 26%, rgba(0, 0, 0, 0.04) 70%),
+        #eadcc8;
+      box-shadow: inset 0 0 22px rgba(0, 0, 0, 0.22), 0 12px 24px rgba(0, 0, 0, 0.22);
+      overflow: hidden;
+    }
+
+    .staff-line {
+      position: absolute;
+      left: 3.2%;
+      right: 1%;
+      height: 3px;
+      background: rgba(21, 21, 21, 0.88);
+    }
+
+    .clef-render {
+      position: absolute;
+      left: 7.8%;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #242424;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(4.4rem, 14vh, 6.15rem);
+      line-height: 1;
+      pointer-events: none;
+    }
+
+    .note-node {
+      position: absolute;
+      width: clamp(32px, 4.2vw, 48px);
+      height: clamp(32px, 4.2vw, 48px);
+      transform: translate(-50%, -50%);
+    }
+
+    .note-node.ledger-required::after {
+      content: "";
+      position: absolute;
+      left: -10px;
+      top: 50%;
+      width: calc(100% + 20px);
+      height: 3px;
+      background: rgba(17, 17, 17, 0.9);
+      z-index: 1;
+    }
+
+    .note-node.played-success {
+      opacity: 0.26;
+    }
+
+    .note-node.active-target .note-oval,
+    .note-node.active-target .note-stem {
+      background: var(--gold);
+    }
+
+    .note-node.active-target.ledger-required::after {
+      background: var(--gold);
+    }
+
+    .note-oval {
+      position: absolute;
+      left: 8%;
+      top: 34%;
+      width: 70%;
+      height: 42%;
+      border-radius: 50%;
+      background: var(--ink);
+      transform: rotate(-20deg);
+      z-index: 2;
+    }
+
+    .note-stem {
+      position: absolute;
+      left: 78%;
+      top: -118%;
+      width: 3px;
+      height: 172%;
+      background: var(--ink);
+      z-index: 2;
+    }
+
+    .note-node.flipped-stem .note-stem {
+      left: 9%;
+      top: 46%;
+    }
+
+    .accidental-symbol {
+      position: absolute;
+      left: -48%;
+      top: 10%;
+      color: var(--ink);
+      font-size: clamp(0.95rem, 1.8vw, 1.45rem);
+      font-weight: 900;
+      z-index: 3;
+    }
+
+    .keyboard-shell {
+      height: 166px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+      padding: 12px;
+    }
+
+    .keyboard-bed {
+      position: relative;
+      width: min(640px, 76%);
+      height: 100%;
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      border-radius: clamp(12px, 1.4vw, 16px);
+      background: #e6dac5;
+      overflow: hidden;
+    }
+
+    .key-white,
+    .key-black {
+      position: relative;
+      border: 0;
+      cursor: pointer;
+      font: inherit;
+    }
+
+    .key-white {
+      z-index: 1;
+      background:
+        linear-gradient(90deg, rgba(0, 0, 0, 0.24), transparent 18%, transparent 82%, rgba(0, 0, 0, 0.16)),
+        linear-gradient(180deg, #fff8ed 0%, #efe0c6 100%);
+      border-right: 1px solid rgba(54, 39, 20, 0.42);
+      box-shadow: inset 0 -16px 22px rgba(121, 83, 42, 0.16);
+      transition: transform 0.08s ease, filter 0.08s ease, box-shadow 0.08s ease;
+    }
+
+    .key-white:last-of-type {
+      border-right: 0;
+    }
+
+    .key-black {
+      position: absolute;
+      top: 0;
+      z-index: 5;
+      width: 8.8%;
+      height: 63%;
+      transform: translateX(-50%);
+      color: var(--gold-soft);
+      background: linear-gradient(180deg, #15181d 0%, #070809 72%);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 0 0 9px 9px;
+      box-shadow: 0 7px 0 #000, 0 16px 24px rgba(0, 0, 0, 0.58);
+      transition: transform 0.08s ease, filter 0.08s ease, box-shadow 0.08s ease;
+    }
+
+    .key-label {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: clamp(16px, 4.3vh, 30px);
+      color: #050505;
+      font-size: clamp(1.28rem, 2.4vw, 1.9rem);
+      font-weight: 900;
+      line-height: 1;
+      text-align: center;
+      pointer-events: none;
+    }
+
+    .key-black .key-label {
+      top: 33%;
+      bottom: auto;
+      color: var(--gold-soft);
+      font-size: clamp(0.8rem, 1.35vw, 1.1rem);
+    }
+
+    .key-white.pressed,
+    .key-white:active {
+      transform: translateY(5px);
+      filter: brightness(1.08);
+      box-shadow: inset 0 0 28px rgba(242, 185, 62, 0.3);
+    }
+
+    .key-black.pressed,
+    .key-black:active {
+      transform: translateX(-50%) translateY(4px);
+      filter: brightness(1.18);
+      box-shadow: 0 3px 0 #000, 0 10px 20px rgba(0, 0, 0, 0.56);
+    }
+
+    .key-white.incorrect,
+    .key-black.incorrect {
+      box-shadow: inset 0 0 32px rgba(255, 83, 104, 0.82), 0 0 18px rgba(255, 83, 104, 0.45);
+    }
+
+    .controls-row {
+      width: min(630px, 100%);
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: minmax(132px, 160px) minmax(140px, 1fr) minmax(132px, 160px);
+      align-items: center;
+      gap: clamp(10px, 3vw, 48px);
+    }
+
+    .controls-row .status-msg {
+      min-height: 48px;
+      display: grid;
+      place-items: center;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(6, 9, 11, 0.92);
+      box-shadow: inset 0 0 16px rgba(255, 255, 255, 0.02);
+    }
+
+    .control-btn {
+      min-height: 48px;
+      padding: 0 clamp(18px, 3vw, 28px);
+      border-radius: 16px;
+      border: 1px solid rgba(242, 185, 62, 0.76);
+      background: transparent;
+      color: var(--gold-soft);
+      font: inherit;
+      font-size: clamp(0.9rem, 1.5vw, 1.05rem);
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: inset 0 0 12px rgba(242, 185, 62, 0.05);
+      white-space: nowrap;
+    }
+
+    .control-btn.gold-filled {
+      color: #140f07;
+      border: 0;
+      background: linear-gradient(135deg, #ffe9a5, #f1b939 60%, #b87925);
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.34);
+    }
+
+    .control-btn:disabled {
+      opacity: 0.6;
+      cursor: default;
+    }
+
+    .status-msg {
+      min-width: 0;
+      color: #efe5d5;
+      font-size: clamp(0.95rem, 1.8vw, 1.25rem);
+      font-weight: 900;
+      line-height: 1.15;
+      text-align: center;
+    }
+
+    .status-msg.success {
+      color: var(--green);
+    }
+
+    .status-msg.error {
+      color: var(--red);
+    }
+
+    .game-over-screen {
+      position: absolute;
+      inset: 0;
+      z-index: 20;
+      display: none;
+      place-items: center;
+      padding: clamp(24px, 4vw, 54px);
+      background:
+        radial-gradient(circle at 50% 34%, rgba(242, 185, 62, 0.12), transparent 24%),
+        linear-gradient(180deg, rgba(2, 3, 4, 0.96), rgba(0, 0, 0, 0.98));
+    }
+
+    .game-board.game-over-active > .module-header,
+    .game-board.game-over-active > .challenge-title,
+    .game-board.game-over-active > .staff-shell,
+    .game-board.game-over-active > .keyboard-shell,
+    .game-board.game-over-active > .controls-row {
+      visibility: hidden;
+    }
+
+    .game-board.game-over-active .game-over-screen {
+      display: grid;
+    }
+
+    .game-over-card {
+      width: min(560px, 100%);
+      display: grid;
+      justify-items: center;
+      gap: 18px;
+      text-align: center;
+      color: var(--gold-soft);
+    }
+
+    .game-over-heart {
+      width: 96px;
+      height: 96px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      border: 1px solid rgba(242, 185, 62, 0.72);
+      background: radial-gradient(circle, rgba(255, 228, 163, 0.14), rgba(12, 10, 7, 0.92));
+      color: #fff4de;
+      font-size: 2.7rem;
+      box-shadow: 0 0 28px rgba(242, 185, 62, 0.16), inset 0 0 22px rgba(255, 255, 255, 0.04);
+    }
+
+    .game-over-title {
+      color: var(--gold-soft);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(3.2rem, 7vw, 5.2rem);
+      font-weight: 900;
+      line-height: 0.95;
+      text-shadow: 0 0 24px rgba(242, 185, 62, 0.22);
+    }
+
+    .game-over-score {
+      color: #d8c8aa;
+      font-size: clamp(1rem, 1.7vw, 1.25rem);
+      font-weight: 800;
+    }
+
+    .game-over-score strong {
+      color: var(--gold-soft);
+      font-size: 1.15em;
+    }
+
+    .game-over-actions {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    .game-over-btn {
+      min-width: 140px;
+      min-height: 54px;
+      padding: 0 24px;
+      border-radius: 18px;
+      border: 1px solid rgba(242, 185, 62, 0.76);
+      color: #130e05;
+      background: linear-gradient(135deg, #ffe79b, #f2b93e 62%, #b87925);
+      font: inherit;
+      font-size: clamp(0.9rem, 1.4vw, 1.05rem);
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.34), inset 0 1px 0 rgba(255, 255, 255, 0.45);
+    }
+
+    .game-over-btn.alt {
+      color: var(--gold-soft);
+      background: rgba(4, 6, 8, 0.88);
+      box-shadow: inset 0 0 16px rgba(242, 185, 62, 0.06);
+    }
+
+    @media (max-width: 920px) {
+      .game-page {
+        width: min(100vw - 10px, 1280px);
+        gap: 6px;
+      }
+
+      .top-border {
+        grid-template-columns: 1fr auto;
+      }
+
+      .main-nav {
+        display: none;
+      }
+
+      .dashboard-panel {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .stat-cell {
+        justify-content: center;
+        padding: 8px;
+        gap: 8px;
+      }
+
+      .stat-icon {
+        display: none;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .staff-shell,
+      .keyboard-shell {
+        border-radius: 16px;
+      }
+
+      .staff-shell {
+        padding: 8px 10px;
+      }
+
+      .staff-board {
+        width: 100%;
+        height: min(100%, clamp(88px, 18vh, 108px));
+        min-height: 82px;
+      }
+
+      .clef-render {
+        left: 7%;
+        font-size: clamp(3.75rem, 13vh, 5rem);
+      }
+
+      .note-node {
+        width: clamp(28px, 7vw, 38px);
+        height: clamp(28px, 7vw, 38px);
+      }
+
+      .keyboard-shell {
+        height: clamp(94px, 21vh, 150px);
+      }
+
+      .controls-row {
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+
+      .status-msg {
+        grid-column: 1 / -1;
+        grid-row: 1;
+      }
+
+      .control-btn {
+        min-height: 44px;
+        border-radius: 14px;
+      }
+
+      .brand-subtitle,
+      .top-actions,
+      .lesson-pill {
+        display: none;
+      }
+
+      .top-border {
+        grid-template-columns: 1fr;
+      }
+
+      .brand-block {
+        justify-content: center;
+      }
+
+      .dashboard-panel {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .stat-cell {
+        min-height: 44px;
+        border-right: 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      }
+
+      .stat-label,
+      .combo-note {
+        font-size: 0.7rem;
+      }
+
+      .stat-value,
+      .lives-text {
+        font-size: 1rem;
+      }
+
+      .module-mark {
+        display: none;
+      }
+    }
+
+    @media (max-height: 620px) {
+      .game-page {
+        padding: 6px 0;
+        gap: 5px;
+      }
+
+      .top-border {
+        padding-top: 4px;
+        padding-bottom: 4px;
+      }
+
+      .brand-mark,
+      .round-action {
+        width: 34px;
+        height: 34px;
+        border-radius: 12px;
+      }
+
+      .brand-title {
+        font-size: 1.65rem;
+      }
+
+      .brand-subtitle {
+        display: none;
+      }
+
+      .nav-btn {
+        min-height: 32px;
+      }
+
+      .stat-cell {
+        min-height: 50px;
+      }
+
+      .stat-icon {
+        width: 38px;
+        height: 38px;
+      }
+
+      .stat-value {
+        margin-top: 4px;
+      }
+
+      .game-board {
+        padding-top: 38px;
+        gap: 5px;
+      }
+
+      .lesson-tab {
+        height: 32px;
+      }
+
+      .module-mark,
+      .lesson-pill {
+        display: none;
+      }
+
+      .challenge-title {
+        font-size: clamp(0.88rem, 1.9vw, 1.18rem);
+      }
+
+      .staff-shell {
+        padding-top: 8px;
+        padding-bottom: 8px;
+      }
+
+      .staff-board {
+        height: min(100%, clamp(84px, 18vh, 104px));
+        min-height: 78px;
+      }
+
+      .clef-render {
+        font-size: clamp(3.6rem, 13vh, 4.8rem);
+      }
+
+      .note-node {
+        width: clamp(28px, 4vw, 38px);
+        height: clamp(28px, 4vw, 38px);
+      }
+
+      .keyboard-shell {
+        height: clamp(86px, 18vh, 130px);
+      }
+
+      .control-btn {
+        min-height: 38px;
+      }
+    }
+
+    @media (max-height: 480px) {
+      .game-page {
+        grid-template-rows: auto auto minmax(0, 1fr);
+      }
+
+      .dashboard-panel {
+        display: none;
+      }
+
+      .module-header {
+        display: none;
+      }
+
+      .game-board {
+        grid-template-rows: auto minmax(0, 1fr) auto auto;
+      }
+
+      .keyboard-shell {
+        height: auto;
+      }
+
+      .staff-shell,
+      .keyboard-shell {
+        padding: 6px;
+      }
+
+      .staff-board {
+        width: 100%;
+        min-height: 82px;
+      }
+
+      .control-btn {
+        min-height: 36px;
+        font-size: 0.78rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="game-page">
+    <header class="top-border">
+      <div class="brand-block">
+        <div class="brand-mark" aria-hidden="true">&#119070;</div>
+        <div>
+          <div class="brand-title">Pianova&#9834;</div>
+          <div class="brand-subtitle">Play &#8226; Learn &#8226; Master</div>
+        </div>
+      </div>
+
+      <nav class="main-nav" aria-label="Game navigation">
+        <button class="nav-btn active" id="navHomeBtn" type="button">&#8962; Home</button>
+        <button class="nav-btn" id="navLeaderboardBtn" type="button">&#9819; Leaderboard</button>
+        <button class="nav-btn" id="navProfileBtn" type="button">&#9817; Profile</button>
+        <button class="nav-btn" id="navExitBtn" type="button">&#9211; Exit</button>
+      </nav>
+
+      <div class="top-actions">
+        <button class="round-action" id="soundToggleBtn" type="button" aria-label="Sound on">&#9834;</button>
+        <button class="round-action" id="topResetBtn" type="button" aria-label="Restart">&#9881;</button>
+      </div>
+    </header>
+
+    <section class="dashboard-panel" aria-label="Progress dashboard">
+      <div class="stat-cell">
+        <div class="stat-icon" aria-hidden="true">&#9733;</div>
+        <div>
+          <div class="stat-label">Score</div>
+          <div class="stat-value" id="scoreValue">1/10</div>
+        </div>
+      </div>
+
+      <div class="stat-cell">
+        <div class="stat-icon" aria-hidden="true">&#9832;</div>
+        <div>
+          <div class="stat-label">Combo</div>
+          <div class="combo-row">
+            <span class="stat-value" id="comboValue">1</span>
+            <span class="combo-note" id="comboMessage">Keep going!</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="stat-cell">
+        <div class="stat-icon" aria-hidden="true" style="color: var(--red); border-color: rgba(255,83,104,.58);">&#9829;</div>
+        <div>
+          <div class="stat-label">Lives</div>
+          <div class="stat-value lives-text" id="livesValue">&#9829;&#9829;&#9829;&#9829;&#9829;</div>
+        </div>
+      </div>
+
+      <div class="stat-cell">
+        <div class="progress-block">
+          <div class="stat-label">Level 1</div>
+          <div class="progress-row">
+            <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+            <strong class="combo-note" id="progressPercent">10%</strong>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="game-board" aria-label="Lesson 3 sequence challenge">
+      <div class="lesson-tab">LESSON 3</div>
+
+      <div class="module-header">
+        <div class="module-title">
+          <div class="module-mark" aria-hidden="true">&#119070;</div>
+          <div>
+            <h2>Pianova</h2>
+            <p>Repeat the triad sequence</p>
+          </div>
+        </div>
+        <button class="lesson-pill" id="lessonMenuBtn" type="button">&#9836; Lesson 3 &#9662;</button>
+      </div>
+
+      <h1 class="challenge-title" id="instructionText">Play the sequence shown on the staff</h1>
+
+      <section class="staff-shell" aria-label="Music staff">
+        <div class="staff-board" id="staffBed">
+          <div class="clef-render" id="clefImage">&#119070;</div>
+        </div>
+      </section>
+
+      <section class="keyboard-shell" aria-label="Piano keyboard">
+        <div class="keyboard-bed" id="pianoKeysContainer"></div>
+      </section>
+
+      <section class="controls-row" aria-label="Game controls">
+        <button class="control-btn gold-filled" id="btnListen" type="button">Hear Phrase</button>
+        <div class="status-msg" id="statusMessage">Sequence ready</div>
+        <button class="control-btn" id="btnReset" type="button">Restart</button>
+      </section>
+
+      <section class="game-over-screen" id="gameOverScreen" aria-hidden="true">
+        <div class="game-over-card">
+          <div class="game-over-heart" aria-hidden="true">&#9829;</div>
+          <h2 class="game-over-title">Try Again</h2>
+          <p class="game-over-score">Final score: <strong id="gameOverScore">0 / 10</strong></p>
+          <div class="game-over-actions">
+            <button class="game-over-btn" id="btnGameOverPlayAgain" type="button">Play Again</button>
+            <button class="game-over-btn" id="btnGameOverNext" type="button">Next Lesson</button>
+            <button class="game-over-btn alt" id="btnGameOverExit" type="button">Exit</button>
+          </div>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <script>
+    let audioContextInstance = null;
+    const TOTAL_LIVES = 5;
+    const QUESTIONS_PER_CLEF = 5;
+    const TOTAL_QUESTIONS = QUESTIONS_PER_CLEF * 2;
+
+    const whiteKeysConfig = [
+      { id: "C4", title: "C" }, { id: "D4", title: "D" }, { id: "E4", title: "E" },
+      { id: "F4", title: "F" }, { id: "G4", title: "G" }, { id: "A4", title: "A" },
+      { id: "B4", title: "B" }, { id: "C5", title: "C" }
+    ];
+
+    const blackKeysConfig = [
+      { id: "C#4", title: "C#", stepPlacement: 1 },
+      { id: "D#4", title: "D#", stepPlacement: 2 },
+      { id: "F#4", title: "F#", stepPlacement: 4 },
+      { id: "G#4", title: "G#", stepPlacement: 5 },
+      { id: "A#4", title: "A#", stepPlacement: 6 }
+    ];
+
+    const lessonQuestionBank = [
+      { type: "treble", notes: ["F4", "A4", "C5", "E5"] },
+      { type: "treble", notes: ["E4", "G4", "B4", "D5"] },
+      { type: "treble", notes: ["G4", "B4", "D5", "F5"] },
+      { type: "treble", notes: ["E4", "F4", "G4", "A4"] },
+      { type: "treble", notes: ["B4", "C5", "D5", "E5"] },
+      { type: "bass", notes: ["A2", "C3", "E3", "G3"] },
+      { type: "bass", notes: ["G2", "B2", "D3", "F3"] },
+      { type: "bass", notes: ["B2", "D3", "F3", "A3"] },
+      { type: "bass", notes: ["G2", "A2", "B2", "C3"] },
+      { type: "bass", notes: ["D3", "E3", "F3", "G3"] }
+    ];
+
+    const toneFrequencyMap = {
+      G2: 98.00, "G#2": 103.83, A2: 110.00, "A#2": 116.54, B2: 123.47,
+      C3: 130.81, "C#3": 138.59, D3: 146.83, "D#3": 155.56, E3: 164.81,
+      F3: 174.61, "F#3": 185.00, G3: 196.00, "G#3": 207.65, A3: 220.00,
+      "A#3": 233.08, B3: 246.94,
+      C4: 261.63, "C#4": 277.18, D4: 293.66, "D#4": 311.13, E4: 329.63,
+      F4: 349.23, "F#4": 369.99, G4: 392.00, "G#4": 415.30, A4: 440.00,
+      "A#4": 466.16, B4: 493.88, C5: 523.25, "C#5": 554.37, D5: 587.33,
+      "D#5": 622.25, E5: 659.25, F5: 698.46
+    };
+
+    const coordinateMappingTreble = {
+      "E4": 74, "F4": 67.5, "G4": 61, "A4": 54.5, "B4": 48,
+      "C5": 41.5, "D5": 35, "E5": 28.5, "F5": 22
+    };
+    const coordinateMappingBass = {
+      "G2": 74, "A2": 67.5, "B2": 61, "C3": 54.5, "D3": 48,
+      "E3": 41.5, "F3": 35, "G3": 28.5, "A3": 22
+    };
+    const horizontalNodeSpacings = [40, 50, 60, 70];
+
+    let scoresCount = 1;
+    let currentCombo = 1;
+    let remainingLives = TOTAL_LIVES;
+    let stageIndex = 0;
+    let questionIndex = 1;
+    let targetGeneratedNotes = [];
+    let placementSequencePointer = 0;
+    let lessonComplete = false;
+    let isSoundMuted = false;
+
+    const staffBed = document.getElementById("staffBed");
+    const pianoKeysContainer = document.getElementById("pianoKeysContainer");
+    const statusMessage = document.getElementById("statusMessage");
+    const clefImage = document.getElementById("clefImage");
+    const instructionText = document.getElementById("instructionText");
+    const gameBoard = document.querySelector(".game-board");
+    const gameOverScreen = document.getElementById("gameOverScreen");
+    const gameOverScore = document.getElementById("gameOverScore");
+    const soundToggleBtn = document.getElementById("soundToggleBtn");
+
+    function assertAudioContext() {
+      if (!audioContextInstance) {
+        audioContextInstance = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioContextInstance.state === "suspended") audioContextInstance.resume();
+      return audioContextInstance;
+    }
+
+    function noteLetter(noteId) {
+      return noteId.replace(/\d/g, "");
+    }
+
+    function getActiveQuestion() {
+      return lessonQuestionBank[Math.min(questionIndex - 1, lessonQuestionBank.length - 1)];
+    }
+
+    function resolvePlayedNoteForAudio(noteId) {
+      if (noteId.match(/\d$/)) return noteId;
+
+      const currentTarget = targetGeneratedNotes[placementSequencePointer];
+      if (currentTarget && noteLetter(currentTarget) === noteId) {
+        return currentTarget;
+      }
+
+      return `${noteId}4`;
+    }
+
+    function drawStaffLinesGrid() {
+      staffBed.querySelectorAll(".staff-line").forEach(line => line.remove());
+      [22, 35, 48, 61, 74].forEach(topPosition => {
+        const line = document.createElement("div");
+        line.className = "staff-line";
+        line.style.top = `${topPosition}%`;
+        staffBed.appendChild(line);
+      });
+    }
+
+    function emitAudioTone(noteId) {
+      if (isSoundMuted) return;
+      const absoluteNote = resolvePlayedNoteForAudio(noteId);
+
+      const context = assertAudioContext();
+      const timestamp = context.currentTime;
+      const oscillatorNode = context.createOscillator();
+      const gainNode = context.createGain();
+
+      oscillatorNode.type = "sine";
+      oscillatorNode.frequency.value = toneFrequencyMap[absoluteNote] || 261.63;
+      gainNode.gain.setValueAtTime(0.28, timestamp);
+      gainNode.gain.exponentialRampToValueAtTime(0.0001, timestamp + 0.55);
+
+      oscillatorNode.connect(gainNode);
+      gainNode.connect(context.destination);
+      oscillatorNode.start();
+      oscillatorNode.stop(timestamp + 0.55);
+    }
+
+    function dispatchSystemChime(frequency, type = "sine") {
+      if (isSoundMuted) return;
+      const context = assertAudioContext();
+      const timestamp = context.currentTime;
+      const oscillatorNode = context.createOscillator();
+      const gainNode = context.createGain();
+
+      oscillatorNode.type = type;
+      oscillatorNode.frequency.value = frequency;
+      gainNode.gain.setValueAtTime(0.15, timestamp);
+      gainNode.gain.exponentialRampToValueAtTime(0.0001, timestamp + 0.2);
+
+      oscillatorNode.connect(gainNode);
+      gainNode.connect(context.destination);
+      oscillatorNode.start();
+      oscillatorNode.stop(timestamp + 0.2);
+    }
+
+    function buildPianoKeyboardLayout() {
+      const whiteKeysMarkup = whiteKeysConfig.map(key => `
+        <button class="key-white" data-note="${key.title}" type="button" aria-label="${key.title}">
+          <span class="key-label">${key.title}</span>
+        </button>
+      `).join("");
+
+      const blackKeysMarkup = blackKeysConfig.map(key => `
+        <button class="key-black" data-note="${key.title}" type="button" aria-label="${key.title}" style="left: ${(key.stepPlacement / whiteKeysConfig.length) * 100}%">
+          <span class="key-label">${key.title}</span>
+        </button>
+      `).join("");
+
+      pianoKeysContainer.innerHTML = whiteKeysMarkup + blackKeysMarkup;
+      pianoKeysContainer.querySelectorAll("[data-note]").forEach(element => {
+        element.addEventListener("click", () => processInputEvaluation(element.dataset.note, element));
+      });
+    }
+
+    function produceTargetSequence() {
+      const activeQuestion = getActiveQuestion();
+      targetGeneratedNotes = [...activeQuestion.notes];
+      placementSequencePointer = 0;
+    }
+
+    function synchronizeNotationPanel() {
+      document.querySelectorAll(".note-node").forEach(node => node.remove());
+      const activeQuestion = getActiveQuestion();
+
+      clefImage.innerHTML = activeQuestion.type === "bass" ? "&#119074;" : "&#119070;";
+      instructionText.textContent = `Question ${questionIndex}/${TOTAL_QUESTIONS}: play the ${activeQuestion.type} clef notes`;
+
+      targetGeneratedNotes.forEach((noteDesignator, stepIndex) => {
+        const carriesSharp = noteDesignator.includes("#");
+        let extraClasses = "";
+
+        if (stepIndex < placementSequencePointer) extraClasses = "played-success";
+        else if (stepIndex === placementSequencePointer) extraClasses = "active-target";
+
+        if (activeQuestion.type === "treble") {
+          if (["B4", "C5", "D5", "E5", "F5"].includes(noteDesignator)) extraClasses += " flipped-stem";
+        } else if (["D3", "E3", "F3", "G3", "A3"].includes(noteDesignator)) {
+          extraClasses += " flipped-stem";
+        }
+
+        const noteNodeElement = document.createElement("div");
+        noteNodeElement.className = `note-node ${extraClasses}`;
+
+        const offsetPercentage = activeQuestion.type === "treble"
+          ? (coordinateMappingTreble[noteDesignator] || 50)
+          : (coordinateMappingBass[noteDesignator] || 50);
+
+        noteNodeElement.style.top = `${offsetPercentage}%`;
+        noteNodeElement.style.left = `${horizontalNodeSpacings[stepIndex]}%`;
+        noteNodeElement.innerHTML = `
+          <div class="accidental-symbol">${carriesSharp ? "\u266F" : ""}</div>
+          <div class="note-oval"></div>
+          <div class="note-stem"></div>
+        `;
+        staffBed.appendChild(noteNodeElement);
+      });
+    }
+
+    function advanceToNextRound() {
+      produceTargetSequence();
+      synchronizeNotationPanel();
+      propagateStatsToDashboard();
+    }
+
+    function processInputEvaluation(evaluatedNote, domElement) {
+      if (lessonComplete) return;
+
+      assertAudioContext();
+      emitAudioTone(evaluatedNote);
+      domElement.classList.add("pressed");
+      setTimeout(() => domElement.classList.remove("pressed"), 150);
+
+      const objectiveTargetNote = targetGeneratedNotes[placementSequencePointer];
+      const cleanObjectiveName = noteLetter(objectiveTargetNote);
+
+      if (evaluatedNote === cleanObjectiveName) {
+        placementSequencePointer++;
+        synchronizeNotationPanel();
+
+        if (placementSequencePointer >= targetGeneratedNotes.length) {
+          currentCombo += 1;
+          questionIndex += 1;
+          if (scoresCount < TOTAL_QUESTIONS) scoresCount += 1;
+
+          dispatchSystemChime(880);
+          triggerMessageFlush("Perfect Phrase!", "success");
+
+          if (questionIndex > TOTAL_QUESTIONS) {
+            completeLesson();
+            return;
+          }
+
+          setTimeout(advanceToNextRound, 400);
+          return;
+        }
+
+        triggerMessageFlush(`Note ${placementSequencePointer}/4 matched!`, "success");
+        return;
+      }
+
+      remainingLives -= 1;
+      currentCombo = 0;
+      placementSequencePointer = 0;
+      dispatchSystemChime(140, "sawtooth");
+      domElement.classList.add("incorrect");
+      setTimeout(() => domElement.classList.remove("incorrect"), 250);
+      triggerMessageFlush("Wrong sequence. Resetting chain!", "error");
+
+      if (remainingLives <= 0) {
+        showGameOverScreen();
+        return;
+      }
+
+      synchronizeNotationPanel();
+      propagateStatsToDashboard();
+    }
+
+    function completeLesson() {
+      lessonComplete = true;
+      questionIndex = TOTAL_QUESTIONS;
+      placementSequencePointer = targetGeneratedNotes.length;
+      synchronizeNotationPanel();
+      propagateStatsToDashboard();
+      triggerMessageFlush("Congratulations! You passed Lesson 3!", "success");
+    }
+
+    function showGameOverScreen() {
+      remainingLives = 0;
+      currentCombo = 0;
+      lessonComplete = true;
+      propagateStatsToDashboard();
+      const completedQuestions = Math.max(0, scoresCount - 1);
+      gameOverScore.textContent = `${completedQuestions} / ${TOTAL_QUESTIONS}`;
+      gameBoard.classList.add("game-over-active");
+      gameOverScreen.setAttribute("aria-hidden", "false");
+      statusMessage.textContent = "Try again";
+      statusMessage.className = "status-msg error";
+      document.getElementById("btnListen").disabled = true;
+    }
+
+    function propagateStatsToDashboard() {
+      const completionRatio = remainingLives <= 0 ? 0 : Math.max(10, Math.round((scoresCount / TOTAL_QUESTIONS) * 100));
+      document.getElementById("scoreValue").textContent = `${scoresCount}/${TOTAL_QUESTIONS}`;
+      document.getElementById("comboValue").textContent = currentCombo;
+      document.getElementById("comboMessage").textContent = currentCombo > 4 ? "Excellent!" : "Keep going!";
+      document.getElementById("livesValue").textContent = "\u2665".repeat(remainingLives) + "\u2661".repeat(TOTAL_LIVES - remainingLives);
+      document.getElementById("progressFill").style.width = `${Math.min(completionRatio, 100)}%`;
+      document.getElementById("progressPercent").textContent = `${completionRatio}%`;
+    }
+
+    function triggerMessageFlush(textString, alertType) {
+      statusMessage.textContent = textString;
+      statusMessage.className = `status-msg ${alertType || ""}`;
+      setTimeout(() => {
+        if (statusMessage.textContent === textString) {
+          statusMessage.textContent = "Sequence ready";
+          statusMessage.className = "status-msg";
+        }
+      }, 1300);
+    }
+
+    function rebootSessionState(alertPrompt = "Sequence ready") {
+      scoresCount = 1;
+      currentCombo = 1;
+      remainingLives = TOTAL_LIVES;
+      stageIndex = 0;
+      questionIndex = 1;
+      lessonComplete = false;
+      gameBoard.classList.remove("game-over-active");
+      gameOverScreen.setAttribute("aria-hidden", "true");
+      document.getElementById("btnListen").disabled = false;
+      triggerMessageFlush(alertPrompt, alertPrompt.includes("over") ? "error" : "success");
+      advanceToNextRound();
+    }
+
+    async function streamSequenceAudio() {
+      if (isSoundMuted) {
+        triggerMessageFlush("Sound is muted", "error");
+        return;
+      }
+
+      assertAudioContext();
+      const triggerBtn = document.getElementById("btnListen");
+      triggerBtn.disabled = true;
+
+      for (let i = 0; i < targetGeneratedNotes.length; i++) {
+        emitAudioTone(targetGeneratedNotes[i]);
+        await new Promise(successCallback => setTimeout(successCallback, 450));
+      }
+
+      triggerBtn.disabled = false;
+    }
+
+    function navigateTo(destinationPath) {
+      window.location.href = destinationPath;
+    }
+
+    function toggleSoundState() {
+      isSoundMuted = !isSoundMuted;
+      soundToggleBtn.classList.toggle("muted", isSoundMuted);
+      soundToggleBtn.setAttribute("aria-label", isSoundMuted ? "Sound off" : "Sound on");
+      soundToggleBtn.innerHTML = isSoundMuted ? "&#9833;" : "&#9834;";
+      triggerMessageFlush(isSoundMuted ? "Sound muted" : "Sound on", isSoundMuted ? "error" : "success");
+    }
+
+    window.addEventListener("keydown", eventKey => {
+      const inputsMapping = whiteKeysConfig.concat(blackKeysConfig);
+      const matchedKeyObj = inputsMapping.find(k => k.title.toLowerCase() === eventKey.key.toLowerCase());
+      if (!matchedKeyObj) return;
+
+      const targetElement = pianoKeysContainer.querySelector(`[data-note="${matchedKeyObj.title}"]`);
+      if (!targetElement) return;
+
+      eventKey.preventDefault();
+      processInputEvaluation(matchedKeyObj.title, targetElement);
+    });
+
+    document.getElementById("btnListen").addEventListener("click", streamSequenceAudio);
+    document.getElementById("btnReset").addEventListener("click", () => rebootSessionState());
+    document.getElementById("topResetBtn").addEventListener("click", () => rebootSessionState());
+    document.getElementById("btnGameOverPlayAgain").addEventListener("click", () => rebootSessionState("New round ready"));
+    document.getElementById("btnGameOverNext").addEventListener("click", () => navigateTo("/lesson2-4"));
+    document.getElementById("btnGameOverExit").addEventListener("click", () => navigateTo("/lessons"));
+    document.getElementById("navHomeBtn").addEventListener("click", () => navigateTo("/dashboard"));
+    document.getElementById("navLeaderboardBtn").addEventListener("click", () => navigateTo("/dashboard#scores"));
+    document.getElementById("navProfileBtn").addEventListener("click", () => navigateTo("/dashboard"));
+    document.getElementById("navExitBtn").addEventListener("click", () => navigateTo("/lessons"));
+    document.getElementById("lessonMenuBtn").addEventListener("click", () => navigateTo("/lessons"));
+    soundToggleBtn.addEventListener("click", toggleSoundState);
+
+    drawStaffLinesGrid();
+    buildPianoKeyboardLayout();
+    rebootSessionState();
+  </script>
+</body>
+</html>

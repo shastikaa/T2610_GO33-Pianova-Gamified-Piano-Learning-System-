@@ -12,10 +12,14 @@ from templates.templates.database import (
     fetch_user_by_username,
     get_all_accounts,
     get_admin_metrics,
+    get_certificate_account_by_ref,
     get_latest_certificate_for_user,
+    get_recent_certificates,
     get_recent_progress,
     get_recent_scores,
+    get_registered_users,
     get_user_metrics,
+    get_weekly_practice_hours,
     init_app as init_database_app,
     init_db,
     issue_certificate,
@@ -27,7 +31,13 @@ from templates.templates.database import (
 app = Flask(__name__, static_folder='static')
 app.secret_key = "secret123"
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
+app.config['TEMPLATES_AUTO_RELOAD'] = True
+app.jinja_env.auto_reload = True
 init_database_app(app)
+
+# Dedicated admin login credentials. You can override with environment variables.
+ADMIN_LOGIN_USERNAME = os.getenv('PIANOVA_ADMIN_USERNAME', 'admin')
+ADMIN_LOGIN_PASSWORD = os.getenv('PIANOVA_ADMIN_PASSWORD', 'admin123')
 
 
 @app.after_request
@@ -93,6 +103,30 @@ def build_progress_chart(metrics):
     return points
 
 
+def build_practice_time_points(hours_by_day):
+    points = []
+    max_hours = 0.0
+
+    for item in hours_by_day:
+        hours = max(0.0, float(item.get('hours', 0.0)))
+        max_hours = max(max_hours, hours)
+        points.append({'label': item.get('label', ''), 'hours': hours})
+
+    # Keep tiny sessions visible: if user practiced only a few minutes,
+    # we still want the chart to rise instead of appearing flat.
+    scale_max = max(0.05, max_hours)
+
+    for point in points:
+        if point['hours'] <= 0:
+            point['value'] = 0.0
+            continue
+
+        raw_value = (point['hours'] / scale_max) * 100.0
+        point['value'] = round(max(14.0, min(100.0, raw_value)), 2)
+
+    return points, scale_max
+
+
 def build_progress_chart_geometry(points, width=860, height=220, left=40, top=28, right=40, bottom=26):
     if not points:
         return {'path': '', 'fill_path': '', 'dots': []}
@@ -139,6 +173,11 @@ def build_progress_chart_geometry(points, width=860, height=220, left=40, top=28
 
 def format_practice_time(metrics):
     total_seconds = int(metrics.get('practice_seconds', 0))
+    return format_duration_seconds(total_seconds)
+
+
+def format_duration_seconds(total_seconds):
+    total_seconds = int(total_seconds)
     hours, remainder = divmod(total_seconds, 3600)
     minutes = remainder // 60
     if hours:
@@ -180,6 +219,24 @@ def practice_href_for_level(current_level):
     return url_for('game2') if current_level >= 2 else url_for('game')
 
 
+def continue_lesson_href_for_level(current_level):
+    if current_level <= 1:
+        return url_for('game')
+    if current_level == 2:
+        return url_for('lesson2_1_latest')
+    return url_for('game2')
+
+
+def level_label(current_level):
+    if current_level <= 1:
+        return 'Beginner 🎵'
+    if current_level == 2:
+        return 'Young Pianist 🎵'
+    if current_level == 3:
+        return 'Intermediate 🎶'
+    return 'Advanced 🌟'
+
+
 @app.route('/')
 def home():
     if session.get('role') == 'admin':
@@ -195,6 +252,24 @@ def login():
         username = request.form.get('username', '').strip()
         password = request.form.get('password', '')
 
+        # Only this dedicated username/password should open admin dashboard.
+        if username == ADMIN_LOGIN_USERNAME and password == ADMIN_LOGIN_PASSWORD:
+            admin_user = fetch_user_by_username(ADMIN_LOGIN_USERNAME)
+            if admin_user is None:
+                create_user(ADMIN_LOGIN_USERNAME, generate_password_hash(ADMIN_LOGIN_PASSWORD), 'admin')
+                admin_user = fetch_user_by_username(ADMIN_LOGIN_USERNAME)
+
+            if admin_user is None:
+                flash('Admin login is temporarily unavailable.', 'error')
+                return render_template('login.html')
+
+            session.clear()
+            session['user_id'] = admin_user['id']
+            session['user'] = admin_user['username']
+            session['role'] = 'admin'
+            session['level'] = 1
+            return redirect(url_for('admin_dashboard'))
+
         user = fetch_user_by_username(username)
         if user is None or not verify_password(user['password'], password):
             flash('Invalid username or password.', 'error')
@@ -203,11 +278,8 @@ def login():
         session.clear()
         session['user_id'] = user['id']
         session['user'] = user['username']
-        session['role'] = user['role']
+        session['role'] = 'user'
         session['level'] = 1
-
-        if user['role'] == 'admin':
-            return redirect(url_for('admin_dashboard'))
         return redirect(url_for('user_dashboard'))
 
     return render_template('login.html')
@@ -233,9 +305,20 @@ def register():
             return render_template('register.html')
 
         create_user(username, generate_password_hash(password), 'user')
+        created_user = fetch_user_by_username(username)
 
-        flash('Account created. You can log in now.', 'success')
-        return redirect(url_for('login'))
+        if created_user is None:
+            flash('Account was created but sign-in failed. Please log in manually.', 'error')
+            return redirect(url_for('login'))
+
+        session.clear()
+        session['user_id'] = created_user['id']
+        session['user'] = created_user['username']
+        session['role'] = 'user'
+        session['level'] = 1
+
+        flash('Account created successfully.', 'success')
+        return redirect(url_for('user_dashboard'))
 
     return render_template('register.html')
 
@@ -277,28 +360,100 @@ def forgot_password():
 def user_dashboard():
     metrics = get_user_metrics(session['user_id'], session.get('level', 1))
     current_level = int(metrics.get('current_level', 1))
+    weekly_practice = get_weekly_practice_hours(session['user_id'])
+    practice_points, practice_scale_max = build_practice_time_points(weekly_practice)
+    weekly_seconds = sum(int(item.get('seconds', 0)) for item in weekly_practice)
+
     return render_template(
         'user_dashboard.html',
         username=session['user'],
         metrics=metrics,
-        progress_chart=build_progress_chart_geometry(build_progress_chart(metrics)),
+        progress_chart=build_progress_chart_geometry(practice_points),
+        practice_chart_max_hours=round(practice_scale_max, 2),
+        practice_hours_week=round(weekly_seconds / 3600.0, 1),
+        weekly_practice_time=format_duration_seconds(weekly_seconds),
         practice_time=format_practice_time(metrics),
+        current_level_label=level_label(current_level),
+        lessons_card_url=url_for('lessons'),
         practice_href=practice_href_for_level(current_level),
         next_lesson=build_next_lesson_card(current_level),
     )
+
+
+@app.route('/api/current-user', methods=['GET'])
+@login_required
+@role_required('user')
+def current_user_api():
+    username = session.get('user', 'Student')
+    return {
+        'username': username,
+        'initial': (username[:1].upper() if username else 'S'),
+    }
+
+
+@app.route('/api/weekly-practice', methods=['GET'])
+@login_required
+@role_required('user')
+def weekly_practice_api():
+    weekly_practice = get_weekly_practice_hours(session['user_id'])
+    practice_points, practice_scale_max = build_practice_time_points(weekly_practice)
+    weekly_seconds = sum(int(item.get('seconds', 0)) for item in weekly_practice)
+    chart = build_progress_chart_geometry(practice_points)
+
+    return {
+        'weekly_practice_time': format_duration_seconds(weekly_seconds),
+        'total_practice_time': format_duration_seconds(
+            get_user_metrics(session['user_id'], session.get('level', 1)).get('practice_seconds', 0)
+        ),
+        'chart': chart,
+        'scale_max_hours': round(practice_scale_max, 2),
+    }
 
 
 @app.route('/admin-dashboard')
 @login_required
 @role_required('admin')
 def admin_dashboard():
+    cert_ref_id = request.args.get('cert_ref_id', '').strip()
+    certificate_lookup = None
+
+    if cert_ref_id:
+        certificate_lookup = get_certificate_account_by_ref(cert_ref_id)
+
     return render_template(
-        'admin_dashboard.html',
+        'admindash.html',
         username=session['user'],
         metrics=get_admin_metrics(),
-        accounts=get_all_accounts(),
+        accounts=get_registered_users(),
         recent_scores=get_recent_scores(),
         recent_progress=get_recent_progress(),
+        recent_certificates=get_recent_certificates(),
+        cert_ref_id=cert_ref_id,
+        certificate_lookup=certificate_lookup,
+    )
+
+
+@app.route('/admin-users')
+@login_required
+@role_required('admin')
+def admin_users():
+    return render_template(
+        'templates/admindash_users.html',
+        username=session['user'],
+        metrics=get_admin_metrics(),
+        accounts=get_registered_users(),
+    )
+
+
+@app.route('/admin-certificates')
+@login_required
+@role_required('admin')
+def admin_certificates():
+    return render_template(
+        'admindash_certificate.html',
+        username=session['user'],
+        metrics=get_admin_metrics(),
+        certificates=get_recent_certificates(limit=500),
     )
 
 
@@ -311,10 +466,23 @@ def lessons():
 
 
 @app.route('/game', methods=['GET', 'POST'])
-@app.route('/game1', methods=['GET'])
 @login_required
 @role_required('user')
 def game():
+    return render_template('templates/game1.html')
+
+
+@app.route('/game1', methods=['GET'])
+@login_required
+@role_required('user')
+def game1_entry():
+    return render_template('templates/level1(lesson1).html')
+
+
+@app.route('/level1-notes', methods=['GET'])
+@login_required
+@role_required('user')
+def level1_notes():
     return render_template('templates/game1.html')
 
 
@@ -325,11 +493,25 @@ def game2():
     return render_template('game2.html')
 
 
+@app.route('/level1-lesson1', methods=['GET'])
+@login_required
+@role_required('user')
+def level1_lesson1():
+    return render_template('templates/level1(lesson1).html')
+
+
+@app.route('/level1-lesson1exercise', methods=['GET'])
+@login_required
+@role_required('user')
+def level1_lesson1exercise():
+    return render_template('templates/level1(lesson1exercise).html')
+
+
 @app.route('/lesson2-1', methods=['GET'])
 @login_required
 @role_required('user')
 def lesson2_1():
-    return render_template('level2(lesson1)')
+    return render_template('level2(lesson 1).html')
 
 
 @app.route('/lesson2-2', methods=['GET'])
@@ -337,6 +519,25 @@ def lesson2_1():
 @role_required('user')
 def lesson2_2():
     return render_template('level 2(lesson 2).html')
+
+
+@app.route('/lesson2-3', methods=['GET'])
+@app.route('/level2-lesson3', methods=['GET'])
+@login_required
+@role_required('user')
+def lesson2_3():
+    lesson3_template = 'level2(lesson 3).html'
+    lesson3_path = os.path.join(app.root_path, 'templates', lesson3_template)
+    if os.path.exists(lesson3_path):
+        return render_template(lesson3_template)
+    return render_template('level 2(lesson 4).html')
+
+
+@app.route('/level2', methods=['GET'])
+@login_required
+@role_required('user')
+def level2_home():
+    return render_template('level2.html')
 
 
 @app.route('/lesson2-4', methods=['GET'])
@@ -350,21 +551,21 @@ def lesson2_4():
 @login_required
 @role_required('user')
 def level1_lesson2():
-    return render_template('level2(lesson1)')
+    return render_template('level2(lesson 1).html')
 
 
 @app.route('/lesson2-1-latest', methods=['GET'])
 @login_required
 @role_required('user')
 def lesson2_1_latest():
-    return render_template('level2(lesson1)')
+    return render_template('level2(lesson 1).html')
 
 
 @app.route('/level2-lesson1', methods=['GET'])
 @login_required
 @role_required('user')
 def level2_lesson1_alias():
-    return render_template('level2(lesson1)')
+    return render_template('level2(lesson 1).html')
 
 
 @app.route('/level2-lesson4', methods=['GET'])
@@ -372,6 +573,43 @@ def level2_lesson1_alias():
 @role_required('user')
 def level2_lesson4_alias():
     return render_template('level 2(lesson 4).html')
+
+
+@app.route('/lesson3-1', methods=['GET'])
+@login_required
+@role_required('user')
+def lesson3_1():
+    return render_template('level3(lesson1).html')
+
+
+@app.route('/lesson3-2', methods=['GET'])
+@login_required
+@role_required('user')
+def lesson3_2():
+    return render_template('level3(lesson2).html')
+
+
+@app.route('/lesson3-3', methods=['GET'])
+@login_required
+@role_required('user')
+def lesson3_3():
+    return render_template('level3(lesson3).html')
+
+
+@app.route('/lesson3-4', methods=['GET'])
+@login_required
+@role_required('user')
+def lesson3_4():
+    return render_template('level3(lesson4).html')
+
+
+@app.route('/level4', methods=['GET'])
+@app.route('/game4', methods=['GET'])
+@app.route('/level4.html', methods=['GET'])
+@login_required
+@role_required('user')
+def level4():
+    return render_template('level4.html')
 
 
 @app.route('/api/save-game2', methods=['POST'])
@@ -415,23 +653,76 @@ def save_game2():
     )
     save_task_progress(user_id, task_id=4, status='completed' if passed else 'in_progress', last_score=score)
 
-    certificate = None
     if passed:
         save_progress(user_id, 2, 'completed')
         session['level'] = max(int(session.get('level', 1)), 2)
-        certificate = issue_certificate(
-            user_id=user_id,
-            level_id=2,
-            issued_for=session.get('user'),
-            score_snapshot=score,
-        )
 
     return {
         'status': 'ok',
         'passed': passed,
+        'certificate_issued': False,
+        'certificate_no': None,
+        'certificate_url': None,
+    }
+
+
+@app.route('/api/complete-level1', methods=['POST'])
+@login_required
+@role_required('user')
+def complete_level1():
+    data = request.get_json(silent=True) or {}
+
+    try:
+        score = int(data.get('score', 0))
+    except (TypeError, ValueError):
+        score = 0
+    score = max(0, min(score, 1000))
+
+    user_id = session['user_id']
+    save_progress(user_id, 1, 'completed')
+    save_task_progress(user_id, task_id=1, status='completed', last_score=score)
+    session['level'] = max(int(session.get('level', 1)), 1)
+
+    return {
+        'status': 'ok',
+        'level_completed': True,
+        'certificate_issued': False,
+        'certificate_no': None,
+        'certificate_url': None,
+    }
+
+
+@app.route('/api/complete-level4', methods=['POST'])
+@login_required
+@role_required('user')
+def complete_level4():
+    data = request.get_json(silent=True) or {}
+
+    try:
+        score = int(data.get('score', 0))
+    except (TypeError, ValueError):
+        score = 0
+    score = max(0, min(score, 1000))
+
+    user_id = session['user_id']
+
+    save_progress(user_id, 4, 'completed')
+    save_task_progress(user_id, task_id=10, status='completed', last_score=score)
+    session['level'] = max(int(session.get('level', 1)), 4)
+
+    certificate = issue_certificate(
+        user_id=user_id,
+        level_id=4,
+        issued_for=session.get('user'),
+        score_snapshot=score,
+    )
+
+    return {
+        'status': 'ok',
+        'level_completed': True,
         'certificate_issued': certificate is not None,
         'certificate_no': certificate['certificate_no'] if certificate else None,
-        'certificate_url': url_for('certificate_page') if certificate else None,
+        'certificate_url': url_for('certificate_page'),
     }
 
 
@@ -440,10 +731,26 @@ def save_game2():
 @role_required('user')
 def certificate_page():
     certificate = get_latest_certificate_for_user(session['user_id'])
+    issued_for = session.get('user', 'Student')
+    certificate_title = 'Beginner Piano Course'
+
+    if certificate is not None:
+        raw_issued_for = (certificate['issued_for'] or '').strip()
+        raw_certificate_title = (certificate['title'] or '').strip()
+
+        # Ignore placeholder-like values stored in old records.
+        if raw_issued_for and not (raw_issued_for.startswith('{{') and raw_issued_for.endswith('}}')):
+            issued_for = raw_issued_for
+
+        if raw_certificate_title and not (raw_certificate_title.startswith('{{') and raw_certificate_title.endswith('}}')):
+            certificate_title = raw_certificate_title
+
     return render_template(
         'certificate.html',
         username=session.get('user', 'Student'),
         certificate=certificate,
+        issued_for=issued_for,
+        certificate_title=certificate_title,
     )
 
 

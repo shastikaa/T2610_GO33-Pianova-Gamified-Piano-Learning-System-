@@ -707,6 +707,107 @@ def add_practice_session(user_id, game_type, duration_seconds):
     db.commit()
 
 
+def _build_level_overview_donut_gradient(level_overview):
+    segments = []
+    start_angle = 0.0
+
+    visible_levels = [item for item in level_overview if int(item.get('count', 0)) > 0]
+    if not visible_levels:
+        return 'conic-gradient(#1f2329 0deg 360deg)'
+
+    for index, item in enumerate(visible_levels):
+        if index == len(visible_levels) - 1:
+            end_angle = 360.0
+        else:
+            end_angle = start_angle + ((float(item.get('percentage', 0)) / 100.0) * 360.0)
+
+        segments.append(f"{item['color_hex']} {start_angle:.2f}deg {end_angle:.2f}deg")
+        start_angle = end_angle
+
+    return f"conic-gradient({', '.join(segments)})"
+
+
+def get_level_overview():
+    db = get_db()
+    total_users = db.execute(
+        "SELECT COUNT(*) FROM users WHERE role = 'user'"
+    ).fetchone()[0]
+
+    level_rows = db.execute(
+        """
+        SELECT id, level_name, level_order
+        FROM levels
+        ORDER BY level_order ASC
+        """
+    ).fetchall()
+
+    if not level_rows:
+        return {
+            'levels': [],
+            'donut_gradient': 'conic-gradient(#1f2329 0deg 360deg)',
+            'total_users': total_users,
+        }
+
+    level_counts = db.execute(
+        """
+        WITH user_highest AS (
+            SELECT
+                u.id AS user_id,
+                COALESCE(MAX(l.level_order), 1) AS highest_level_order
+            FROM users u
+            LEFT JOIN progress p
+                ON p.user_id = u.id
+                AND p.status = 'completed'
+            LEFT JOIN levels l
+                ON l.id = p.level_id
+            WHERE u.role = 'user'
+            GROUP BY u.id
+        )
+        SELECT
+            lv.id AS level_id,
+            COUNT(uh.user_id) AS user_count
+        FROM levels lv
+        LEFT JOIN user_highest uh
+            ON uh.highest_level_order = lv.level_order
+        GROUP BY lv.id
+        ORDER BY lv.level_order ASC
+        """
+    ).fetchall()
+
+    count_by_level_id = {
+        int(row['level_id']): int(row['user_count'])
+        for row in level_counts
+    }
+
+    color_tokens = [
+        ('purple', '#6c2db5'),
+        ('blue', '#1760ca'),
+        ('green', '#2d9743'),
+        ('orange', '#f39212'),
+    ]
+
+    level_overview = []
+    for index, level in enumerate(level_rows):
+        color_class, color_hex = color_tokens[index % len(color_tokens)]
+        count = count_by_level_id.get(int(level['id']), 0)
+        percentage = round((count / total_users) * 100.0, 1) if total_users else 0.0
+        level_overview.append(
+            {
+                'level_name': level['level_name'],
+                'count': count,
+                'percentage': percentage,
+                'color_class': color_class,
+                'color_hex': color_hex,
+            }
+        )
+
+    return {
+        'levels': level_overview,
+        'donut_gradient': _build_level_overview_donut_gradient(level_overview),
+        'total_users': total_users,
+    }
+
+
 def get_admin_metrics():
     db = get_db()
     total_users = db.execute("SELECT COUNT(*) FROM users WHERE role = 'user'").fetchone()[0]
@@ -716,22 +817,46 @@ def get_admin_metrics():
     completed_lessons = db.execute(
         "SELECT COUNT(*) FROM progress WHERE status = 'completed'"
     ).fetchone()[0]
+    recent_students_week = db.execute(
+        """
+        SELECT COUNT(*)
+        FROM users
+        WHERE role = 'user'
+          AND created_at IS NOT NULL
+          AND datetime(created_at) >= datetime('now', '-7 days')
+        """
+    ).fetchone()[0]
     recent_users = db.execute(
         "SELECT username, role FROM users ORDER BY id DESC LIMIT 5"
     ).fetchall()
+    level_overview = get_level_overview()
     return {
         'total_users': total_users,
         'total_admins': total_admins,
         'total_scores': total_scores,
         'total_certificates': total_certificates,
         'completed_lessons': completed_lessons,
+        'recent_students_week': recent_students_week,
         'recent_users': recent_users,
+        'level_overview': level_overview['levels'],
+        'level_overview_donut': level_overview['donut_gradient'],
     }
 
 
 def get_all_accounts():
     return get_db().execute(
-        "SELECT id, username, password, role FROM users ORDER BY id DESC"
+        "SELECT id, username, password, role, created_at FROM users ORDER BY id DESC"
+    ).fetchall()
+
+
+def get_registered_users():
+    return get_db().execute(
+        """
+        SELECT id, username, password, role, created_at
+        FROM users
+        WHERE role = 'user'
+        ORDER BY id DESC
+        """
     ).fetchall()
 
 

@@ -17,6 +17,7 @@ from templates.templates.database import (
     get_recent_certificates,
     get_recent_progress,
     get_recent_scores,
+    get_registered_users,
     get_user_metrics,
     get_weekly_practice_hours,
     init_app as init_database_app,
@@ -30,7 +31,13 @@ from templates.templates.database import (
 app = Flask(__name__, static_folder='static')
 app.secret_key = "secret123"
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
+app.config['TEMPLATES_AUTO_RELOAD'] = True
+app.jinja_env.auto_reload = True
 init_database_app(app)
+
+# Dedicated admin login credentials. You can override with environment variables.
+ADMIN_LOGIN_USERNAME = os.getenv('PIANOVA_ADMIN_USERNAME', 'admin')
+ADMIN_LOGIN_PASSWORD = os.getenv('PIANOVA_ADMIN_PASSWORD', 'admin123')
 
 
 @app.after_request
@@ -245,6 +252,24 @@ def login():
         username = request.form.get('username', '').strip()
         password = request.form.get('password', '')
 
+        # Only this dedicated username/password should open admin dashboard.
+        if username == ADMIN_LOGIN_USERNAME and password == ADMIN_LOGIN_PASSWORD:
+            admin_user = fetch_user_by_username(ADMIN_LOGIN_USERNAME)
+            if admin_user is None:
+                create_user(ADMIN_LOGIN_USERNAME, generate_password_hash(ADMIN_LOGIN_PASSWORD), 'admin')
+                admin_user = fetch_user_by_username(ADMIN_LOGIN_USERNAME)
+
+            if admin_user is None:
+                flash('Admin login is temporarily unavailable.', 'error')
+                return render_template('login.html')
+
+            session.clear()
+            session['user_id'] = admin_user['id']
+            session['user'] = admin_user['username']
+            session['role'] = 'admin'
+            session['level'] = 1
+            return redirect(url_for('admin_dashboard'))
+
         user = fetch_user_by_username(username)
         if user is None or not verify_password(user['password'], password):
             flash('Invalid username or password.', 'error')
@@ -253,11 +278,8 @@ def login():
         session.clear()
         session['user_id'] = user['id']
         session['user'] = user['username']
-        session['role'] = user['role']
+        session['role'] = 'user'
         session['level'] = 1
-
-        if user['role'] == 'admin':
-            return redirect(url_for('admin_dashboard'))
         return redirect(url_for('user_dashboard'))
 
     return render_template('login.html')
@@ -283,9 +305,20 @@ def register():
             return render_template('register.html')
 
         create_user(username, generate_password_hash(password), 'user')
+        created_user = fetch_user_by_username(username)
 
-        flash('Account created. You can log in now.', 'success')
-        return redirect(url_for('login'))
+        if created_user is None:
+            flash('Account was created but sign-in failed. Please log in manually.', 'error')
+            return redirect(url_for('login'))
+
+        session.clear()
+        session['user_id'] = created_user['id']
+        session['user'] = created_user['username']
+        session['role'] = 'user'
+        session['level'] = 1
+
+        flash('Account created successfully.', 'success')
+        return redirect(url_for('user_dashboard'))
 
     return render_template('register.html')
 
@@ -388,15 +421,39 @@ def admin_dashboard():
         certificate_lookup = get_certificate_account_by_ref(cert_ref_id)
 
     return render_template(
-        'admin_dashboard.html',
+        'admindash.html',
         username=session['user'],
         metrics=get_admin_metrics(),
-        accounts=get_all_accounts(),
+        accounts=get_registered_users(),
         recent_scores=get_recent_scores(),
         recent_progress=get_recent_progress(),
         recent_certificates=get_recent_certificates(),
         cert_ref_id=cert_ref_id,
         certificate_lookup=certificate_lookup,
+    )
+
+
+@app.route('/admin-users')
+@login_required
+@role_required('admin')
+def admin_users():
+    return render_template(
+        'templates/admindash_users.html',
+        username=session['user'],
+        metrics=get_admin_metrics(),
+        accounts=get_registered_users(),
+    )
+
+
+@app.route('/admin-certificates')
+@login_required
+@role_required('admin')
+def admin_certificates():
+    return render_template(
+        'admindash_certificate.html',
+        username=session['user'],
+        metrics=get_admin_metrics(),
+        certificates=get_recent_certificates(limit=500),
     )
 
 
@@ -462,6 +519,17 @@ def lesson2_1():
 @role_required('user')
 def lesson2_2():
     return render_template('level 2(lesson 2).html')
+
+
+@app.route('/lesson2-3', methods=['GET'])
+@login_required
+@role_required('user')
+def lesson2_3():
+    lesson3_template = 'level2(lesson 3).html'
+    lesson3_path = os.path.join(app.root_path, 'templates', lesson3_template)
+    if os.path.exists(lesson3_path):
+        return render_template(lesson3_template)
+    return render_template('level 2(lesson 4).html')
 
 
 @app.route('/level2', methods=['GET'])

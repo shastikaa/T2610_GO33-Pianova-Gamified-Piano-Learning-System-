@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pianova Admin Dashboard</title>
+
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@1,600&display=swap");
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #020304;
+      color: #fff7e8;
+      font-family: Inter, Arial, sans-serif;
+    }
+
+    .sidebar {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 204px;
+      height: 100vh;
+      padding: 18px 14px;
+      background: #020304;
+      border-right: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .logo {
+      text-align: center;
+    }
+
+    .piano {
+      color: #e79a1e;
+      letter-spacing: 4px;
+      font-size: 28px;
+    }
+
+    .logo h2 {
+      margin: -5px 0 0;
+      color: #f6b64d;
+      font: italic 44px "Playfair Display", serif;
+    }
+
+    .logo p {
+      margin: 0;
+      color: #c98b34;
+      font-size: 9px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1.8px;
+    }
+
+    nav {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: -120px;
+    }
+
+    nav a {
+      height: 48px;
+      padding: 0 14px;
+      border-radius: 7px;
+      color: #fff1d8;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 16px;
+    }
+
+    nav a.active {
+      border: 1px solid rgba(245, 172, 35, 0.55);
+      background: linear-gradient(100deg, #a56e08, #473107, #171104);
+      box-shadow: inset 0 0 16px rgba(255, 214, 82, 0.2);
+    }
+
+    .admin-box {
+      height: 176px;
+      padding: 19px 14px;
+      border: 1px solid rgba(221, 148, 32, 0.2);
+      border-radius: 8px;
+      background: rgba(255, 185, 54, 0.03);
+      overflow: hidden;
+    }
+
+    .admin-top {
+      display: flex;
+      gap: 11px;
+      align-items: center;
+    }
+
+    .avatar {
+      width: 45px;
+      height: 45px;
+      border: 2px solid #eca128;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 50% 35%, #ffd26c 0 8px, transparent 9px),
+        radial-gradient(ellipse at 50% 82%, #e29619 0 17px, transparent 18px),
+        #140d04;
+      flex: none;
+    }
+
+    .avatar.small {
+      width: 39px;
+      height: 39px;
+    }
+
+    .admin-box h4 {
+      margin: 0 0 6px;
+      font-size: 16px;
+      font-weight: 500;
+    }
+
+    .admin-box p,
+    .profile small {
+      margin: 0;
+      color: #fff3dd;
+      font-size: 11px;
+    }
+
+    .music {
+      position: relative;
+      height: 72px;
+      margin-top: 32px;
+    }
+
+    .music i {
+      position: absolute;
+      left: -8px;
+      right: -6px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(191, 103, 12, 0.6), transparent);
+      transform: rotate(-13deg);
+    }
+
+    .music i:nth-child(1) { top: 18px; }
+    .music i:nth-child(2) { top: 26px; }
+    .music i:nth-child(3) { top: 34px; }
+    .music i:nth-child(4) { top: 42px; }
+    .music i:nth-child(5) { top: 50px; }
+
+    .music span {
+      position: absolute;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #ee9b17;
+      box-shadow: 0 0 10px rgba(238, 155, 23, 0.5);
+    }
+
+    .music span:nth-child(6) { left: 34px; top: 45px; }
+    .music span:nth-child(7) { left: 78px; top: 52px; }
+    .music span:nth-child(8) { left: 122px; top: 32px; }
+    .music span:nth-child(9) { left: 144px; top: 23px; }
+
+    main {
+      padding: 28px 26px 60px 222px;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 31px;
+    }
+
+    header h1 {
+      margin: 0;
+      font: italic 700 44px/1.05 "Playfair Display", Georgia, serif;
+      letter-spacing: 0.5px;
+      color: #fff7e8;
+      text-shadow: 0 2px 16px rgba(231, 154, 30, 0.25);
+    }
+
+    header p {
+      margin: 10px 0 0;
+      font-size: 16px;
+      color: #fff2de;
+    }
+
+    .top-actions {
+      display: flex;
+      gap: 20px;
+    }
+
+    .top-actions button {
+      height: 56px;
+      padding: 0 14px;
+      border: 1px solid rgba(215, 139, 28, 0.25);
+      border-radius: 8px;
+      background: #06070a;
+      color: #fff0d6;
+      font: 500 14px Inter, Arial, sans-serif;
+    }
+
+    .profile {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .profile span:last-child {
+      text-align: left;
+    }
+
+    .profile b,
+    .profile small {
+      display: block;
+    }
+
+    .cards,
+    .bottom {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      width: 100%;
+    }
+
+    .bottom {
+      margin-top: 14px;
+    }
+
+    .card {
+      border: 1px solid rgba(167, 123, 51, 0.24);
+      border-radius: 8px;
+      background: linear-gradient(145deg, rgba(255,255,255,0.04), rgba(255,255,255,0.005)), #08090b;
+      box-shadow: 0 18px 45px rgba(0,0,0,0.25);
+    }
+
+    .stat {
+      height: 170px;
+      padding: 34px 36px;
+      display: flex;
+      align-items: center;
+      gap: 28px;
+    }
+
+    .big-icon {
+      font-size: 70px;
+      color: #f0ab22;
+      filter: sepia(1) saturate(2);
+    }
+
+    .stat p {
+      margin: 0 0 10px;
+      color: #f4d392;
+      font-size: 18px;
+    }
+
+    .stat h2 {
+      margin: 0;
+      color: #ffd782;
+      font-size: 52px;
+      line-height: 1;
+    }
+
+    .overview,
+    .students {
+      height: 430px;
+      padding: 22px 18px;
+    }
+
+    .card h3 {
+      margin: 0;
+      color: #f6d391;
+      font-size: 20px;
+    }
+
+    .overview-content {
+      height: calc(100% - 30px);
+      display: flex;
+      align-items: center;
+      gap: 22px;
+    }
+
+    .donut {
+      width: 230px;
+      height: 230px;
+      border-radius: 50%;
+      background: conic-gradient(
+        #6630b5 0deg 126deg,
+        #155dcb 126deg 234deg,
+        #299240 234deg 306deg,
+        #f39211 306deg 360deg
+      );
+      position: relative;
+    }
+
+    .donut::before {
+      content: "";
+      position: absolute;
+      inset: 48px;
+      border-radius: 50%;
+      background: #07080a;
+    }
+
+    .donut-center {
+      position: absolute;
+      inset: 50%;
+      transform: translate(-50%, -50%);
+      width: 55px;
+      height: 55px;
+      border-radius: 50%;
+      background: linear-gradient(145deg, #ffd467, #e48c0d);
+      color: #07101a;
+      display: grid;
+      place-items: center;
+      font-size: 28px;
+    }
+
+    .legend {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      gap: 25px;
+      font-size: 16px;
+      line-height: 1.45;
+    }
+
+    .legend li {
+      position: relative;
+      padding-left: 35px;
+    }
+
+    .legend span {
+      position: absolute;
+      left: 0;
+      top: 3px;
+      width: 21px;
+      height: 21px;
+      border-radius: 50%;
+    }
+
+    .legend b {
+      font-weight: 400;
+    }
+
+    .purple { background: #6c2db5; }
+    .blue { background: #1760ca; }
+    .green { background: #2d9743; }
+    .orange { background: #f39212; }
+
+    .title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .title-row button {
+      height: 36px;
+      min-width: 88px;
+      border: 1px solid rgba(205, 139, 34, 0.2);
+      border-radius: 5px;
+      background: #0b0b0d;
+      color: #f6ce8c;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    th {
+      padding: 8px 0 13px;
+      color: #e7c07c;
+      font-weight: 500;
+      text-align: left;
+    }
+
+    td {
+      height: 59px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+
+    td:first-child {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .face {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 50% 42%, #f5c49d 0 8px, transparent 9px),
+        radial-gradient(ellipse at 50% 78%, #473123 0 12px, transparent 13px),
+        #eee;
+    }
+
+    .face.male {
+      background:
+        radial-gradient(circle at 50% 42%, #f0bd91 0 8px, transparent 9px),
+        radial-gradient(ellipse at 50% 78%, #132a4b 0 12px, transparent 13px),
+        #e9edf2;
+    }
+
+    .badge {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      min-width: 67px;
+      height: 32px;
+      border-radius: 4px;
+      color: white;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .purple-bg { background: #64259c; }
+    .blue-bg { background: #123464; }
+    .green-bg { background: #126332; }
+
+    @media (max-width: 1100px) {
+      .sidebar {
+        position: static;
+        width: 100%;
+        height: auto;
+      }
+
+      nav {
+        margin-top: 20px;
+      }
+
+      main {
+        padding: 24px;
+      }
+
+      header,
+      .top-actions {
+        flex-wrap: wrap;
+      }
+
+      .cards,
+      .bottom {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="piano">▮▮▮▮▮</div>
+      <h2>Pianova</h2>
+      <p>Gamified Piano Learning</p>
+    </div>
+
+    <nav>
+      <a class="active" href="{{ url_for('admin_dashboard') }}">⌂ Dashboard</a>
+      <a href="{{ url_for('admin_users') }}">👥 Users</a>
+      <a href="{{ url_for('admin_certificates') }}">♔ Certificates</a>
+      <a href="{{ url_for('logout') }}">↪ Logout</a>
+    </nav>
+
+    <div class="admin-box">
+      <div class="admin-top">
+        <div class="avatar"></div>
+        <div>
+          <h4>{{ username }}</h4>
+          <p>Super Admin</p>
+        </div>
+      </div>
+      <div class="music">
+        <i></i><i></i><i></i><i></i><i></i>
+        <span></span><span></span><span></span><span></span>
+      </div>
+    </div>
+  </aside>
+
+  <main>
+    <header>
+      <div>
+        <h1>Welcome back, {{ username }}! 👋</h1>
+        <p>Keep practicing and become a piano master!</p>
+      </div>
+
+      <div class="top-actions">
+        <button class="profile">
+          <span class="avatar small"></span>
+          <span>
+            <b>{{ username }}</b>
+            <small>Super Admin</small>
+          </span>
+          ⌄
+        </button>
+      </div>
+    </header>
+
+    <section class="cards">
+      <div class="card stat">
+        <div class="big-icon">👥</div>
+        <div>
+          <p>Total Users</p>
+          <h2>{{ metrics.total_users }}</h2>
+        </div>
+      </div>
+
+      <div class="card stat">
+        <div class="big-icon">📖</div>
+        <div>
+          <p>Students Completed Lessons</p>
+          <h2>{{ metrics.completed_lessons }}</h2>
+        </div>
+      </div>
+    </section>
+
+    <section class="bottom">
+      <div class="card overview">
+        <h3>Level Overview</h3>
+
+        <div class="overview-content">
+          <div class="donut" data-gradient="{{ metrics.level_overview_donut }}">
+            <div class="donut-center">★</div>
+          </div>
+
+          <ul class="legend">
+            {% for level in metrics.level_overview %}
+            <li><span class="{{ level.color_class }}"></span>{{ level.level_name }}<br><b>{{ level.percentage }}% ({{ level.count }})</b></li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+
+      <div class="card students">
+        <div class="title-row">
+          <h3>Recent Students</h3>
+          <button>View All</button>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Joined On</th>
+              <th>Role</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {% if accounts %}
+            {% for account in accounts[:5] %}
+            <tr>
+              <td><span class="face"></span>{{ account.username }}</td>
+              <td>{{ (account.created_at or '')[:10] if account.created_at else 'N/A' }}</td>
+              <td><span class="badge blue-bg">{{ account.role|capitalize }}</span></td>
+            </tr>
+            {% endfor %}
+            {% else %}
+            <tr>
+              <td colspan="3">No registered users yet.</td>
+            </tr>
+            {% endif %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    (function () {
+      const donut = document.querySelector('.donut[data-gradient]');
+      if (donut) {
+        donut.style.background = donut.getAttribute('data-gradient');
+      }
+    })();
+  </script>
+</body>
+</html>

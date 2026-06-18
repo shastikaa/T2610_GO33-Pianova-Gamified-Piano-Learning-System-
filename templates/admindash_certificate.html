@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pianova Certificates</title>
+
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@1,600&display=swap");
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #020304;
+      color: #fff7e8;
+      font-family: Inter, Arial, sans-serif;
+    }
+
+    .sidebar {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 199px;
+      height: 100vh;
+      padding: 18px 13px 27px;
+      background: #020304;
+      border-right: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .logo {
+      text-align: center;
+    }
+
+    .piano {
+      color: #e79a1e;
+      letter-spacing: 4px;
+      font-size: 28px;
+    }
+
+    .logo h2 {
+      margin: -6px 0 0;
+      color: #f6b64d;
+      font: italic 44px "Playfair Display", serif;
+    }
+
+    .logo p {
+      margin: 0;
+      color: #c98b34;
+      font-size: 9px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1.6px;
+    }
+
+    nav {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: -135px;
+    }
+
+    nav a {
+      height: 48px;
+      padding: 0 14px;
+      border-radius: 7px;
+      color: #fff1d8;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-size: 16px;
+      font-weight: 500;
+    }
+
+    nav a .nav-icon {
+      width: 22px;
+      text-align: center;
+      color: #f0ab22;
+      font-size: 22px;
+      filter: sepia(1) saturate(2);
+    }
+
+    nav a.active {
+      border: 1px solid rgba(245, 172, 35, 0.55);
+      background: linear-gradient(100deg, #a56e08, #473107, #171104);
+      box-shadow: inset 0 0 16px rgba(255, 214, 82, 0.2);
+    }
+
+    .admin-box {
+      height: 185px;
+      padding: 20px 14px;
+      border: 1px solid rgba(221, 148, 32, 0.2);
+      border-radius: 8px;
+      background: rgba(255, 185, 54, 0.03);
+      overflow: hidden;
+    }
+
+    .admin-top {
+      display: flex;
+      gap: 11px;
+      align-items: center;
+    }
+
+    .avatar {
+      width: 45px;
+      height: 45px;
+      border: 2px solid #eca128;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 50% 35%, #ffd26c 0 8px, transparent 9px),
+        radial-gradient(ellipse at 50% 82%, #e29619 0 17px, transparent 18px),
+        #140d04;
+    }
+
+    .avatar.small {
+      width: 39px;
+      height: 39px;
+    }
+
+    .admin-box h4 {
+      margin: 0 0 6px;
+      font-size: 16px;
+      font-weight: 500;
+    }
+
+    .admin-box p,
+    .profile small {
+      margin: 0;
+      color: #fff3dd;
+      font-size: 11px;
+    }
+
+    .music {
+      position: relative;
+      height: 75px;
+      margin-top: 35px;
+    }
+
+    .music i {
+      position: absolute;
+      left: -8px;
+      right: -6px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(191, 103, 12, 0.6), transparent);
+      transform: rotate(-13deg);
+    }
+
+    .music i:nth-child(1) { top: 18px; }
+    .music i:nth-child(2) { top: 26px; }
+    .music i:nth-child(3) { top: 34px; }
+    .music i:nth-child(4) { top: 42px; }
+    .music i:nth-child(5) { top: 50px; }
+
+    .music span {
+      position: absolute;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #ee9b17;
+      box-shadow: 0 0 10px rgba(238, 155, 23, 0.5);
+    }
+
+    .music span:nth-child(6) { left: 35px; top: 45px; }
+    .music span:nth-child(7) { left: 78px; top: 52px; }
+    .music span:nth-child(8) { left: 122px; top: 32px; }
+    .music span:nth-child(9) { left: 145px; top: 23px; }
+
+    main {
+      padding: 27px 20px 22px 217px;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+
+    header h1 {
+      margin: 0;
+      font: italic 700 44px/1.05 "Playfair Display", Georgia, serif;
+      letter-spacing: 0.5px;
+      color: #fff7e8;
+      text-shadow: 0 2px 16px rgba(231, 154, 30, 0.25);
+    }
+
+    header p {
+      margin: 9px 0 0;
+      font-size: 14px;
+      color: #fff2de;
+    }
+
+    .top-actions {
+      display: flex;
+      gap: 20px;
+    }
+
+    .top-actions button {
+      height: 54px;
+      padding: 0 14px;
+      border: 1px solid rgba(215, 139, 28, 0.25);
+      border-radius: 8px;
+      background: #06070a;
+      color: #fff0d6;
+      font: 500 14px Inter, Arial, sans-serif;
+    }
+
+    .date-btn {
+      min-width: 215px;
+    }
+
+    .profile {
+      min-width: 193px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .profile span:last-child {
+      text-align: left;
+      margin-right: auto;
+    }
+
+    .profile b,
+    .profile small {
+      display: block;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 11px;
+      width: 100%;
+      margin-bottom: 12px;
+    }
+
+    .card {
+      border: 1px solid rgba(167, 123, 51, 0.24);
+      border-radius: 8px;
+      background: linear-gradient(145deg, rgba(255,255,255,0.04), rgba(255,255,255,0.005)), #08090b;
+      box-shadow: 0 18px 45px rgba(0,0,0,0.25);
+    }
+
+    .mini-stat {
+      height: 143px;
+      padding: 32px 28px;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .mini-stat .icon {
+      font-size: 54px;
+      color: #f0ab22;
+      filter: sepia(1) saturate(2);
+    }
+
+    .mini-stat p {
+      margin: 0 0 6px;
+      color: #f4d392;
+      font-size: 13px;
+    }
+
+    .mini-stat h2 {
+      margin: 0;
+      color: #ffd782;
+      font-size: 35px;
+      line-height: 1;
+    }
+
+    .level-card {
+      height: 143px;
+      padding: 13px 17px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .donut {
+      width: 86px;
+      height: 86px;
+      border-radius: 50%;
+      background: conic-gradient(
+        #6630b5 0deg 126deg,
+        #155dcb 126deg 234deg,
+        #299240 234deg 306deg,
+        #f39211 306deg 360deg
+      );
+      position: relative;
+      flex: none;
+    }
+
+    .donut::before {
+      content: "";
+      position: absolute;
+      inset: 22px;
+      border-radius: 50%;
+      background: #07080a;
+    }
+
+    .level-card h4 {
+      margin: 0 0 12px;
+      color: #fff3df;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .level-list {
+      display: grid;
+      gap: 8px;
+      font-size: 12px;
+      color: #fff3df;
+    }
+
+    .level-row {
+      display: grid;
+      grid-template-columns: 10px 80px 35px;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .dot {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+    }
+
+    .purple { background: #6c2db5; }
+    .blue { background: #1760ca; }
+    .green { background: #2d9743; }
+    .orange { background: #f39212; }
+
+    .recent-card {
+      height: 143px;
+      padding: 30px 28px;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .cap {
+      width: 60px;
+      height: 42px;
+      background: linear-gradient(145deg, #ffd36e, #e09212);
+      clip-path: polygon(50% 0, 100% 29%, 50% 58%, 0 29%);
+      position: relative;
+      flex: none;
+    }
+
+    .recent-card p {
+      margin: 0 0 5px;
+      color: #f4d392;
+      font-size: 13px;
+    }
+
+    .recent-card h2 {
+      margin: 0;
+      color: #ffd782;
+      font-size: 39px;
+      line-height: 1;
+    }
+
+    .recent-card small {
+      display: block;
+      margin-top: 12px;
+      color: #fff2de;
+      font-size: 13px;
+    }
+
+    .certificates {
+      width: 100%;
+      height: 570px;
+      padding: 19px 13px 14px;
+    }
+
+    .cert-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 9px 22px;
+    }
+
+    .cert-title {
+      display: flex;
+      gap: 13px;
+      align-items: flex-start;
+    }
+
+    .cert-icon {
+      width: 29px;
+      height: 29px;
+      border-radius: 5px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(145deg, #ffe49a, #e19513);
+      color: #1b1001;
+      font-size: 19px;
+    }
+
+    .cert-title h3 {
+      margin: 0 0 7px;
+      font-size: 23px;
+      color: #fff3df;
+    }
+
+    .cert-title p {
+      margin: 0;
+      font-size: 13px;
+      color: #fff3df;
+    }
+
+    .search {
+      width: 242px;
+      height: 45px;
+      padding: 0 14px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 6px;
+      background: #08090c;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .search input {
+      width: 100%;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      color: #fff;
+      font-size: 14px;
+    }
+
+    .search input::placeholder {
+      color: #a9a9b0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    th {
+      height: 46px;
+      padding: 0 12px;
+      color: #f1cd84;
+      font-weight: 500;
+      text-align: left;
+      border-top: 1px solid rgba(255,255,255,0.07);
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+    }
+
+    td {
+      height: 47px;
+      padding: 0 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.055);
+      color: #fff4e4;
+    }
+
+    td:first-child {
+      color: #f1cd84;
+      font-weight: 600;
+    }
+
+    .person {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .face {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 50% 42%, #f5c49d 0 8px, transparent 9px),
+        radial-gradient(ellipse at 50% 78%, #473123 0 12px, transparent 13px),
+        #eee;
+      flex: none;
+    }
+
+    .face.male {
+      background:
+        radial-gradient(circle at 50% 42%, #f0bd91 0 8px, transparent 9px),
+        radial-gradient(ellipse at 50% 78%, #132a4b 0 12px, transparent 13px),
+        #e9edf2;
+    }
+
+    .download {
+      width: 40px;
+      height: 34px;
+      border: 1px solid rgba(215, 139, 28, 0.35);
+      border-radius: 6px;
+      background: #09090b;
+      color: #edb13a;
+      font-size: 19px;
+      cursor: pointer;
+    }
+
+    .table-foot {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 7px 0;
+      color: #fff4e4;
+      font-size: 14px;
+    }
+
+    .pagination {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .pagination button,
+    .pagination span {
+      min-width: 36px;
+      height: 32px;
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 5px;
+      background: #08090b;
+      color: #fff4e4;
+      display: grid;
+      place-items: center;
+      font-size: 14px;
+    }
+
+    .pagination .active-page {
+      background: linear-gradient(100deg, #a56e08, #4d3508);
+      border-color: rgba(245, 172, 35, 0.45);
+      color: #fff3d2;
+    }
+
+    @media (max-width: 1150px) {
+      .sidebar {
+        position: static;
+        width: 100%;
+        height: auto;
+      }
+
+      nav {
+        margin-top: 20px;
+      }
+
+      main {
+        padding: 24px;
+      }
+
+      header,
+      .top-actions {
+        flex-wrap: wrap;
+      }
+
+      .stats {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .certificates {
+        overflow-x: auto;
+      }
+
+      table {
+        min-width: 980px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="piano">▮▮▮▮▮</div>
+      <h2>Pianova</h2>
+      <p>Gamified Piano Learning</p>
+    </div>
+
+    <nav>
+      <a href="{{ url_for('admin_dashboard') }}"><span class="nav-icon">⌂</span>Dashboard</a>
+      <a href="{{ url_for('admin_users') }}"><span class="nav-icon">♣</span>Users</a>
+      <a class="active" href="{{ url_for('admin_certificates') }}"><span class="nav-icon">♔</span>Certificates</a>
+      <a href="{{ url_for('logout') }}"><span class="nav-icon">↪</span>Logout</a>
+    </nav>
+
+    <div class="admin-box">
+      <div class="admin-top">
+        <div class="avatar"></div>
+        <div>
+          <h4>{{ username }}</h4>
+          <p>Super Admin</p>
+        </div>
+      </div>
+
+      <div class="music">
+        <i></i><i></i><i></i><i></i><i></i>
+        <span></span><span></span><span></span><span></span>
+      </div>
+    </div>
+  </aside>
+
+  <main>
+    <header>
+      <div>
+        <h1>Welcome back, {{ username }}! 👋</h1>
+        <p>Keep practicing and become a piano master!</p>
+      </div>
+
+      <div class="top-actions">
+        <button class="profile">
+          <span class="avatar small"></span>
+          <span>
+            <b>{{ username }}</b>
+            <small>Super Admin</small>
+          </span>
+          ⌄
+        </button>
+      </div>
+    </header>
+
+    <section class="stats">
+      <div class="card mini-stat">
+        <div class="icon">👥</div>
+        <div>
+          <p>Total Users</p>
+          <h2>{{ metrics.total_users }}</h2>
+        </div>
+      </div>
+
+      <div class="card mini-stat">
+        <div class="icon">📖</div>
+        <div>
+          <p>Students Completed Lessons</p>
+          <h2>{{ metrics.completed_lessons }}</h2>
+        </div>
+      </div>
+
+      <div class="card level-card">
+        <div class="donut" data-gradient="{{ metrics.level_overview_donut }}"></div>
+
+        <div>
+          <h4>Level Overview</h4>
+
+          <div class="level-list">
+            {% for level in metrics.level_overview %}
+            <div class="level-row"><span class="dot {{ level.color_class }}"></span><span>{{ level.level_name }}</span><b>{{ level.percentage }}%</b></div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+
+      <div class="card recent-card">
+        <div class="cap"></div>
+        <div>
+          <p>Recent Students</p>
+          <h2>{{ metrics.recent_students_week }}</h2>
+          <small>This Week</small>
+        </div>
+      </div>
+    </section>
+
+    <section class="card certificates">
+      <div class="cert-head">
+        <div class="cert-title">
+          <div class="cert-icon">♔</div>
+          <div>
+            <h3>Certificates</h3>
+            <p>View and manage all issued certificates.</p>
+          </div>
+        </div>
+
+        <label class="search">
+          🔍
+          <input type="text" placeholder="Search certificates..." />
+        </label>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>No.</th>
+            <th>Certificate Serial No.</th>
+            <th>Student Name</th>
+            <th>Issued On</th>
+            <th>Downloaded By</th>
+            <th>Downloaded On</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {% if certificates %}
+          {% for cert in certificates %}
+          <tr>
+            <td>{{ loop.index }}</td>
+            <td>{{ cert.certificate_no or cert.cert_ref_id or ('CERT-' ~ cert.id) }}</td>
+            <td><div class="person"><span class="face"></span>{{ cert.username }}</div></td>
+            <td>{{ (cert.completion_date or '')[:10] if cert.completion_date else 'N/A' }}</td>
+            <td><div class="person"><span class="face"></span>{{ cert.username }}</div></td>
+            <td>{{ (cert.completion_date or '')[:10] if cert.completion_date else 'N/A' }}</td>
+            <td><button class="download">⇩</button></td>
+          </tr>
+          {% endfor %}
+          {% else %}
+          <tr>
+            <td colspan="7">No certificates issued yet.</td>
+          </tr>
+          {% endif %}
+        </tbody>
+      </table>
+
+      <div class="table-foot">
+        <div>Showing 1 to {{ certificates|length }} of {{ certificates|length }} certificates</div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    (function () {
+      const donut = document.querySelector('.donut[data-gradient]');
+      if (donut) {
+        donut.style.background = donut.getAttribute('data-gradient');
+      }
+    })();
+  </script>
+</body>
+</html>

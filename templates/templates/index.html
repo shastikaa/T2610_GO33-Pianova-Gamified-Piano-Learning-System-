@@ -612,6 +612,13 @@
         localStorage.setItem("pianoLessonsProgress", JSON.stringify(progressArray));
     }
 
+    function gameUrlForLesson(lessonId) {
+        if (lessonId === 1) return '/game1';
+        if (lessonId === 2) return '/lesson2-1-latest';
+        if (lessonId === 4) return '/level4';
+        return '/game2';
+    }
+
     // Initialize global state: either from storage or fresh default
     let lessonsState = [];
 

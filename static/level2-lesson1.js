@@ -46,7 +46,7 @@ const pianoLayout = [
     { note: "C2", color: "white", label: "C", keyChar: "K" }
 ];
 
-const staffPos = {
+const trebleStaffPos = {
     "C": 138,
     "C#": 138,
     "D": 130,
@@ -62,13 +62,26 @@ const staffPos = {
     "C2": 82
 };
 
+const bassStaffPos = {
+    "C": 100,
+    "D": 92,
+    "E": 84,
+    "F": 76,
+    "G": 68
+};
+
+const trebleQuestionNotes = Object.keys(trebleStaffPos);
+const bassQuestionNotes = Object.keys(bassStaffPos);
+
 let currentNote = "";
+let currentClef = "treble";
 let score = 0;
 let combo = 0;
 let lives = 5;
 
 const maxLives = 5;
-const maxScore = 10;
+const maxScore = 15;
+const trebleQuestionCount = 10;
 
 function playNote(note) {
     const ctx = getAudioCtx();
@@ -139,7 +152,7 @@ function setFeedback(text, type) {
     }
 }
 
-function drawStaff(note) {
+function drawStaff(note, clef = "treble") {
     const canvas = document.getElementById("staff");
     const ctx = canvas.getContext("2d");
 
@@ -159,16 +172,17 @@ function drawStaff(note) {
 
     ctx.font = "70px serif";
     ctx.fillStyle = "#333";
-    ctx.fillText("𝄞", 60, 130);
+    ctx.fillText(clef === "bass" ? "\uD834\uDD22" : "\uD834\uDD1E", 60, clef === "bass" ? 116 : 130);
 
-    const y = staffPos[note];
+    const staffPositions = clef === "bass" ? bassStaffPos : trebleStaffPos;
+    const y = staffPositions[note];
 
     if (note.includes("#")) {
         ctx.font = "26px serif";
         ctx.fillText("♯", 270, y + 9);
     }
 
-    if (note === "C" || note === "C#") {
+    if (clef === "treble" && (note === "C" || note === "C#")) {
         ctx.beginPath();
         ctx.moveTo(280, 138);
         ctx.lineTo(320, 138);
@@ -190,11 +204,14 @@ function drawStaff(note) {
 }
 
 function newQuestion() {
-    const keys = Object.keys(staffPos);
-    currentNote = keys[Math.floor(Math.random() * keys.length)];
+    const isBassQuestion = score >= trebleQuestionCount;
+    const notes = isBassQuestion ? bassQuestionNotes : trebleQuestionNotes;
+
+    currentClef = isBassQuestion ? "bass" : "treble";
+    currentNote = notes[Math.floor(Math.random() * notes.length)];
 
     setFeedback("Click the matching piano key");
-    drawStaff(currentNote);
+    drawStaff(currentNote, currentClef);
 }
 
 function flashKey(note, state) {
@@ -363,6 +380,7 @@ function saveGameResult(finalScore, passed) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
             score: finalScore,
+            total_questions: maxScore,
             passed: passed
         })
     }).catch(() => {});

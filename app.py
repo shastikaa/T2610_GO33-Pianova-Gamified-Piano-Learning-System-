@@ -522,6 +522,7 @@ def lesson2_2():
 
 
 @app.route('/lesson2-3', methods=['GET'])
+@app.route('/level2-lesson3', methods=['GET'])
 @login_required
 @role_required('user')
 def lesson2_3():
@@ -600,6 +601,15 @@ def lesson3_3():
 @role_required('user')
 def lesson3_4():
     return render_template('level3(lesson4).html')
+
+
+@app.route('/level4', methods=['GET'])
+@app.route('/game4', methods=['GET'])
+@app.route('/level4.html', methods=['GET'])
+@login_required
+@role_required('user')
+def level4():
+    return render_template('level4.html')
 
 
 @app.route('/api/save-game2', methods=['POST'])

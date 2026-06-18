@@ -620,9 +620,7 @@
         }
 
         @media (max-width: 1150px) {
-            .topbar {
-                grid-template-columns: 1fr;
-            }
+            .topbar { grid-template-columns: 1fr; }
             .brand, .top-actions { justify-content: center; }
             .nav {
                 width: 100%;
@@ -630,9 +628,7 @@
                 justify-content: center;
                 gap: 10px;
             }
-            .scoreboard {
-                grid-template-columns: repeat(2, 1fr);
-            }
+            .scoreboard { grid-template-columns: repeat(2, 1fr); }
             .score-item { padding: 16px 20px; }
             .challenge-header {
                 flex-direction: column;
@@ -703,15 +699,15 @@
 
 <body>
     <div class="music-bg" aria-hidden="true">
-        <span>𝄞</span>
-        <span>♫</span>
-        <span>♪</span>
-        <span>♬</span>
+        <span>ð„ž</span>
+        <span>â™«</span>
+        <span>â™ª</span>
+        <span>â™¬</span>
     </div>
 
     <div id="victory-overlay" class="overlay">
         <div id="victory-card" class="popup-card">
-            <div class="trophy">★</div>
+            <div class="trophy">â˜…</div>
             <h1 class="victory-text">PERFECT!</h1>
             <p>You have mastered the staff with 10/10!</p>
             <div class="button-group">
@@ -723,7 +719,7 @@
 
     <div id="loss-overlay" class="overlay">
         <div id="loss-card" class="popup-card">
-            <div class="broken-heart">♥</div>
+            <div class="broken-heart">â™¥</div>
             <h1 class="loss-text">YOU LOST</h1>
             <p>Don't give up! Your musical journey is just starting.</p>
             <div class="button-group">
@@ -736,29 +732,29 @@
     <main class="stage">
         <header class="topbar">
             <div class="brand">
-                <div class="brand-mark">▥</div>
+                <div class="brand-mark">â–¥</div>
                 <div>
-                    <div class="brand-title">Pianova♪</div>
-                    <div class="brand-sub">Play • Learn • Master</div>
+                    <div class="brand-title">Pianovaâ™ª</div>
+                    <div class="brand-sub">Play â€¢ Learn â€¢ Master</div>
                 </div>
             </div>
 
             <nav class="nav" aria-label="Game navigation">
-                <button class="nav-btn active">⌂ Home</button>
-                <button class="nav-btn">♛ Leaderboard</button>
-                <button class="nav-btn">♙ Profile</button>
-                <button class="nav-btn" onclick="window.location.href='/lessons'">⏻ Exit</button>
+                <button class="nav-btn active">âŒ‚ Home</button>
+                <button class="nav-btn">â™› Leaderboard</button>
+                <button class="nav-btn">â™™ Profile</button>
+                <button class="nav-btn" onclick="window.location.href='/lessons'">â» Exit</button>
             </nav>
 
             <div class="top-actions">
-                <button class="icon-btn" id="soundBtn" title="Sound">♪</button>
-                <button class="icon-btn" onclick="location.reload()" title="Restart">⚙</button>
+                <button class="icon-btn" id="soundBtn" title="Sound">â™ª</button>
+                <button class="icon-btn" onclick="location.reload()" title="Restart">âš™</button>
             </div>
         </header>
 
         <section class="scoreboard">
             <div class="score-item">
-                <div class="badge">★</div>
+                <div class="badge">â˜…</div>
                 <div>
                     <div class="score-label">Score</div>
                     <div class="score-number" id="score-val">0/10</div>
@@ -766,7 +762,7 @@
             </div>
 
             <div class="score-item">
-                <div class="badge">♨</div>
+                <div class="badge">â™¨</div>
                 <div>
                     <div class="score-label">Combo</div>
                     <div>
@@ -777,10 +773,10 @@
             </div>
 
             <div class="score-item">
-                <div class="badge" style="border-color: rgba(255,83,104,.55);">♥</div>
+                <div class="badge" style="border-color: rgba(255,83,104,.55);">â™¥</div>
                 <div>
                     <div class="score-label">Lives</div>
-                    <div class="lives-row" id="lives-val">♥ ♥ ♥ ♥ ♥</div>
+                    <div class="lives-row" id="lives-val">â™¥ â™¥ â™¥ â™¥ â™¥</div>
                 </div>
             </div>
 
@@ -802,14 +798,14 @@
 
             <div class="challenge-header">
                 <div class="challenge-title">
-                    <div class="mini-mark">▥</div>
+                    <div class="mini-mark">â–¥</div>
                     <div>
                         <h1>Pianova</h1>
                         <p>Repeat the triad sequence</p>
                     </div>
                 </div>
 
-                <button class="difficulty">♫ Lesson 2 ˅</button>
+                <button class="difficulty">â™« Lesson 2 Ë…</button>
             </div>
 
             <div class="instruction-main">Play the sequence shown on the staff</div>
@@ -817,7 +813,7 @@
             <div class="target-panel">
                 <div class="target-card">
                     <div class="staff-lines"></div>
-                    <div class="clef">𝄞</div>
+                    <div class="clef">ð„ž</div>
                     <div id="target-notes">...</div>
                 </div>
             </div>
@@ -861,7 +857,7 @@
         return audioCtx;
     }
 
-    async function playNote(note, duration = 0.75, volume = 0.18) {
+    async function playNote(note, duration = 0.75, volume = 0.42) {
         const ctx = await ensureAudioContext();
         if (!freqs[note]) return;
         const now = ctx.currentTime;
@@ -877,7 +873,7 @@
         osc.stop(now + duration);
     }
 
-    async function playTone(freq, duration = 0.25, volume = 0.2, type = "sine") {
+    async function playTone(freq, duration = 0.25, volume = 0.5, type = "sine") {
         const ctx = await ensureAudioContext();
         const now = ctx.currentTime;
         const osc = ctx.createOscillator();
@@ -893,25 +889,25 @@
     }
 
     async function playCorrectSound() {
-        await playTone(523.25, 0.18, 0.18, "sine");
-        setTimeout(() => playTone(659.25, 0.2, 0.18, "sine"), 90);
-        setTimeout(() => playTone(783.99, 0.24, 0.18, "sine"), 180);
+        await playTone(523.25, 0.18, 0.5, "sine");
+        setTimeout(() => playTone(659.25, 0.2, 0.5, "sine"), 90);
+        setTimeout(() => playTone(783.99, 0.24, 0.5, "sine"), 180);
     }
 
     async function playWrongSound() {
-        await playTone(180, 0.18, 0.22, "sawtooth");
-        setTimeout(() => playTone(130, 0.22, 0.18, "sawtooth"), 120);
+        await playTone(180, 0.18, 0.58, "sawtooth");
+        setTimeout(() => playTone(130, 0.22, 0.5, "sawtooth"), 120);
     }
 
     function playVictorySound() {
         [523.25, 659.25, 783.99, 1046.5].forEach((freq, index) => {
-            setTimeout(() => playTone(freq, 0.28, 0.18, "triangle"), index * 130);
+            setTimeout(() => playTone(freq, 0.28, 0.5, "triangle"), index * 130);
         });
     }
 
     function playLossSound() {
         [300, 230, 170].forEach((freq, index) => {
-            setTimeout(() => playTone(freq, 0.28, 0.2, "sawtooth"), index * 150);
+            setTimeout(() => playTone(freq, 0.28, 0.55, "sawtooth"), index * 150);
         });
     }
 
@@ -929,19 +925,19 @@
     async function checkAnswer() {
         if (waitingForReset) return;
         if (userSeq.length === 0) {
-            document.getElementById("status-text").innerText = "Play 3 notes first";
+            document.getElementById("status-text").innerText = "Wrong answer! Play 3 notes first.";
             playWrongSound();
             return;
         }
         if (userSeq.length < 3) {
-            document.getElementById("status-text").innerText = "Complete the triad";
+            document.getElementById("status-text").innerText = "Wrong answer! Complete the triad.";
             playWrongSound();
             return;
         }
         if (userSeq.join(",") === targetSeq.join(",")) {
             score++;
             streak++;
-            document.getElementById("status-text").innerText = "Correct! +250";
+            document.getElementById("status-text").innerText = "Correct answer! Great job.";
             playCorrectSound();
             updateUI();
             if (score >= 10) {
@@ -954,7 +950,7 @@
         } else {
             lives--;
             streak = 0;
-            document.getElementById("status-text").innerText = "Wrong sequence!";
+            document.getElementById("status-text").innerText = "Wrong answer! Try the next triad.";
             playWrongSound();
             updateUI();
             if (lives <= 0) {
@@ -981,7 +977,7 @@
     function renderLives() {
         let output = "";
         for (let i = 0; i < 5; i++) {
-            output += i < lives ? "♥ " : "♡ ";
+            output += i < lives ? "â™¥ " : "â™¡ ";
         }
         return output.trim();
     }
@@ -1003,7 +999,7 @@
         key.type = "button";
         key.className = `key ${note.includes("#") ? "black" : "white"}`;
         key.innerText = note;
-        
+
         const handlePress = async (e) => {
             e.preventDefault();
             if (waitingForReset) return;
@@ -1017,7 +1013,7 @@
             key.classList.add("active");
             setTimeout(() => key.classList.remove("active"), 150);
         };
-        
+
         key.onmousedown = handlePress;
         key.ontouchstart = handlePress;
         rail.appendChild(key);

@@ -318,7 +318,7 @@ body {
   position: relative;
   overflow: hidden;
   border-radius: 10px;
-  background: rgba(12, 10, 5, 0.6);
+  background: rgba(12, 10, 5, 0.75);
   border: 1px solid rgba(212, 175, 55, 0.2);
 }
 
@@ -343,49 +343,53 @@ body {
 
 .staff {
   position: absolute;
-  left: 40px;
+  left: 30px;
   right: 14px;
-  top: 40px;
-  bottom: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 72px; /* Fixed height tracking standard 5 lines */
 }
 
 .staff-line {
   position: absolute;
   left: 0;
   right: 0;
-  height: 1px;
-  background: rgba(255, 244, 214, 0.35);
-  box-shadow: 0 0 4px rgba(212, 175, 55, 0.2);
+  height: 1.5px;
+  background: rgba(255, 244, 214, 0.4);
+  box-shadow: 0 0 2px rgba(212, 175, 55, 0.15);
 }
 
-.staff-line:nth-child(1) { top: 10%; }
-.staff-line:nth-child(2) { top: 25%; }
-.staff-line:nth-child(3) { top: 40%; }
-.staff-line:nth-child(4) { top: 55%; }
-.staff-line:nth-child(5) { top: 70%; }
+/* Perfect balanced music lines positioning */
+.staff-line:nth-child(1) { top: 0px; }
+.staff-line:nth-child(2) { top: 18px; }
+.staff-line:nth-child(3) { top: 36px; }
+.staff-line:nth-child(4) { top: 54px; }
+.staff-line:nth-child(5) { top: 72px; }
 
 .big-clef {
   position: absolute;
   left: 4px;
-  top: -10px;
-  font-size: 56px;
+  top: -22px;
+  font-size: 76px;
   color: #ffd700;
   text-shadow: 0 0 12px rgba(212, 175, 55, 0.85);
+  pointer-events: none;
 }
 
 .time-sig {
   position: absolute;
-  left: 55px;
-  top: 5px;
-  font-size: 26px;
+  left: 62px;
+  top: 0px;
+  font-size: 28px;
   font-weight: 900;
-  line-height: 0.8;
+  line-height: 0.65;
   color: #f3e5ab;
+  pointer-events: none;
 }
 
 .note-track {
   position: absolute;
-  left: 90px;
+  left: 110px;
   right: 10px;
   top: 0;
   bottom: 0;
@@ -395,60 +399,77 @@ body {
   position: absolute;
   top: var(--y);
   left: var(--x);
-  width: 14px;
-  height: 11px;
+  width: 16px;
+  height: 12px;
   border-radius: 50%;
-  transform: rotate(-18deg);
+  transform: rotate(-20deg);
   background: linear-gradient(135deg, white, #ffd700 45%, #aa7c11);
   box-shadow: 0 0 10px rgba(212, 175, 55, 0.9);
-  transition: 0.18s ease;
+  transition: transform 0.18s ease, opacity 0.18s ease;
 }
 
+/* Stem rules */
 .music-note::before {
   content: "";
   position: absolute;
   width: 1.5px;
-  height: 35px;
-  left: 12px;
-  bottom: 5px;
+  height: 38px;
+  left: 14.5px;
+  bottom: 4px;
   background: rgba(255, 248, 224, 0.9);
 }
 
+/* Custom ledger line for middle C */
+.music-note.ledger::after {
+  content: "";
+  position: absolute;
+  width: 36px;
+  height: 1.5px;
+  left: -10px;
+  top: 6px;
+  background: rgba(255, 244, 214, 0.75);
+}
+
 .music-note.done {
-  opacity: 0.22;
+  opacity: 0.25;
 }
 
 .music-note.current {
-  transform: rotate(-18deg) scale(1.25);
+  transform: rotate(-20deg) scale(1.3);
   animation: pulse 850ms infinite;
 }
 
 .note-label {
   position: absolute;
-  top: 75%;
+  top: calc(var(--y) + 18px);
   left: calc(var(--x) - 6px);
   min-width: 26px;
   text-align: center;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 900;
-  color: #f3e5ab;
+  color: rgba(243, 229, 171, 0.6);
+  transition: all 0.18s ease;
 }
 
 .note-label.current {
-  transform: translateY(-3px);
+  transform: translateY(-2px);
   color: #ffffff;
+  font-size: 16px;
   text-shadow: 0 0 12px rgba(255, 215, 0, 1);
 }
 
 .play-head {
   position: absolute;
-  top: 0;
-  bottom: 20%;
+  top: -30px;
+  bottom: -40px;
   left: var(--head, 2%);
-  width: 40px;
-  background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.4), transparent);
+  width: 2px;
+  background: linear-gradient(180deg, transparent, #ffd700, transparent);
+  box-shadow: 0 0 10px #ffd700;
   pointer-events: none;
   transform: translateX(-50%);
+  transition: left 0.18s ease;
+  z-index: 5;
 }
 
 .keyboard-wrap {
@@ -539,10 +560,6 @@ body {
     inset 0 0 15px rgba(212, 175, 55, 0.5),
     inset 0 -6px 4px #c2b9a1,
     0 4px 5px rgba(0,0,0,0.4);
-}
-
-.middle-c {
-  display: none;
 }
 
 .bottom {
@@ -829,6 +846,7 @@ body {
 <div class="controls">
   <button class="control-btn" id="demoBtn">Play Demo</button>
   <button class="control-btn secondary" id="resetBtn">Reset</button>
+  <button class="control-btn secondary" id="exitBtn">Exit Game</button>
 </div>
 
 </div>
@@ -845,22 +863,24 @@ body {
 
 <script>
 const melody = [
-  "C","C","G","G","A","A","G",
-  "F","F","E","E","D","D","C",
-  "G","G","F","F","E","E","D",
-  "G","G","F","F","E","E","D",
-  "C","C","G","G","A","A","G",
-  "F","F","E","E","D","D","C"
+  "D","E","G","G","G","G","G","G",
+  "D","E","G","G","G","G","G","G",
+  "D","E","G","G","G","G","G","G",
+  "F","D","E","G","G","G","G","G","G","F"
 ];
 
+/* Accurate positions relative to standard 5 lines treble clef staff setup.
+  Line 5 (top) is 0px. Line 1 (bottom) is 72px. Distance between lines is 18px.
+  Each step up/down a scale degree (line to space) is exactly 9px.
+*/
 const staffY = {
-  C: "80%",
-  D: "68%",
-  E: "56%",
-  F: "44%",
-  G: "32%",
-  A: "20%",
-  B: "8%"
+  C: "90px",  /* C4 (Ledger line below staff) */
+  D: "81px",  /* D4 (Space below line 1) */
+  E: "72px",  /* E4 (Line 1) */
+  F: "63px",  /* F4 (Space 1) */
+  G: "54px",  /* G4 (Line 2) */
+  A: "45px",  /* A4 (Space 2) */
+  B: "36px"   /* B4 (Line 3) */
 };
 
 const frequencies = {
@@ -924,6 +944,7 @@ const pauseBtn = document.querySelector("#pauseBtn");
 const demoBtn = document.querySelector("#demoBtn");
 const resetBtn = document.querySelector("#resetBtn");
 const resetTopBtn = document.querySelector("#resetTopBtn");
+const exitBtn = document.querySelector("#exitBtn");
 
 const endGameModal = document.querySelector("#endGameModal");
 const modalTrophy = document.querySelector("#modalTrophy");
@@ -954,6 +975,9 @@ function createStaffNotes() {
 
     const noteShape = document.createElement("span");
     noteShape.className = "music-note";
+    if (note === "C") {
+      noteShape.classList.add("ledger"); // Adds specialized line styling for middle C
+    }
     noteShape.style.setProperty("--x", x);
     noteShape.style.setProperty("--y", staffY[note]);
     noteShape.dataset.index = index;
@@ -962,6 +986,7 @@ function createStaffNotes() {
     const label = document.createElement("span");
     label.className = "note-label";
     label.style.setProperty("--x", x);
+    label.style.setProperty("--y", staffY[note]);
     label.textContent = note;
     label.dataset.index = index;
     noteTrackEl.appendChild(label);
@@ -1034,7 +1059,7 @@ function playAttempt(note, keyEl) {
 
   if (correct) {
     combo++;
-    score += 50; // Dynamic combo multiplier removed: static 50 points per accurate press
+    score += 50; 
     feedbackEl.textContent = combo > 8 ? "PERFECT!" : "GREAT!";
     songIndex++;
 
@@ -1046,7 +1071,6 @@ function playAttempt(note, keyEl) {
   } else {
     combo = 0;
     lives = Math.max(0, lives - 1);
-    // Score penalty line removed entirely: pressing incorrect keys does not decrease the score points
     feedbackEl.textContent = "TRY AGAIN";
     markMiss();
 
@@ -1119,7 +1143,6 @@ function render() {
     key.classList.toggle("target", key.dataset.note === melody[songIndex]);
   });
 
-  // Balanced target values for star scoring threshold because max score is now 42 * 50 = 2100
   const starCount = score >= 2000 ? 3 : score >= 1200 ? 2 : score > 0 ? 1 : 0;
 
   starsEl.innerHTML = [0, 1, 2]
@@ -1134,6 +1157,14 @@ function formatTime(seconds) {
   return `00:${String(seconds).padStart(2, "0")}`;
 }
 
+function handleExit() {
+  if (confirm("Are you sure you want to exit? Unsaved progress will be lost.")) {
+    paused = true;
+    stopDemo();
+    alert("Exiting game. Thank you for playing Twinkle Piano Quest!");
+  }
+}
+
 function showEndGamePopup(isPassed) {
   modalActions.innerHTML = "";
   
@@ -1146,11 +1177,11 @@ function showEndGamePopup(isPassed) {
     
     const restartBtn = createModalButton("Restart", "secondary", () => { closePopup(); resetGame(); });
     const nextLevelBtn = createModalButton("Next Level", "primary", () => { closePopup(); alert("Loading Next Lesson..."); resetGame(); });
-    const homeBtn = createModalButton("Home", "secondary", () => { closePopup(); alert("Returning to Dashboard Home."); });
+    const modalExitBtn = createModalButton("Exit", "secondary", () => { closePopup(); handleExit(); });
     
     modalActions.appendChild(restartBtn);
     modalActions.appendChild(nextLevelBtn);
-    modalActions.appendChild(homeBtn);
+    modalActions.appendChild(modalExitBtn);
   } else {
     modalTrophy.style.display = "block";
     modalTrophy.textContent = "❌";
@@ -1159,10 +1190,10 @@ function showEndGamePopup(isPassed) {
     modalBody.textContent = "You ran out of musical lives! Don't look back, practice makes perfect.";
     
     const restartBtn = createModalButton("Restart", "primary", () => { closePopup(); resetGame(); });
-    const homeBtn = createModalButton("Home", "secondary", () => { closePopup(); alert("Returning to Dashboard Home."); });
+    const modalExitBtn = createModalButton("Exit", "secondary", () => { closePopup(); handleExit(); });
     
     modalActions.appendChild(restartBtn);
-    modalActions.appendChild(homeBtn);
+    modalActions.appendChild(modalExitBtn);
   }
   
   endGameModal.classList.add("open");
@@ -1251,6 +1282,7 @@ pauseBtn.addEventListener("click", () => {
 demoBtn.addEventListener("click", startDemo);
 resetBtn.addEventListener("click", resetGame);
 resetTopBtn.addEventListener("click", resetGame);
+exitBtn.addEventListener("click", handleExit);
 
 setupGame();
 </script>

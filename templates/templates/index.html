@@ -110,7 +110,7 @@
 
         /* main card container */
         .piano-card {
-            max-width: 700px;
+            max-width: 960px;
             width: 100%;
             background: linear-gradient(180deg, rgba(20, 15, 10, 0.95) 0%, rgba(10, 5, 0, 0.98) 100%);
             backdrop-filter: blur(10px);
@@ -427,6 +427,532 @@
             margin-bottom: 8px;
         }
 
+        .exercise-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 14px;
+            margin-top: 12px;
+            margin-bottom: 8px;
+        }
+
+        .exercise-card {
+            background: linear-gradient(180deg, #0d0b09 0%, #090806 100%);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 22px;
+            padding: 10px 12px 14px;
+            color: #e9ddc8;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.04), 0 10px 18px rgba(0,0,0,0.24);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+        }
+
+        .exercise-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(212, 175, 55, 0.35);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.06), 0 14px 24px rgba(0,0,0,0.32);
+        }
+
+        .exercise-media {
+            height: 130px;
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.11);
+            margin-bottom: 12px;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(180deg, #0f1527, #070a12);
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.03), inset 0 -24px 30px rgba(0,0,0,0.3);
+        }
+
+        .exercise-media::before {
+            content: '';
+        }
+
+        .exercise-media.alphabet {
+            background:
+                radial-gradient(circle at 20% 18%, rgba(255, 214, 95, 0.28), transparent 30%),
+                linear-gradient(180deg, #17243e, #0b111d);
+        }
+
+        .alphabet-tags {
+            position: absolute;
+            top: 12px;
+            left: 18px;
+            display: flex;
+            gap: 6px;
+        }
+
+        .alphabet-tags span {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            display: grid;
+            place-items: center;
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #fff7de;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.28);
+        }
+
+        .alphabet-tags .a { background: linear-gradient(180deg, #f8cb4a, #d79d1d); }
+        .alphabet-tags .b { background: linear-gradient(180deg, #6cd77a, #45a552); }
+        .alphabet-tags .c { background: linear-gradient(180deg, #59adff, #2f74c9); }
+
+        .mini-keys {
+            position: absolute;
+            left: 34px;
+            right: 34px;
+            bottom: 14px;
+            height: 52px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.2);
+            background: repeating-linear-gradient(
+                to right,
+                #f1f1f1 0,
+                #f1f1f1 14px,
+                #d8d8d8 14px,
+                #d8d8d8 16px
+            );
+        }
+
+        .mini-keys::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                linear-gradient(90deg, transparent 8px, #111 8px, #111 12px, transparent 12px),
+                linear-gradient(90deg, transparent 24px, #111 24px, #111 28px, transparent 28px),
+                linear-gradient(90deg, transparent 56px, #111 56px, #111 60px, transparent 60px),
+                linear-gradient(90deg, transparent 72px, #111 72px, #111 76px, transparent 76px),
+                linear-gradient(90deg, transparent 88px, #111 88px, #111 92px, transparent 92px);
+            background-repeat: no-repeat;
+            background-size: 100% 55%;
+            background-position: top left;
+        }
+
+        .exercise-media.staff {
+            background:
+                repeating-linear-gradient(
+                    to bottom,
+                    transparent 0,
+                    transparent 16px,
+                    rgba(255, 255, 255, 0.2) 17px,
+                    rgba(255, 255, 255, 0.2) 18px
+                ),
+                linear-gradient(180deg, #141922, #0a0d14);
+        }
+
+        .staff-clef {
+            position: absolute;
+            left: 22px;
+            top: 16px;
+            font-size: 4rem;
+            line-height: 1;
+            color: #f3e6c9;
+            text-shadow: 0 4px 12px rgba(0,0,0,0.35);
+        }
+
+        .staff-note {
+            position: absolute;
+            width: 18px;
+            height: 13px;
+            border-radius: 50%;
+            background: #f2f2f2;
+            right: 44px;
+            top: 64px;
+            transform: rotate(-18deg);
+            box-shadow: 0 0 8px rgba(255,255,255,0.35);
+        }
+
+        .staff-note::after {
+            content: '';
+            position: absolute;
+            width: 2px;
+            height: 24px;
+            background: #f2f2f2;
+            right: 1px;
+            top: -20px;
+            border-radius: 1px;
+        }
+
+        .exercise-media.keys {
+            background:
+                radial-gradient(circle at 82% 22%, rgba(99, 176, 255, 0.25), transparent 30%),
+                linear-gradient(180deg, #111826, #090d17);
+        }
+
+        .key-match-hand {
+            position: absolute;
+            right: 26px;
+            top: 54px;
+            font-size: 2rem;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4));
+        }
+
+        .exercise-media.flying {
+            background:
+                radial-gradient(circle at 30% 80%, rgba(75, 145, 255, 0.28), transparent 35%),
+                radial-gradient(circle at 80% 16%, rgba(146, 240, 101, 0.25), transparent 30%),
+                linear-gradient(180deg, #0a1221, #070b12);
+        }
+
+        .flying-grid {
+            position: absolute;
+            inset: 0;
+            background:
+                linear-gradient(rgba(255,255,255,0.08) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.06) 1px, transparent 1px);
+            background-size: 100% 38px, 38px 100%;
+            opacity: 0.35;
+        }
+
+        .flying-keys {
+            position: absolute;
+            left: 8px;
+            right: 8px;
+            bottom: 10px;
+            height: 34px;
+            border-radius: 6px;
+            border: 1px solid rgba(255,255,255,0.2);
+            background: repeating-linear-gradient(
+                to right,
+                #f2f2f2 0,
+                #f2f2f2 12px,
+                #d7d7d7 12px,
+                #d7d7d7 14px
+            );
+        }
+
+        .flying-keys::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: -2px;
+            height: 3px;
+            background: linear-gradient(90deg, #ff6464, #ff8c8c);
+            box-shadow: 0 0 8px rgba(255, 105, 105, 0.6);
+        }
+
+        .exercise-media.flying .star {
+            position: absolute;
+            color: #ffca5f;
+            font-size: 1rem;
+            text-shadow: 0 0 8px rgba(255, 199, 90, 0.6);
+        }
+
+        .exercise-media.flying .s1 { left: 34px; top: 16px; }
+        .exercise-media.flying .s2 { left: 46px; top: 30px; font-size: 0.85rem; }
+        .exercise-media.flying .s3 { left: 58px; top: 20px; font-size: 0.9rem; }
+
+        .exercise-media.flying .fall-note {
+            position: absolute;
+            width: 16px;
+            border-radius: 6px;
+            background: linear-gradient(180deg, #7dd7ff, #2d79d8);
+            box-shadow: 0 0 8px rgba(85, 175, 255, 0.55);
+        }
+
+        .exercise-media.flying .f1 { left: 52px; top: 16px; height: 52px; }
+        .exercise-media.flying .f2 { left: 94px; top: 8px; height: 22px; background: linear-gradient(180deg, #8fff83, #4dbc45); }
+        .exercise-media.flying .f3 { left: 122px; top: 34px; height: 18px; background: linear-gradient(180deg, #8fff83, #4dbc45); }
+        .exercise-media.flying .f4 { left: 144px; top: 56px; height: 28px; background: linear-gradient(180deg, #8fff83, #4dbc45); }
+
+        .exercise-icon {
+            display: none;
+        }
+
+        .exercise-name {
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #f3e2bf;
+            font-size: 0.92rem;
+        }
+
+        .exercise-desc {
+            font-size: 0.83rem;
+            color: #c9b79b;
+            line-height: 1.45;
+        }
+
+        .expand-details.advanced-panel {
+            background: linear-gradient(180deg, #12100d 0%, #0b0907 100%);
+            border-top: 1px solid rgba(212, 175, 55, 0.2);
+            color: #e9dcc6;
+        }
+
+        .advanced-showcase {
+            display: grid;
+            grid-template-columns: 1fr 0.95fr;
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .advanced-groups {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .advanced-group {
+            border: 1px solid rgba(212, 175, 55, 0.25);
+            border-radius: 16px;
+            background: linear-gradient(180deg, #17130d, #100d09);
+            overflow: hidden;
+        }
+
+        .advanced-group-head {
+            padding: 10px 12px;
+            font-size: 0.86rem;
+            font-weight: 700;
+            color: #f6e6c2;
+            background: linear-gradient(90deg, rgba(91, 52, 160, 0.9), rgba(44, 30, 95, 0.9));
+        }
+
+        .advanced-group-head.bass {
+            background: linear-gradient(90deg, rgba(22, 92, 173, 0.9), rgba(14, 55, 122, 0.9));
+        }
+
+        .advanced-list {
+            list-style: none;
+            margin: 0;
+            padding: 8px 10px 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .advanced-item {
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 8px 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.84rem;
+            color: #f0e2c8;
+        }
+
+        .play-dot {
+            width: 26px;
+            height: 26px;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            display: grid;
+            place-items: center;
+            font-size: 0.72rem;
+            color: #ffffff;
+            background: linear-gradient(180deg, #8e52ff, #6532cf);
+        }
+
+        .play-dot.bass {
+            background: linear-gradient(180deg, #2b9cff, #1d69d2);
+        }
+
+        .advanced-visual {
+            border-radius: 18px;
+            border: 1px solid rgba(212, 175, 55, 0.26);
+            background:
+                radial-gradient(circle at 12% 16%, rgba(255, 191, 71, 0.2), transparent 34%),
+                radial-gradient(circle at 86% 18%, rgba(74, 125, 255, 0.22), transparent 34%),
+                linear-gradient(180deg, #0c1222 0%, #080b14 100%);
+            min-height: 250px;
+            position: relative;
+            overflow: hidden;
+            padding: 12px;
+        }
+
+        .visual-staff {
+            height: 112px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: repeating-linear-gradient(
+                to bottom,
+                transparent 0,
+                transparent 18px,
+                rgba(255, 214, 120, 0.4) 19px,
+                rgba(255, 214, 120, 0.4) 20px
+            );
+            position: relative;
+        }
+
+        .visual-staff::before {
+            content: '𝄞';
+            position: absolute;
+            left: 10px;
+            top: 12px;
+            font-size: 2.1rem;
+            color: #f6e0b5;
+        }
+
+        .note-dot {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #ffd247;
+            box-shadow: 0 0 10px rgba(255, 210, 71, 0.55);
+        }
+
+        .n1 { left: 88px; top: 70px; }
+        .n2 { left: 122px; top: 54px; }
+        .n3 { left: 156px; top: 44px; }
+        .n4 { left: 190px; top: 58px; }
+        .n5 { left: 224px; top: 44px; }
+        .n6 { left: 258px; top: 60px; }
+
+        .visual-bars {
+            position: absolute;
+            left: 12px;
+            right: 12px;
+            bottom: 58px;
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-end;
+            gap: 7px;
+        }
+
+        .vbar {
+            width: 30px;
+            border-radius: 14px;
+            display: grid;
+            place-items: center;
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 0.9rem;
+            box-shadow: 0 0 14px rgba(255, 255, 255, 0.22);
+            padding-bottom: 5px;
+        }
+
+        .vbar.c { height: 78px; background: linear-gradient(180deg, #9f5eff, #712fdc); }
+        .vbar.e1 { height: 56px; background: linear-gradient(180deg, #58acff, #2f69d8); }
+        .vbar.g1 { height: 90px; background: linear-gradient(180deg, #4ac2ff, #2e8bdb); }
+        .vbar.a { height: 84px; background: linear-gradient(180deg, #ffcd53, #df9a24); }
+        .vbar.e2 { height: 60px; background: linear-gradient(180deg, #71e867, #44b842); }
+
+        .visual-keys {
+            position: absolute;
+            left: 12px;
+            right: 12px;
+            bottom: 12px;
+            height: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 0 0 12px 12px;
+            background: repeating-linear-gradient(
+                to right,
+                #f8f8f8 0,
+                #f8f8f8 21px,
+                #dadada 21px,
+                #dadada 23px
+            );
+        }
+
+        .test-lock-panel {
+            background: linear-gradient(180deg, #0d0a06 0%, #070503 100%);
+            border-top: 1px solid rgba(212, 175, 55, 0.26);
+            color: #f2e8d4;
+        }
+
+        .test-lock-showcase {
+            border: 1px solid rgba(212, 175, 55, 0.34);
+            border-radius: 18px;
+            background:
+                radial-gradient(circle at 12% 20%, rgba(255, 206, 99, 0.12), transparent 34%),
+                linear-gradient(180deg, #0b0a08 0%, #050403 100%);
+            padding: 14px;
+        }
+
+        .test-lock-main {
+            display: grid;
+            grid-template-columns: 230px 1fr;
+            gap: 16px;
+            align-items: stretch;
+        }
+
+        .lock-art {
+            border: 1px solid rgba(212, 175, 55, 0.26);
+            border-radius: 16px;
+            background:
+                radial-gradient(circle at 50% 45%, rgba(255, 201, 73, 0.45), rgba(147, 96, 8, 0.2) 35%, rgba(7,6,4,0.85) 70%),
+                linear-gradient(180deg, #1b1208 0%, #070503 100%);
+            display: grid;
+            place-items: center;
+            font-size: 6.6rem;
+            text-shadow: 0 0 24px rgba(255, 207, 88, 0.5);
+        }
+
+        .lock-copy h3 {
+            margin: 0;
+            font-size: clamp(1.4rem, 3vw, 2.4rem);
+            color: #f7ecd8;
+            font-weight: 800;
+        }
+
+        .lock-copy p {
+            margin: 8px 0 0;
+            font-size: 1rem;
+            color: #efe1c5;
+            line-height: 1.45;
+        }
+
+        .lock-copy .gold {
+            color: #ffcf59;
+            font-weight: 800;
+        }
+
+        .lock-task-box {
+            margin-top: 12px;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 10px 12px;
+        }
+
+        .lock-task-title {
+            color: #ffd468;
+            font-weight: 800;
+            font-size: 1.02rem;
+            margin-bottom: 8px;
+        }
+
+        .lock-task {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1rem;
+            color: #ece1cb;
+            padding: 8px 0;
+            border-top: 1px dashed rgba(212, 175, 55, 0.22);
+        }
+
+        .lock-task:first-of-type {
+            border-top: none;
+        }
+
+        .lock-rule {
+            margin-top: 12px;
+            border: 1px solid rgba(212, 175, 55, 0.36);
+            border-radius: 999px;
+            padding: 10px 14px;
+            font-size: 1rem;
+            color: #f0e4cd;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .lock-foot {
+            margin-top: 12px;
+            text-align: center;
+            font-size: 1.05rem;
+            color: #f7ecd6;
+            border-top: 1px solid rgba(212, 175, 55, 0.2);
+            padding-top: 10px;
+        }
+
+        .lock-foot .gold {
+            color: #ffcf59;
+            font-weight: 800;
+        }
+
         .badge-song {
             background: #e2cfb3;
             padding: 4px 12px;
@@ -487,6 +1013,37 @@
             .status-chip {
                 align-self: flex-start;
             }
+
+            .exercise-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .advanced-showcase {
+                grid-template-columns: 1fr;
+            }
+
+            .advanced-visual {
+                min-height: 220px;
+            }
+
+            .test-lock-main {
+                grid-template-columns: 1fr;
+            }
+
+            .lock-art {
+                font-size: 4.2rem;
+                min-height: 140px;
+            }
+
+            .lock-rule {
+                border-radius: 14px;
+            }
+        }
+
+        @media (max-width: 1120px) {
+            .exercise-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
         }
     </style>
 </head>
@@ -543,55 +1100,86 @@
 </div>
 
 <script>
+    const serverCompletedLevels = JSON.parse('{{ completed_levels|default([], true)|tojson|safe }}');
+
     // ----- LESSON DATA MATCHING YOUR VISUAL STRUCTURE -----
     const lessonsData = [
         {
             id: 1,
-            name: "Basics",
+            name: "Beginner",
             subtitle: "Beginner",
             status: "available",   // 'available' means unlocked and ready to complete
             completed: false,
             locked: false,
             unlockCondition: null, // always unlocked
-            details: "Finger position, posture, middle C, first exercises.",
-            songsPreview: ["Warm-up scales", "Ode to Joy (simplified)", "Hand coordination"],
+            details: "Introduction to bass clef and treble clef notes, and understanding basic note beats.",
+            songsPreview: ["Treble Clef Notes", "Bass Clef Notes", "Note Values (Beats)", "Rhythm Practice"],
             chordHint: null
         },
         {
             id: 2,
-            name: "Simple Songs",
-            subtitle: "Unlock",
+            name: "Intermediate",
+            subtitle: "Intermediate",
             status: "locked",      // starts locked, becomes available after level1 completed
             completed: false,
             locked: true,
             unlockCondition: 1,    // requires lesson id 1 to be completed
-            details: "Play full melodies: Twinkle Twinkle, Jingle Bells, Happy Birthday.",
-            songsPreview: ["🎵 Twinkle Twinkle", "🎵 Jingle Bells", "🎵 Happy Birthday"],
+            details: "Read notes from treble and bass clef, convert them into letter names, and play the correct piano keys.",
+            songsPreview: ["Twinkle Twinkle", "Jingle Bells", "Happy Birthday"],
+            detailedExercises: [
+                { icon: "🔤", title: "Play by Alphabet", desc: "Play the keys in order from A to G.", art: "alphabet" },
+                { icon: "𝄞", title: "Note on Staff", desc: "Identify the note shown on the staff.", art: "staff" },
+                { icon: "🎹", title: "Key Matching Game", desc: "Match the note with the correct piano key.", art: "keys" },
+                { icon: "✨", title: "Flying Notes Game", desc: "Play the falling notes as they reach the keys.", art: "flying" }
+            ],
             chordHint: null
         },
         {
             id: 3,
-            name: "Chords",
-            subtitle: "Locked → Chords mastery",
+            name: "Advanced",
+            subtitle: "Advanced",
             status: "locked",
             completed: false,
             locked: true,
             unlockCondition: 2,    // requires Simple Songs completed
-            details: "Major & minor triads, chord progressions, C - G - Am - F.",
-            songsPreview: ["Chord inversions", "Pop progression  I-V-vi-IV", "Simple accompaniment"],
-            chordHint: "C major • G major • A minor • F major"
+            details: "Play complete songs using treble and bass clef. Read notes, follow rhythm, and perform full melodies.",
+            songsPreview: ["Treble Clef Songs", "Bass Clef Songs"],
+            advancedShowcase: {
+                trebleSongs: [
+                    "Twinkle Twinkle Little Star",
+                    "Baby Shark",
+                    "Old MacDonald Had a Farm",
+                    "Jingle Bells"
+                ],
+                bassSongs: [
+                    "London Bridge Is Falling Down",
+                    "See You Again"
+                ]
+            },
+            chordHint: null
         },
         {
             id: 4,
-            name: "Advanced",
-            subtitle: "Locked → Advanced Techniques",
+            name: "Test",
+            subtitle: "Locked • Advanced Techniques",
             status: "locked",
             completed: false,
             locked: true,
             unlockCondition: 3,    // requires Chords completed
             details: "Arpeggios, improvisation, extended chords (7th, 9th), complex rhythms.",
             songsPreview: ["🎹 Für Elise (original)", "🎹 Moonlight Sonata excerpt", "🎹 Jazz blues"],
-            chordHint: "7th chords · improvisation tools"
+            chordHint: "7th chords · improvisation tools",
+            lockShowcase: {
+                title: "Level Locked 🔒",
+                intro: "Complete \"Advanced\" to unlock this level and earn your certificate.",
+                objectiveLine: "Finish the previous level to gain access and certification:",
+                objectives: [
+                    "Complete all 30 objective questions",
+                    "Perform 1 final song assessment"
+                ],
+                unlockLine: "Unlock requirement: Complete \"Advanced\" + pass all test components",
+                foot: "Pass the test to earn your Pianova Certificate and unlock the next level!"
+            }
         }
     ];
 
@@ -626,8 +1214,6 @@
         const savedProgress = loadProgress();
         if (savedProgress) {
             lessonsState = savedProgress;
-            // ensure consistency: lock status based on completion and unlock conditions
-            recomputeLockStatusFromState();
         } else {
             // fresh start: level 1 Basics = unlocked & not completed, others locked accordingly.
             lessonsState = lessonsData.map(lesson => ({
@@ -639,9 +1225,17 @@
             // ensure level1 is definitely unlocked and not completed
             lessonsState[0].locked = false;
             lessonsState[0].completed = false;
-            // recompute unlock cascade (level2,3,4 based on previous completion)
-            recomputeLockStatusFromState();
         }
+
+        // Source of truth: completed levels saved by backend when a level is actually finished.
+        lessonsState.forEach((lesson) => {
+            lesson.completed = Array.isArray(serverCompletedLevels)
+                ? serverCompletedLevels.includes(lesson.id)
+                : false;
+        });
+
+        // ensure consistency: lock status based on completion and unlock conditions
+        recomputeLockStatusFromState();
         // Final sanity: propagate changes and save
         syncAndSave();
     }
@@ -653,12 +1247,6 @@
             const originalLesson = lessonsData.find(l => l.id === lesson.id);
             if (!originalLesson) continue;
 
-            // Testing override: keep Level 3 open so gameplay can be tested directly.
-            if (lesson.id === 3) {
-                lesson.locked = false;
-                continue;
-            }
-            
             // if condition exists: check if required lesson is completed
             if (originalLesson.unlockCondition) {
                 const requiredLesson = lessonsState.find(l => l.id === originalLesson.unlockCondition);
@@ -690,27 +1278,6 @@
         renderLessonsUI();
     }
 
-    // Mark a lesson as completed (if it's unlocked and not completed yet)
-    function completeLesson(lessonId) {
-        const lessonState = lessonsState.find(l => l.id === lessonId);
-        const originalLesson = lessonsData.find(d => d.id === lessonId);
-        if (!lessonState || !originalLesson) return false;
-        
-        // cannot complete if locked
-        if (lessonState.locked) return false;
-        // already completed
-        if (lessonState.completed) return false;
-        
-        // complete it!
-        lessonState.completed = true;
-        // after completing, lesson stays unlocked obviously
-        lessonState.locked = false;
-        
-        // Recalculate locks for all next lessons (since prerequisite met)
-        syncAndSave();
-        return true;
-    }
-    
     // Reset all progress: start over, only Level1 unlocked, nothing completed
     function resetAllProgress() {
         lessonsState = lessonsData.map(lesson => ({
@@ -826,16 +1393,6 @@
                 playBtn.innerHTML = '🎮 Play Game';
                 playBtn.style.textDecoration = 'none';
                 rightActions.appendChild(playBtn);
-
-                // Complete button to unlock next level
-                const completeBtn = document.createElement('button');
-                completeBtn.className = 'btn-action btn-secondary';
-                completeBtn.innerHTML = '✅ Mark Complete';
-                completeBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    completeLesson(lessonMeta.id);
-                });
-                rightActions.appendChild(completeBtn);
             } else if (isCompleted) {
                 // Play again link
                 const playAgainBtn = document.createElement('a');
@@ -866,6 +1423,40 @@
             // expandable details: always show extra content (song previews & chord info)
             const detailsDiv = document.createElement('div');
             detailsDiv.className = 'expand-details';
+            if (lessonMeta.advancedShowcase) {
+                detailsDiv.classList.add('advanced-panel');
+            }
+
+            const useLockShowcase = isLocked && lessonMeta.lockShowcase;
+            if (useLockShowcase) {
+                detailsDiv.classList.add('test-lock-panel');
+
+                const lockData = lessonMeta.lockShowcase;
+                const lockWrap = document.createElement('div');
+                lockWrap.className = 'test-lock-showcase';
+                lockWrap.innerHTML = `
+                    <div class="test-lock-main">
+                        <div class="lock-art">🔒</div>
+                        <div class="lock-copy">
+                            <h3>${lockData.title}</h3>
+                            <p>${lockData.intro.replace('Advanced', '<span class="gold">Advanced</span>').replace('certificate', '<span class="gold">certificate</span>')}</p>
+                            <div class="lock-task-box">
+                                <div class="lock-task-title">⭐ ${lockData.objectiveLine}</div>
+                                <div class="lock-task">📝 ${lockData.objectives[0].replace('30', '<span class="gold">30</span>')}</div>
+                                <div class="lock-task">🎵 ${lockData.objectives[1].replace('1', '<span class="gold">1</span>')}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="lock-rule">🔐 <strong>${lockData.unlockLine.replace('Unlock requirement:', 'Unlock requirement:')}</strong></div>
+                    <div class="lock-foot">🎵 ${lockData.foot.replace('Pianova Certificate', '<span class="gold">Pianova Certificate</span>')} 🎵</div>
+                `;
+
+                detailsDiv.appendChild(lockWrap);
+                cardDiv.appendChild(headerDiv);
+                cardDiv.appendChild(detailsDiv);
+                container.appendChild(cardDiv);
+                return;
+            }
             
             // show description
             const descP = document.createElement('p');
@@ -882,15 +1473,133 @@
                 songsTitle.style.marginTop = '6px';
                 songsTitle.innerText = '🎶 Repertoire / exercises:';
                 detailsDiv.appendChild(songsTitle);
-                const songsContainer = document.createElement('div');
-                songsContainer.className = 'song-list';
-                lessonMeta.songsPreview.forEach(song => {
-                    const chip = document.createElement('span');
-                    chip.className = 'badge-song';
-                    chip.innerText = song;
-                    songsContainer.appendChild(chip);
-                });
-                detailsDiv.appendChild(songsContainer);
+
+                if (lessonMeta.advancedShowcase) {
+                    const showcase = document.createElement('div');
+                    showcase.className = 'advanced-showcase';
+
+                    const groups = document.createElement('div');
+                    groups.className = 'advanced-groups';
+
+                    const trebleGroup = document.createElement('div');
+                    trebleGroup.className = 'advanced-group';
+                    trebleGroup.innerHTML = '<div class="advanced-group-head">𝄞 TREBLE CLEF SONGS</div>';
+                    const trebleList = document.createElement('ul');
+                    trebleList.className = 'advanced-list';
+                    lessonMeta.advancedShowcase.trebleSongs.forEach((song) => {
+                        const li = document.createElement('li');
+                        li.className = 'advanced-item';
+                        li.innerHTML = `<span>🎵 ${song}</span><span class="play-dot">▶</span>`;
+                        trebleList.appendChild(li);
+                    });
+                    trebleGroup.appendChild(trebleList);
+
+                    const bassGroup = document.createElement('div');
+                    bassGroup.className = 'advanced-group';
+                    bassGroup.innerHTML = '<div class="advanced-group-head bass">𝄢 BASS CLEF SONGS</div>';
+                    const bassList = document.createElement('ul');
+                    bassList.className = 'advanced-list';
+                    lessonMeta.advancedShowcase.bassSongs.forEach((song) => {
+                        const li = document.createElement('li');
+                        li.className = 'advanced-item';
+                        li.innerHTML = `<span>🎵 ${song}</span><span class="play-dot bass">▶</span>`;
+                        bassList.appendChild(li);
+                    });
+                    bassGroup.appendChild(bassList);
+
+                    groups.appendChild(trebleGroup);
+                    groups.appendChild(bassGroup);
+
+                    const visual = document.createElement('div');
+                    visual.className = 'advanced-visual';
+                    visual.innerHTML = `
+                        <div class="visual-staff">
+                            <span class="note-dot n1"></span>
+                            <span class="note-dot n2"></span>
+                            <span class="note-dot n3"></span>
+                            <span class="note-dot n4"></span>
+                            <span class="note-dot n5"></span>
+                            <span class="note-dot n6"></span>
+                        </div>
+                        <div class="visual-bars">
+                            <div class="vbar c">C</div>
+                            <div class="vbar e1">E</div>
+                            <div class="vbar g1">G</div>
+                            <div class="vbar a">A</div>
+                            <div class="vbar e2">G</div>
+                        </div>
+                        <div class="visual-keys"></div>
+                    `;
+
+                    showcase.appendChild(groups);
+                    showcase.appendChild(visual);
+                    detailsDiv.appendChild(showcase);
+                } else if (lessonMeta.detailedExercises && lessonMeta.detailedExercises.length) {
+                    const exerciseGrid = document.createElement('div');
+                    exerciseGrid.className = 'exercise-grid';
+                    lessonMeta.detailedExercises.forEach((exercise) => {
+                        const exerciseCard = document.createElement('div');
+                        exerciseCard.className = 'exercise-card';
+
+                        const mediaDiv = document.createElement('div');
+                        mediaDiv.className = `exercise-media ${exercise.art || ''}`.trim();
+                        if (exercise.art === 'alphabet') {
+                            mediaDiv.innerHTML = `
+                                <div class="alphabet-tags">
+                                    <span class="a">A</span>
+                                    <span class="b">B</span>
+                                    <span class="c">C</span>
+                                </div>
+                                <div class="mini-keys"></div>
+                            `;
+                        } else if (exercise.art === 'staff') {
+                            mediaDiv.innerHTML = '<span class="staff-clef">𝄞</span><span class="staff-note"></span>';
+                        } else if (exercise.art === 'keys') {
+                            mediaDiv.innerHTML = '<div class="mini-keys"></div><span class="key-match-hand">☝</span>';
+                        } else if (exercise.art === 'flying') {
+                            mediaDiv.innerHTML = `
+                                <div class="flying-grid"></div>
+                                <span class="star s1">✦</span>
+                                <span class="star s2">✦</span>
+                                <span class="star s3">✦</span>
+                                <span class="fall-note f1"></span>
+                                <span class="fall-note f2"></span>
+                                <span class="fall-note f3"></span>
+                                <span class="fall-note f4"></span>
+                                <div class="flying-keys"></div>
+                            `;
+                        }
+
+                        const iconDiv = document.createElement('div');
+                        iconDiv.className = 'exercise-icon';
+                        iconDiv.innerText = exercise.icon;
+
+                        const nameDiv = document.createElement('div');
+                        nameDiv.className = 'exercise-name';
+                        nameDiv.innerText = exercise.title;
+
+                        const descDiv = document.createElement('div');
+                        descDiv.className = 'exercise-desc';
+                        descDiv.innerText = exercise.desc;
+
+                        exerciseCard.appendChild(mediaDiv);
+                        exerciseCard.appendChild(iconDiv);
+                        exerciseCard.appendChild(nameDiv);
+                        exerciseCard.appendChild(descDiv);
+                        exerciseGrid.appendChild(exerciseCard);
+                    });
+                    detailsDiv.appendChild(exerciseGrid);
+                } else {
+                    const songsContainer = document.createElement('div');
+                    songsContainer.className = 'song-list';
+                    lessonMeta.songsPreview.forEach(song => {
+                        const chip = document.createElement('span');
+                        chip.className = 'badge-song';
+                        chip.innerText = song;
+                        songsContainer.appendChild(chip);
+                    });
+                    detailsDiv.appendChild(songsContainer);
+                }
             }
             
             // chord hint if any
@@ -920,16 +1629,25 @@
                 readyMsg.className = 'info-text';
                 readyMsg.style.marginTop = '12px';
                 readyMsg.style.color = '#2c7a47';
-                readyMsg.innerHTML = '⭐ Click "Complete & Unlock Next" when you finish this level → next lesson unlocks!';
+                readyMsg.innerHTML = '⭐ Finish this level in the game to mark it complete and unlock the next lesson.';
                 detailsDiv.appendChild(readyMsg);
             } else if (isCompleted && lessonMeta.id < lessonsData.length) {
+                if (lessonMeta.id === 2) {
+                    cardDiv.appendChild(headerDiv);
+                    cardDiv.appendChild(detailsDiv);
+                    container.appendChild(cardDiv);
+                    return;
+                }
+
                 const nextUnlockMsg = document.createElement('div');
                 nextUnlockMsg.className = 'info-text';
                 nextUnlockMsg.style.marginTop = '8px';
                 nextUnlockMsg.style.color = '#b97f44';
                 const nextLevel = lessonsData.find(l => l.unlockCondition === lessonMeta.id);
                 if (nextLevel) {
-                    nextUnlockMsg.innerHTML = `🎉 Great! You've unlocked "${nextLevel.name}"! Continue your piano journey.`;
+                    nextUnlockMsg.innerHTML = lessonMeta.id === 1
+                        ? '⭐ Great! You\'ve mastered clef notes and beats. Intermediate unlocked!'
+                        : `🎉 Great! You've unlocked "${nextLevel.name}"! Continue your piano journey.`;
                 } else {
                     nextUnlockMsg.innerHTML = `🎉 Congratulations! You've mastered this level.`;
                 }

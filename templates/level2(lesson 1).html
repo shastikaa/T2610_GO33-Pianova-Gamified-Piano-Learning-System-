@@ -73,49 +73,60 @@
         }
 
         .stage {
-            width: min(1050px, calc(100% - 18px));
-            height: 100dvh;
+            width: min(1500px, calc(100% - 32px));
+            min-height: calc(100vh - 28px);
             margin: 0 auto;
-            padding: clamp(8px, 1.5vh, 18px) 0;
+            padding: 0 0 14px;
             position: relative;
             z-index: 1;
             display: flex;
             flex-direction: column;
-            gap: clamp(8px, 1.5vh, 16px);
+            gap: 12px;
             overflow: hidden;
+            transform-origin: top center;
         }
 
         .topbar {
             display: grid;
-            grid-template-columns: auto 1fr auto;
+            grid-template-columns: minmax(280px, auto) 1fr auto;
             align-items: center;
-            gap: 18px;
+            gap: 32px;
+            height: 64px;
+            padding: 0 24px;
+            border-radius: 28px;
+            background:
+                radial-gradient(circle at 7% 50%, rgba(241, 189, 87, 0.3), transparent 24%),
+                radial-gradient(circle at 92% 50%, rgba(241, 189, 87, 0.24), transparent 24%),
+                linear-gradient(180deg, rgba(24, 22, 12, 0.98), rgba(4, 5, 5, 0.98));
+            border: 1px solid rgba(241, 189, 87, 0.28);
+            box-shadow: 0 18px 44px rgba(0, 0, 0, 0.38), inset 0 0 30px rgba(255, 226, 154, 0.06);
             flex-shrink: 0;
         }
 
         .brand {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 14px;
             min-width: 220px;
         }
 
         .brand-mark {
-            width: clamp(42px, 5vw, 54px);
-            height: clamp(42px, 5vw, 54px);
+            width: 50px;
+            height: 50px;
             display: grid;
             place-items: center;
-            border-radius: 18px;
+            border-radius: 16px;
             background: linear-gradient(145deg, #11161b, #050606);
-            border: 1px solid rgba(241, 189, 87, 0.45);
+            border: 1px solid rgba(241, 189, 87, 0.78);
             box-shadow: 0 0 24px rgba(241, 189, 87, 0.24), inset 0 0 22px rgba(255, 226, 154, 0.09);
-            font-size: clamp(1.2rem, 2.5vw, 1.7rem);
+            font-size: 1.65rem;
+            color: var(--text);
         }
 
         .brand-title {
             font-family: "Playfair Display", serif;
-            font-size: clamp(1.7rem, 4vw, 2.55rem);
-            line-height: 0.95;
+            font-size: 2.25rem;
+            line-height: 0.82;
             color: var(--gold-soft);
             text-shadow: 0 0 18px rgba(241, 189, 87, 0.45);
         }
@@ -123,7 +134,8 @@
         .brand-sub {
             margin-top: 4px;
             color: var(--muted);
-            font-size: clamp(0.75rem, 1.5vw, 0.98rem);
+            font-size: 0.9rem;
+            font-weight: 800;
         }
 
         .nav {
@@ -134,6 +146,10 @@
             border-radius: 18px;
             background: rgba(5, 7, 10, 0.58);
             border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .nav-spacer {
+            min-height: 1px;
         }
 
         .nav-btn,
@@ -165,17 +181,17 @@
 
         .top-actions {
             display: flex;
-            gap: 10px;
+            gap: 14px;
             justify-content: flex-end;
         }
 
         .icon-btn {
-            width: clamp(42px, 5vw, 54px);
-            height: clamp(42px, 5vw, 54px);
+            width: 48px;
+            height: 48px;
             border-radius: 50%;
             display: grid;
             place-items: center;
-            border-color: rgba(241, 189, 87, 0.65);
+            border-color: rgba(241, 189, 87, 0.82);
             color: var(--gold-soft);
             background: rgba(5, 6, 8, 0.62);
             box-shadow: 0 0 18px rgba(241, 189, 87, 0.16);
@@ -585,6 +601,10 @@
                 flex-wrap: wrap;
             }
 
+            .nav-spacer {
+                display: none;
+            }
+
             .scoreboard {
                 grid-template-columns: repeat(4, 1fr);
             }
@@ -662,6 +682,39 @@
                 display: none;
             }
         }
+        .brand-mark,
+        .brand-title,
+        .brand-sub,
+        .top-actions .icon-btn {
+            font-size: 0;
+        }
+
+        .brand-mark::before {
+            content: "\1D11E";
+            font-size: 1.65rem;
+        }
+
+        .brand-title::before {
+            content: "Pianova\266A";
+            font-size: 2.25rem;
+        }
+
+        .brand-sub::before {
+            content: "Play \2022  Learn \2022  Master";
+            font-size: 0.9rem;
+        }
+
+        .top-actions .icon-btn::before {
+            font-size: 1.15rem;
+        }
+
+        .top-actions .icon-btn:first-child::before {
+            content: "\2302";
+        }
+
+        .top-actions .icon-btn:last-child::before {
+            content: "\23FB";
+        }
     </style>
 </head>
 
@@ -683,16 +736,11 @@
                 </div>
             </div>
 
-            <nav class="nav" aria-label="Game navigation">
-                <button class="nav-btn active">⌂ Home</button>
-                <button class="nav-btn">♕ Leaderboard</button>
-                <button class="nav-btn">♙ Profile</button>
-                <button class="nav-btn" onclick="goExit()">⏻ Exit</button>
-            </nav>
+            <div class="nav-spacer" aria-hidden="true"></div>
 
             <div class="top-actions">
-                <button class="icon-btn" id="soundBtn" title="Sound">♪</button>
-                <button class="icon-btn" id="resetBtn" title="Restart">⚙</button>
+                <button class="icon-btn" id="homeBtn" title="Home" onclick="goHome()">⌂</button>
+                <button class="icon-btn" id="exitBtn" title="Exit" onclick="goExit()">⏻</button>
             </div>
         </header>
 
@@ -837,7 +885,7 @@
         let lives = 5;
 
         const maxLives = 5;
-        const maxScore = 10;
+        const maxScore = 100;
 
         function playNote(note) {
             const ctx = getAudioCtx();
@@ -981,7 +1029,7 @@
             playNote(note);
 
             if (note === currentNote) {
-                score++;
+                score += 10;
                 combo++;
 
                 flashKey(note, "correct");
@@ -1061,18 +1109,19 @@
                         <h2>${won ? "Maestro!" : "Try Again"}</h2>
                         <p style="color: var(--muted); margin-bottom: 26px;">Final score: <strong style="color: var(--gold-soft);">${score} / ${maxScore}</strong></p>
                         <div class="home-actions">
-                            <button class="primary-btn" onclick="restartGame()">Play Again</button>
-                            <button class="primary-btn" onclick="goNextLesson()">Next Lesson</button>
-                            <button class="ghost-btn" onclick="goExit()">Exit</button>
-                            <button class="ghost-btn" onclick="restartGame()">Home</button>
+                            ${won ? `<button class="primary-btn" onclick="window.location.href='${window.location.protocol.startsWith('http') ? '/lesson2-2' : 'level 2(lesson 2).html'}'">Next Lesson</button>` : `<button class="primary-btn" onclick="restartGame()">Play Again</button>`}
                         </div>
                     </div>
                 </section>
             `;
         }
 
-        function goNextLesson() {
-            window.location.href = '/lesson2-2';
+        function goHome() {
+            if (window.location.protocol.startsWith('http')) {
+                window.location.href = '/lessons';
+            } else {
+                window.location.href = 'index.html';
+            }
         }
 
         function goExit() {
@@ -1134,8 +1183,8 @@
             }).catch(() => {});
         }
 
-        document.getElementById("resetBtn").addEventListener("click", restartGame);
-        document.getElementById("soundBtn").addEventListener("click", () => playTone(880));
+        document.getElementById("resetBtn")?.addEventListener("click", restartGame);
+        document.getElementById("soundBtn")?.addEventListener("click", () => playTone(880));
 
         window.addEventListener("keydown", event => {
             const key = event.key.toUpperCase();
@@ -1182,6 +1231,30 @@
         renderPiano();
         updateStats();
         newQuestion();
+
+        (function () {
+            const stage = document.querySelector(".stage");
+            if (!stage) return;
+
+            function fit() {
+                stage.style.transform = "none";
+                const viewportH = window.innerHeight || document.documentElement.clientHeight;
+                const height = stage.getBoundingClientRect().height || stage.offsetHeight;
+                if (!height) return;
+
+                let scale = 1;
+                if (height > viewportH) {
+                    scale = viewportH / height;
+                    scale = Math.max(0.5, scale);
+                }
+
+                stage.style.transform = "scale(" + Math.min(1, scale) + ")";
+            }
+
+            window.addEventListener("resize", fit);
+            setTimeout(fit, 80);
+            setTimeout(fit, 350);
+        })();
     </script>
 </body>
 </html>

@@ -81,6 +81,24 @@
 			transform-origin: top center;
 		}
 
+		.home-nav-btn {
+			width: 54px;
+			min-width: 54px;
+			height: 54px;
+			padding: 0;
+			display: inline-grid;
+			place-items: center;
+			border-radius: 18px;
+			border: 1px solid rgba(242, 189, 87, 0.72);
+			color: var(--gold-soft);
+			background: linear-gradient(145deg, #11161b, #050606);
+			box-shadow: 0 0 24px rgba(242, 189, 87, 0.24), inset 0 0 22px rgba(255, 226, 154, 0.09);
+			font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
+			font-size: 1.75rem;
+			line-height: 1;
+			text-align: center;
+		}
+
 		/* Rest of CSS omitted for brevity in patch (identical to source) */
 	</style>
 </head>
@@ -99,7 +117,6 @@
 			<h1 class="victory-text">PERFECT!</h1>
 			<p>You have mastered the staff with 10/10!</p>
 			<div class="button-group">
-				<button class="main-action-btn" onclick="window.location.href='/lesson2-1-latest'">NEXT LEVEL</button>
 				<button class="secondary-btn" onclick="location.reload()">PLAY AGAIN</button>
 			</div>
 		</div>
@@ -120,7 +137,7 @@
 	<main class="stage">
 		<header class="topbar">
 			<div class="brand">
-				<div class="brand-mark">▥</div>
+				<div class="brand-mark" aria-label="Piano">🎹</div>
 				<div>
 					<div class="brand-title">Pianova♪</div>
 					<div class="brand-sub">Play • Learn • Master</div>
@@ -128,7 +145,7 @@
 			</div>
 
 			<nav class="nav" aria-label="Game navigation">
-				<button class="nav-btn active">⌂ Home</button>
+				<button class="nav-btn active home-nav-btn" type="button" title="Home" aria-label="Home" onclick="window.location.href='/lessons'">&#127968;</button>
 				<button class="nav-btn">♛ Leaderboard</button>
 				<button class="nav-btn">♙ Profile</button>
 				<button class="nav-btn" onclick="window.location.href='/lessons'">⏻ Exit</button>
@@ -186,7 +203,7 @@
 
 			<div class="challenge-header">
 				<div class="challenge-title">
-					<div class="mini-mark">▥</div>
+					<div class="mini-mark" aria-label="Piano">🎹</div>
 					<div>
 						<h1>Pianova</h1>
 						<p>Repeat the triad sequence</p>

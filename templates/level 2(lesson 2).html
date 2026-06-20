@@ -103,6 +103,7 @@
             height: 56px;
             border-radius: 18px;
             font-size: 1.75rem;
+            line-height: 1;
         }
 
         .brand-title {
@@ -157,6 +158,25 @@
             color: var(--gold-soft);
             background: linear-gradient(145deg, rgba(242, 189, 87, 0.18), rgba(255, 255, 255, 0.03));
             box-shadow: inset 0 0 18px rgba(242, 189, 87, 0.08);
+        }
+
+        .home-nav-btn {
+            width: 56px;
+            min-width: 56px;
+            height: 56px;
+            justify-content: center;
+            padding: 0;
+            display: inline-grid;
+            place-items: center;
+            gap: 0;
+            border-radius: 18px;
+            border-color: rgba(242, 189, 87, 0.72);
+            color: var(--gold-soft);
+            background: linear-gradient(145deg, #13171d, #040506);
+            box-shadow: 0 0 24px rgba(242, 189, 87, 0.22), inset 0 0 20px rgba(255, 227, 161, 0.06);
+            font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
+            font-size: 1.75rem;
+            line-height: 1;
         }
 
         .top-actions {
@@ -998,14 +1018,14 @@
             return `
                 <header class="topbar">
                     <div class="brand">
-                        <div class="brand-mark">▥</div>
+                        <div class="brand-mark" aria-label="Piano">🎹</div>
                         <div>
                             <div class="brand-title">Pianova♪</div>
                             <div class="brand-sub">Play • Learn • Master</div>
                         </div>
                     </div>
                     <nav class="nav" aria-label="Game navigation">
-                        <button class="nav-btn active">⌂ Home</button>
+                        <button class="nav-btn active home-nav-btn" type="button" title="Home" aria-label="Home" onclick="window.location.href='/lessons'">&#127968;</button>
                         <button class="nav-btn">♫ Practice</button>
                         <button class="nav-btn">▤ Lessons</button>
                         <button class="nav-btn">♕ Leaderboard</button>
@@ -1303,7 +1323,7 @@
                     <div class="level-ribbon">♕ Level <span id="levelDigit">1</span></div>
                     <div class="challenge-header">
                         <div class="challenge-title">
-                            <div class="mini-mark">▥</div>
+                            <div class="mini-mark" aria-label="Piano">🎹</div>
                             <div>
                                 <h1>Pianova</h1>
                                 <p>Repeat the golden melody</p>
@@ -1381,7 +1401,7 @@
             root.innerHTML = `
                 <div class="homepage-container">
                     <div>
-                        <div class="brand-mark" style="margin: 0 auto 22px;">▥</div>
+                        <div class="brand-mark" style="margin: 0 auto 22px;" aria-label="Piano">🎹</div>
                         <div class="homepage-logo">Pianova</div>
                         <div class="homepage-sub">Play • Learn • Master</div>
                         <div class="home-buttons">

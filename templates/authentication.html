@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Pianova - Create Account</title>
+	<style>
+		:root {
+			--bg: #050505;
+			--panel: rgba(10, 10, 10, 0.9);
+			--line: rgba(240, 182, 70, 0.45);
+			--line-soft: rgba(240, 182, 70, 0.2);
+			--gold: #f0b646;
+			--gold-soft: #ffe2a6;
+			--text: #f8e7be;
+			--muted: #b9a985;
+			--danger: #ff7468;
+			--ok: #89d46e;
+		}
+
+		* {
+			box-sizing: border-box;
+			margin: 0;
+			padding: 0;
+		}
+
+		body {
+			min-height: 100vh;
+			font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+			color: var(--text);
+			background:
+				radial-gradient(circle at 20% 15%, rgba(240, 182, 70, 0.2), transparent 38%),
+				radial-gradient(circle at 82% 24%, rgba(240, 182, 70, 0.14), transparent 35%),
+				linear-gradient(155deg, #030303 0%, #0b0a07 44%, #040404 100%);
+			display: grid;
+			place-items: center;
+			padding: 28px 16px;
+		}
+
+		.register-card {
+			width: min(94vw, 520px);
+			background: var(--panel);
+			border: 1px solid var(--line);
+			border-radius: 20px;
+			box-shadow: 0 22px 48px rgba(0, 0, 0, 0.65), 0 0 24px rgba(240, 182, 70, 0.16);
+			padding: 30px 26px 24px;
+			backdrop-filter: blur(4px);
+		}
+
+		.brand {
+			text-align: center;
+			color: var(--gold);
+			font-size: 2rem;
+			line-height: 1;
+			margin-bottom: 8px;
+		}
+
+		h1 {
+			text-align: center;
+			font-size: clamp(1.9rem, 5vw, 2.45rem);
+			margin-bottom: 8px;
+			color: var(--gold-soft);
+		}
+
+		.subtitle {
+			text-align: center;
+			color: var(--muted);
+			margin-bottom: 18px;
+			font-size: 1.03rem;
+			line-height: 1.5;
+		}
+
+		.divider {
+			width: 100%;
+			height: 1px;
+			background: linear-gradient(90deg, transparent, var(--line), transparent);
+			margin-bottom: 22px;
+			position: relative;
+		}
+
+		.divider::after {
+			content: "✦";
+			position: absolute;
+			left: 50%;
+			top: 50%;
+			transform: translate(-50%, -56%);
+			color: var(--gold);
+			background: var(--panel);
+			padding: 0 8px;
+			font-size: 0.8rem;
+		}
+
+		form {
+			display: grid;
+			gap: 14px;
+		}
+
+		.field {
+			display: grid;
+			gap: 8px;
+		}
+
+		.field label {
+			color: var(--gold-soft);
+			font-weight: 600;
+			font-size: 0.98rem;
+		}
+
+		.input-row {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			border: 1px solid var(--line-soft);
+			border-radius: 12px;
+			background: rgba(0, 0, 0, 0.25);
+			padding: 0 12px;
+			min-height: 48px;
+		}
+
+		.input-row input {
+			flex: 1;
+			background: transparent;
+			border: none;
+			outline: none;
+			color: #fff8e8;
+			font-size: 1rem;
+		}
+
+		.input-row input::placeholder {
+			color: #8f7f5a;
+		}
+
+		.auth-btn {
+			border: 1px solid var(--line);
+			color: #271c00;
+			background: linear-gradient(180deg, #ffd473, #e8ac33);
+			border-radius: 10px;
+			font-weight: 700;
+			font-size: 0.86rem;
+			padding: 7px 10px;
+			cursor: pointer;
+			transition: filter 0.2s ease;
+			white-space: nowrap;
+		}
+
+		.auth-btn:hover {
+			filter: brightness(1.08);
+		}
+
+		.hint {
+			color: var(--muted);
+			font-size: 0.88rem;
+			line-height: 1.35;
+		}
+
+		.verify-note {
+			font-size: 0.86rem;
+			color: var(--muted);
+		}
+
+		.status {
+			min-height: 19px;
+			font-size: 0.9rem;
+			color: var(--muted);
+		}
+
+		.status.error {
+			color: var(--danger);
+		}
+
+		.status.success {
+			color: var(--ok);
+		}
+
+		.submit-btn {
+			margin-top: 6px;
+			min-height: 54px;
+			border: 1px solid var(--line);
+			border-radius: 13px;
+			color: #221700;
+			background: linear-gradient(180deg, #ffd473 0%, #e8ac33 100%);
+			font-size: 1.28rem;
+			font-weight: 800;
+			cursor: pointer;
+			transition: transform 0.2s ease, filter 0.2s ease;
+		}
+
+		.submit-btn:hover {
+			transform: translateY(-1px);
+			filter: brightness(1.05);
+		}
+
+		.footer-text {
+			margin-top: 18px;
+			text-align: center;
+			color: var(--muted);
+			font-size: 0.95rem;
+		}
+
+		.footer-text a {
+			color: var(--gold-soft);
+			text-decoration: none;
+			font-weight: 700;
+		}
+
+		@media (max-width: 520px) {
+			.register-card {
+				padding: 22px 14px 18px;
+			}
+
+			.input-row {
+				min-height: 46px;
+				padding: 0 10px;
+			}
+
+			.auth-btn {
+				padding: 7px 8px;
+				font-size: 0.79rem;
+			}
+		}
+	</style>
+</head>
+<body>
+	<section class="register-card" aria-label="Create account form">
+		<div class="brand">♫</div>
+		<h1>Create Account</h1>
+		<p class="subtitle">Join Pianova and start your interactive piano lessons today.</p>
+		<div class="divider"></div>
+
+		<form id="registerForm" action="/register" method="post" novalidate>
+			<div class="field">
+				<label for="authEmail">Authentication Email</label>
+				<div class="input-row">
+					<input id="authEmail" name="auth_email" type="email" placeholder="Enter email for verification" required>
+					<button id="sendCodeBtn" class="auth-btn" type="button">Send Code</button>
+				</div>
+				<p class="hint">Use this email to receive the verification code for account authentication.</p>
+				<div class="input-row">
+					<input id="authCode" name="auth_code" type="text" placeholder="Enter verification code" maxlength="8" inputmode="numeric" required>
+					<button id="verifyCodeBtn" class="auth-btn" type="button">Verify</button>
+				</div>
+				<p class="verify-note" id="verifyNote">Please verify this email before creating your account.</p>
+				<p id="authStatus" class="status" aria-live="polite"></p>
+			</div>
+
+			<div class="field">
+				<label for="username">Username</label>
+				<div class="input-row">
+					<input id="username" name="username" type="text" placeholder="Choose username" required>
+				</div>
+			</div>
+
+			<div class="field">
+				<label for="email">Email Address</label>
+				<div class="input-row">
+					<input id="email" name="email" type="email" placeholder="Enter your email address" required>
+				</div>
+			</div>
+
+			<div class="field">
+				<label for="password">Password</label>
+				<div class="input-row">
+					<input id="password" name="password" type="password" placeholder="Create password" required>
+				</div>
+			</div>
+
+			<div class="field">
+				<label for="confirmPassword">Confirm Password</label>
+				<div class="input-row">
+					<input id="confirmPassword" name="confirm_password" type="password" placeholder="Confirm password" required>
+				</div>
+			</div>
+
+			<button class="submit-btn" type="submit">Create account</button>
+		</form>
+
+		<p class="footer-text">Already registered? <a href="/login">Go back to login.</a></p>
+	</section>
+
+	<script>
+		const sendCodeBtn = document.getElementById("sendCodeBtn");
+		const verifyCodeBtn = document.getElementById("verifyCodeBtn");
+		const authCodeInput = document.getElementById("authCode");
+		const authEmailInput = document.getElementById("authEmail");
+		const emailInput = document.getElementById("email");
+		const verifyNote = document.getElementById("verifyNote");
+		const registerForm = document.getElementById("registerForm");
+		const authStatus = document.getElementById("authStatus");
+
+		function resolveBackendOrigin() {
+			if (window.location.protocol === "file:") {
+				return "http://127.0.0.1:5000";
+			}
+
+			if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
+				if (window.location.port && window.location.port !== "5000") {
+					return "http://127.0.0.1:5000";
+				}
+			}
+
+			return window.location.origin;
+		}
+
+		const BACKEND_ORIGIN = resolveBackendOrigin();
+
+		const API_ENDPOINTS = {
+			sendCode: `${BACKEND_ORIGIN}/api/auth/send-code`,
+			verifyCode: `${BACKEND_ORIGIN}/api/auth/verify-code`
+		};
+
+		let emailVerified = false;
+
+		function setStatus(message, type) {
+			authStatus.textContent = message;
+			authStatus.className = "status";
+			if (type) {
+				authStatus.classList.add(type);
+			}
+		}
+
+		function setVerifiedState(isVerified, message) {
+			emailVerified = isVerified;
+			if (isVerified) {
+				verifyNote.textContent = message || "Authentication email verified successfully.";
+				verifyNote.style.color = "var(--ok)";
+			} else {
+				verifyNote.textContent = message || "Please verify this email before creating your account.";
+				verifyNote.style.color = "var(--muted)";
+			}
+		}
+
+		function isValidEmail(value) {
+			return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+		}
+
+		async function postJson(url, payload) {
+			let response;
+			try {
+				response = await fetch(url, {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json"
+					},
+					body: JSON.stringify(payload)
+				});
+			} catch (networkError) {
+				throw new Error(
+					"Cannot connect to backend API. Start Flask and open http://127.0.0.1:5000/register-auth"
+				);
+			}
+
+			let data = {};
+			try {
+				data = await response.json();
+			} catch (error) {
+				data = {};
+			}
+
+			if (!response.ok) {
+				const message = data.message || "Request failed. Please try again.";
+				throw new Error(message);
+			}
+
+			return data;
+		}
+
+		authEmailInput.addEventListener("input", function () {
+			setVerifiedState(false, "Email changed. Please verify again.");
+			setStatus("", "");
+		});
+
+		sendCodeBtn.addEventListener("click", async function () {
+			const authEmail = authEmailInput.value.trim();
+			if (!authEmail) {
+				setStatus("Please enter the authentication email first.", "error");
+				return;
+			}
+
+			if (!isValidEmail(authEmail)) {
+				setStatus("Please enter a valid email format.", "error");
+				return;
+			}
+
+			try {
+				sendCodeBtn.disabled = true;
+				sendCodeBtn.textContent = "Sending...";
+				setStatus("Sending verification code...", "");
+
+				const result = await postJson(API_ENDPOINTS.sendCode, { email: authEmail });
+				setVerifiedState(false, "Code sent. Enter the code and press Verify.");
+
+				if (result.debug_otp) {
+					setStatus(
+						`Local OTP: ${result.debug_otp} (SMTP not configured; use this code now).`,
+						"success"
+					);
+				} else {
+					setStatus(result.message || "Verification code sent successfully.", "success");
+				}
+			} catch (error) {
+				setStatus(error.message || "Could not send verification code.", "error");
+			} finally {
+				sendCodeBtn.disabled = false;
+				sendCodeBtn.textContent = "Send Code";
+			}
+		});
+
+		verifyCodeBtn.addEventListener("click", async function () {
+			const authEmail = authEmailInput.value.trim();
+			const authCode = authCodeInput.value.trim();
+
+			if (!isValidEmail(authEmail)) {
+				setStatus("Enter a valid authentication email first.", "error");
+				return;
+			}
+
+			if (!authCode) {
+				setStatus("Please enter the verification code.", "error");
+				return;
+			}
+
+			try {
+				verifyCodeBtn.disabled = true;
+				verifyCodeBtn.textContent = "Verifying...";
+				setStatus("Checking verification code...", "");
+
+				const result = await postJson(API_ENDPOINTS.verifyCode, {
+					email: authEmail,
+					code: authCode
+				});
+
+				setVerifiedState(true, "Email verified. You can now create your account.");
+				setStatus(result.message || "Email verification successful.", "success");
+			} catch (error) {
+				setVerifiedState(false, "Verification failed. Please request and verify again.");
+				setStatus(error.message || "Invalid code or expired code.", "error");
+			} finally {
+				verifyCodeBtn.disabled = false;
+				verifyCodeBtn.textContent = "Verify";
+			}
+		});
+
+		registerForm.addEventListener("submit", function (event) {
+			const authEmail = authEmailInput.value.trim();
+			const accountEmail = emailInput.value.trim();
+
+			if (!emailVerified) {
+				event.preventDefault();
+				setStatus("Please verify your authentication email before creating account.", "error");
+				return;
+			}
+
+			if (accountEmail && authEmail && accountEmail.toLowerCase() !== authEmail.toLowerCase()) {
+				event.preventDefault();
+				setStatus("Authentication Email and Email Address must match.", "error");
+				setVerifiedState(false, "Email mismatch detected. Verify again after correcting email.");
+			}
+		});
+
+		setVerifiedState(false);
+	</script>
+</body>
+</html>

@@ -89,6 +89,24 @@
             box-shadow: 0 0 18px rgba(255, 208, 113, 0.18);
         }
 
+        .home-nav-btn {
+            width: 54px;
+            min-width: 54px;
+            height: 54px;
+            padding: 0;
+            display: inline-grid;
+            place-items: center;
+            border-radius: 18px;
+            border-color: rgba(255, 208, 113, 0.72);
+            color: #ffe4b3;
+            background: linear-gradient(145deg, #11161b, #050606);
+            box-shadow: 0 0 24px rgba(255, 208, 113, 0.22), inset 0 0 22px rgba(255, 226, 154, 0.09);
+            font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
+            font-size: 1.75rem;
+            line-height: 1;
+            text-align: center;
+        }
+
         .top-stats {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -381,9 +399,9 @@
 <body>
     <div class="top-shell">
         <div class="top-nav">
-            <div class="brand">Pianova - Play - Learn - Master</div>
+            <div class="brand">🎹 Pianova - Play - Learn - Master</div>
             <div class="nav-links">
-                <a class="nav-pill active" href="#">Home</a>
+                <a class="nav-pill active home-nav-btn" href="/lessons" title="Home" aria-label="Home">&#127968;</a>
                 <a class="nav-pill" href="#">Practice</a>
                 <a class="nav-pill" href="#">Lessons</a>
                 <a class="nav-pill" href="#">Leaderboard</a>
@@ -419,7 +437,7 @@
 
     <div class="container" id="game-container">
         <div class="header">
-            <h1 class="logo">Pianova</h1>
+            <h1 class="logo">🎹 Pianova</h1>
 
             <div class="progress">
                 <span>Score: <span id="score">0</span></span>

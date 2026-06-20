@@ -96,6 +96,7 @@
       letter-spacing: 2px;
       font-size: clamp(0.8rem, 1.05vw, 1rem);
       font-weight: 800;
+      font-family: "Segoe UI Symbol", "Arial Unicode MS", sans-serif;
     }
 
     .content {
@@ -336,6 +337,83 @@
         0 2px 3px rgba(0, 0, 0, 0.35);
     }
 
+    .game-over-modal {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(2, 6, 12, 0.78);
+      z-index: 999;
+      padding: 1rem;
+    }
+
+    .game-over-modal.open {
+      display: flex;
+    }
+
+    .game-over-card {
+      width: min(560px, 92vw);
+      border-radius: 2.2rem;
+      border: 1px solid rgba(255, 195, 77, 0.78);
+      background:
+        radial-gradient(circle at 50% 0%, rgba(255, 197, 77, 0.1), transparent 55%),
+        linear-gradient(180deg, #060d17 0%, #02060d 100%);
+      box-shadow:
+        0 0 42px rgba(255, 195, 77, 0.28),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+      padding: clamp(1.8rem, 4vw, 2.8rem) clamp(1.2rem, 4vw, 2.4rem);
+      text-align: center;
+    }
+
+    .game-over-title {
+      color: #f8cf59;
+      font-size: clamp(2rem, 5.4vw, 3.2rem);
+      font-weight: 800;
+      letter-spacing: 0.4px;
+      margin-bottom: 0.75rem;
+    }
+
+    .game-over-points {
+      color: #f7e5be;
+      font-size: clamp(1.15rem, 2.6vw, 2rem);
+      margin-bottom: 1.6rem;
+    }
+
+    .game-over-actions {
+      display: flex;
+      justify-content: center;
+      gap: 0.9rem;
+      flex-wrap: wrap;
+    }
+
+    .game-over-btn {
+      min-width: 170px;
+      border: 1px solid rgba(255, 188, 74, 0.62);
+      border-radius: 999px;
+      padding: 0.72rem 1.25rem;
+      font-size: 1.05rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform 0.2s ease, filter 0.2s ease;
+    }
+
+    .game-over-btn.primary {
+      background: linear-gradient(180deg, #f6cf66 0%, #eab94a 100%);
+      color: #1e1407;
+      border-color: #f5ca63;
+    }
+
+    .game-over-btn.secondary {
+      background: rgba(7, 12, 20, 0.94);
+      color: #ffd793;
+    }
+
+    .game-over-btn:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.05);
+    }
+
     @media (max-width: 1100px) {
       .cards {
         grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -416,6 +494,7 @@
         <div class="chip">Score: <span id="score">0</span></div>
         <div class="chip">Combo: <span id="combo">x0</span></div>
         <div class="chip">Streak: <span id="streak">0</span></div>
+        <div class="chip">Lives: <span class="lives" id="lives">♥♥♥♥♥</span></div>
       </div>
     </header>
 
@@ -474,13 +553,24 @@
       </section>
 
       <section class="actions">
-        <button class="action-btn" id="restartBtn">↻ RESTART EXERCISE</button>
         <button class="action-btn primary" id="backBtn" disabled>→ NEXT LESSON</button>
+        <button class="action-btn" id="quitBtn">✕ QUIT LESSON</button>
       </section>
     </section>
 
     <section class="piano-bar" aria-hidden="true" id="pianoBar"></section>
   </main>
+
+  <div class="game-over-modal" id="gameOverModal" role="dialog" aria-modal="true" aria-labelledby="gameOverTitle">
+    <div class="game-over-card">
+      <h2 class="game-over-title" id="gameOverTitle">Game Over</h2>
+      <p class="game-over-points">Total Points: <span id="gameOverPoints">0</span></p>
+      <div class="game-over-actions">
+        <button class="game-over-btn primary" id="modalTryAgainBtn">Try Again</button>
+        <button class="game-over-btn secondary" id="modalHomeBtn">Home</button>
+      </div>
+    </div>
+  </div>
 
   <script>
     const notes = [
@@ -516,9 +606,14 @@
     const scoreText = document.getElementById("score");
     const comboText = document.getElementById("combo");
     const streakText = document.getElementById("streak");
-    const restartBtn = document.getElementById("restartBtn");
+    const livesText = document.getElementById("lives");
     const backBtn = document.getElementById("backBtn");
+    const quitBtn = document.getElementById("quitBtn");
     const pianoBar = document.getElementById("pianoBar");
+    const gameOverModal = document.getElementById("gameOverModal");
+    const gameOverPoints = document.getElementById("gameOverPoints");
+    const modalTryAgainBtn = document.getElementById("modalTryAgainBtn");
+    const modalHomeBtn = document.getElementById("modalHomeBtn");
 
     const questionFlow = ["1", "2", "4", "1/2"];
     const orderedQuestions = questionFlow
@@ -530,6 +625,8 @@
     let score = 0;
     let combo = 0;
     let streak = 0;
+    const MAX_LIVES = 5;
+    let lives = MAX_LIVES;
 
     function renderPianoBar() {
       const totalWhiteKeys = 40;
@@ -574,9 +671,12 @@
       scoreText.textContent = String(score);
       comboText.textContent = `x${combo}`;
       streakText.textContent = String(streak);
+      if (livesText) {
+        livesText.textContent = "♥".repeat(lives) + "♡".repeat(MAX_LIVES - lives);
+      }
     }
 
-    function disableGame(completed = false) {
+    function disableGame(completed = false, outOfLives = false) {
       cards.forEach((card) => {
         card.style.pointerEvents = "none";
       });
@@ -589,7 +689,33 @@
       }
 
       questionText.innerHTML = "Exercise ended";
-      feedback.textContent = "Return and restart the exercise.";
+      feedback.textContent = outOfLives
+        ? "No lives left. Return and restart the exercise."
+        : "Return and restart the exercise.";
+    }
+
+    function openGameOverModal() {
+      if (!gameOverModal || !gameOverPoints) return;
+      gameOverPoints.textContent = String(score);
+      gameOverModal.classList.add("open");
+    }
+
+    function closeGameOverModal() {
+      if (!gameOverModal) return;
+      gameOverModal.classList.remove("open");
+    }
+
+    function restartGame() {
+      currentQuestionIndex = 0;
+      score = 0;
+      combo = 0;
+      streak = 0;
+      lives = MAX_LIVES;
+      backBtn.disabled = true;
+      closeGameOverModal();
+      renderStats();
+      enableGame();
+      newQuestion();
     }
 
     function enableGame() {
@@ -628,7 +754,7 @@
           card.classList.add("correct");
           combo += 1;
           streak += 1;
-          score += 10 * combo;
+          score += 10;
           renderStats();
           feedback.textContent = `Correct. ${currentQuestion.answerText}`;
 
@@ -638,25 +764,40 @@
           card.classList.add("wrong");
           combo = 0;
           streak = 0;
+          lives = Math.max(0, lives - 1);
           renderStats();
-          feedback.textContent = `Try again. Find the note with ${currentQuestion.beats} beat(s).`;
+
+          if (lives <= 0) {
+            disableGame(false, true);
+            openGameOverModal();
+            return;
+          }
+
+          feedback.textContent = `Wrong answer. ${lives} lives left. Find the note with ${currentQuestion.beats} beat(s).`;
         }
       });
     });
 
-    restartBtn.addEventListener("click", () => {
-      currentQuestionIndex = 0;
-      score = 0;
-      combo = 0;
-      streak = 0;
-      backBtn.disabled = true;
-      renderStats();
-      enableGame();
-      newQuestion();
-    });
+    if (modalTryAgainBtn) {
+      modalTryAgainBtn.addEventListener("click", restartGame);
+    }
+
+    if (modalHomeBtn) {
+      modalHomeBtn.addEventListener("click", () => {
+        window.location.href = "/dashboard";
+      });
+    }
 
     backBtn.addEventListener("click", () => {
       window.location.href = "/level1-notes";
+    });
+
+    quitBtn.addEventListener("click", () => {
+      const shouldQuit = window.confirm("Quit this lesson and return to dashboard?");
+      if (!shouldQuit) {
+        return;
+      }
+      window.location.href = "/dashboard";
     });
 
     renderPianoBar();

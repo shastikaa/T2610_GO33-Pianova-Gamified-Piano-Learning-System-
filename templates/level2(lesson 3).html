@@ -996,7 +996,7 @@
         <button class="nav-btn active" id="navHomeBtn" type="button">&#8962; Home</button>
         <button class="nav-btn" id="navLeaderboardBtn" type="button">&#9819; Leaderboard</button>
         <button class="nav-btn" id="navProfileBtn" type="button">&#9817; Profile</button>
-        <button class="nav-btn" id="navExitBtn" type="button">&#9211; Exit</button>
+        <button class="nav-btn" id="navexitBtn" type="button">&#9211; exit</button>
       </nav>
 
       <div class="top-actions">
@@ -1084,7 +1084,7 @@
           <div class="game-over-actions">
             <button class="game-over-btn" id="btnGameOverPlayAgain" type="button">Play Again</button>
             <button class="game-over-btn" id="btnGameOverNext" type="button">Next Lesson</button>
-            <button class="game-over-btn alt" id="btnGameOverExit" type="button">Exit</button>
+            <button class="game-over-btn alt" id="btnGameOverexit" type="button">exit</button>
           </div>
         </div>
       </section>
@@ -1467,11 +1467,11 @@
     document.getElementById("topResetBtn").addEventListener("click", () => rebootSessionState());
     document.getElementById("btnGameOverPlayAgain").addEventListener("click", () => rebootSessionState("New round ready"));
     document.getElementById("btnGameOverNext").addEventListener("click", () => navigateTo("/lesson2-4"));
-    document.getElementById("btnGameOverExit").addEventListener("click", () => navigateTo("/lessons"));
+    document.getElementById("btnGameOverexit").addEventListener("click", () => navigateTo("/lessons"));
     document.getElementById("navHomeBtn").addEventListener("click", () => navigateTo("/dashboard"));
     document.getElementById("navLeaderboardBtn").addEventListener("click", () => navigateTo("/dashboard#scores"));
     document.getElementById("navProfileBtn").addEventListener("click", () => navigateTo("/dashboard"));
-    document.getElementById("navExitBtn").addEventListener("click", () => navigateTo("/lessons"));
+    document.getElementById("navexitBtn").addEventListener("click", () => navigateTo("/lessons"));
     document.getElementById("lessonMenuBtn").addEventListener("click", () => navigateTo("/lessons"));
     soundToggleBtn.addEventListener("click", toggleSoundState);
 

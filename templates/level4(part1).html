@@ -5,133 +5,169 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Music Quiz</title>
 
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+
   <style>
     * {
       box-sizing: border-box;
+      font-family: 'Montserrat', sans-serif;
     }
 
     body {
       margin: 0;
       min-height: 100vh;
-      font-family: Arial, Helvetica, sans-serif;
-      background:
-        radial-gradient(circle at 18% 10%, rgba(246, 179, 29, 0.18), transparent 38%),
-        radial-gradient(circle at 84% 86%, rgba(246, 179, 29, 0.11), transparent 44%),
-        linear-gradient(165deg, #0b0a08 0%, #15110a 48%, #070605 100%);
-      color: #f7f1e5;
+      background: #060606;
+      color: #ffffff;
     }
 
+    /* Top Bar Styling */
     .quiz-topbar {
       width: 100%;
-      border-bottom: 1px solid rgba(246, 179, 29, 0.24);
-      background:
-        radial-gradient(circle at 50% 0%, rgba(246, 179, 29, 0.15), transparent 52%),
-        linear-gradient(180deg, #0d131b 0%, #090d12 100%);
-      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
+      border-bottom: 1px solid rgba(255, 201, 84, 0.1);
+      background: #080808;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+      position: relative;
+      z-index: 10;
     }
 
     .quiz-topbar-inner {
-      width: min(1280px, calc(100% - 24px));
+      width: min(1500px, calc(100% - 40px));
       margin: 0 auto;
-      min-height: 86px;
-      display: flex;
+      min-height: 70px;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
       align-items: center;
-      justify-content: space-between;
-      gap: 12px;
       padding: 10px 0;
     }
 
-    .back-home {
-      display: inline-flex;
+    /* Logo Area */
+    .brand-wrapper {
+      display: flex;
       align-items: center;
-      gap: 8px;
-      text-decoration: none;
-      color: #e8e1d0;
-      border: 1px solid rgba(246, 179, 29, 0.35);
-      border-radius: 8px;
-      padding: 10px 14px;
-      background: rgba(12, 12, 12, 0.78);
-      font-size: 14px;
-      white-space: nowrap;
-      transition: border-color 0.18s ease, box-shadow 0.18s ease;
+      gap: 10px;
     }
 
-    .back-home:hover {
-      border-color: rgba(246, 179, 29, 0.7);
-      box-shadow: 0 0 12px rgba(246, 179, 29, 0.28);
+    .logo-icon {
+      width: 28px;
+      height: 28px;
+      fill: none;
+      stroke: #ffc954;
+      stroke-width: 2.2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      filter: drop-shadow(0 0 8px rgba(255, 201, 84, 0.5));
     }
 
+    .logo-text-col {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .logo-main {
+      font-size: 18px;
+      font-weight: 900;
+      color: #ffffff;
+      letter-spacing: 1px;
+      line-height: 1;
+      margin-bottom: 3px;
+    }
+
+    .logo-sub {
+      font-size: 8px;
+      font-weight: 800;
+      color: #ffc954;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      line-height: 1;
+    }
+
+    /* Center Title Area */
     .top-title {
       text-align: center;
-      line-height: 1.2;
-      flex: 1;
-      min-width: 260px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
     }
 
     .top-title h1 {
       margin: 0;
-      color: #f6c65f;
-      font-size: clamp(24px, 3.2vw, 44px);
-      letter-spacing: 0.5px;
+      color: #ffc954;
+      font-size: clamp(24px, 3vw, 36px);
+      letter-spacing: 0px;
+      font-weight: 900;
+      text-transform: uppercase;
+      text-shadow: 0 0 20px rgba(255, 201, 84, 0.3);
+      line-height: 1;
     }
 
     .top-title p {
       margin: 6px 0 0;
-      color: rgba(247, 241, 229, 0.9);
-      font-size: clamp(13px, 1.6vw, 23px);
+      color: #cccccc;
+      font-size: 12px;
+      font-weight: 700;
     }
 
+    /* Stats Area */
     .top-stats {
       display: flex;
       align-items: stretch;
+      justify-content: flex-end;
       gap: 10px;
     }
 
     .stat-box {
-      min-width: 110px;
-      border: 1px solid rgba(246, 179, 29, 0.35);
-      border-radius: 8px;
-      background: rgba(9, 9, 9, 0.82);
-      padding: 8px 12px;
+      min-width: 80px;
+      border: 1px solid #222;
+      border-radius: 6px;
+      background: #030303;
+      padding: 6px 16px;
       text-align: center;
-      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.5);
     }
 
     .stat-label {
       display: block;
-      color: rgba(247, 241, 229, 0.78);
-      font-size: 12px;
-      margin-bottom: 5px;
+      color: #777;
+      font-size: 9px;
+      font-weight: 700;
+      margin-bottom: 2px;
     }
 
     .stat-value {
+      display: block;
       color: #ffffff;
-      font-size: 30px;
-      font-weight: 700;
+      font-size: 20px;
+      font-weight: 900;
       line-height: 1;
     }
 
+    /* Quiz Content Styling */
     .quiz {
-      width: min(1760px, calc(100% - 20px));
+      width: min(1400px, calc(100% - 40px));
       margin: auto;
       padding: 30px 0;
+      padding-bottom: 100px;
     }
 
     .quiz-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
-      gap: 18px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
     }
 
     .card {
       position: relative;
-      background: linear-gradient(160deg, rgba(22, 18, 12, 0.95), rgba(10, 9, 7, 0.98));
-      border: 1px solid #5a3b12;
+      background: linear-gradient(150deg, #18140c, #0a0806);
+      border: 1px solid #3a2a14;
       border-radius: 8px;
-      padding: 22px;
-      padding-top: 62px;
-      min-height: 280px;
-      box-shadow: 0 0 22px rgba(0, 0, 0, 0.48), inset 0 0 0 1px rgba(246, 179, 29, 0.08);
+      padding: 16px;
+      padding-top: 50px;
+      min-height: 220px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.6);
+      display: flex;
+      flex-direction: column;
     }
 
     .top {
@@ -141,76 +177,55 @@
     }
 
     .num {
-      min-width: 34px;
-      height: 34px;
+      width: 22px;
+      height: 22px;
       display: grid;
       place-items: center;
-      border: 1px solid #6f4a12;
-      border-radius: 7px;
-      background: rgba(246, 179, 29, 0.18);
-      color: #ffd36a;
-      font-weight: bold;
+      border: none;
+      border-radius: 4px;
+      background: #ad822c;
+      color: #ffffff;
+      font-weight: 800;
+      font-size: 10px;
       position: absolute;
-      top: 12px;
-      left: 12px;
+      top: 16px;
+      left: 16px;
     }
 
     h2 {
       margin: 0;
-      font-size: 22px;
-      line-height: 1.32;
-      color: #ffe9ba;
-      text-shadow: 0 1px 0 rgba(0, 0, 0, 0.35);
+      font-size: 15px;
+      font-weight: 800;
+      line-height: 1.4;
+      color: #ffffff;
     }
 
-    .next-page-btn {
-      position: fixed;
-      right: 18px;
-      bottom: 18px;
-      z-index: 30;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-width: 170px;
-      text-decoration: none;
-      font-weight: 700;
-      letter-spacing: 0.4px;
-      color: #201506;
-      background: linear-gradient(180deg, #ffd778 0%, #f4b232 100%);
-      border: 1px solid #9f6a0a;
-      border-radius: 999px;
-      padding: 12px 18px;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4), 0 0 18px rgba(246, 179, 29, 0.45);
-      transition: transform 0.18s ease, box-shadow 0.18s ease;
-    }
-
-    .next-page-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.48), 0 0 22px rgba(246, 179, 29, 0.58);
+    .symbols, .big-symbol, .staff, .keyboard, .speaker {
+      margin-top: auto;
+      margin-bottom: 16px;
     }
 
     .symbols {
       display: flex;
       justify-content: space-around;
       align-items: center;
-      margin: 14px 0;
-      font-size: 42px;
+      font-size: 32px;
       font-family: "Times New Roman", serif;
       color: white;
     }
 
     .big-symbol {
       text-align: center;
-      font-size: 58px;
+      font-size: 46px;
       font-family: "Times New Roman", serif;
-      margin: 10px 0;
     }
 
+    /* Answers Layout */
     .answers {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      margin-top: 12px;
+      gap: 10px;
+      margin-top: auto;
     }
 
     .answers.four {
@@ -218,77 +233,125 @@
     }
 
     .answer {
-      min-height: 40px;
-      border: 1px solid #2c2113;
+      min-height: 36px;
+      border: 1px solid #2b2111;
       border-radius: 6px;
-      background: #0b0b0a;
-      color: #f7f1e5;
-      font-size: 13px;
+      background: #050505;
+      color: #ffffff;
+      font-size: 11px;
+      font-weight: 700;
       text-align: left;
-      padding: 8px;
+      padding: 6px 10px;
       cursor: pointer;
-      transition: border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+      display: flex;
+      align-items: center;
+      transition: all 0.15s ease;
     }
 
     .answer span {
       display: inline-grid;
       place-items: center;
-      width: 24px;
-      height: 24px;
-      margin-right: 6px;
-      border: 1px solid #5c4722;
+      width: 18px;
+      height: 18px;
+      margin-right: 8px;
+      background: transparent;
+      border: none;
       border-radius: 4px;
-      color: #ffd36a;
-      font-weight: bold;
-    }
-
-    .correct {
-      border-color: #b97810;
-      background: linear-gradient(#6b470b, #2a1d08);
-      box-shadow: 0 0 15px rgba(246, 179, 29, 0.4);
+      color: #ffc954;
+      font-weight: 900;
+      font-size: 10px;
     }
 
     .answer:hover {
-      border-color: #785116;
+      border-color: #ffc954;
     }
 
     .answer.selected {
-      border-color: #d9a236;
-      box-shadow: 0 0 8px rgba(246, 179, 29, 0.35);
+      border-color: #ffc954;
     }
 
+    /* Correctly guessed / Correct reveal color (Green) */
+    .answer.reveal-correct, .answer.reveal-green {
+      border-color: #22c55e;
+      background: rgba(34, 197, 94, 0.08);
+    }
+
+    /* Incorrectly guessed color (Red) */
     .answer.incorrect {
-      border-color: #b34131;
-      background: linear-gradient(#46221c, #1d0d0b);
-      box-shadow: 0 0 10px rgba(179, 65, 49, 0.35);
+      border-color: #ef4444;
+      background: rgba(239, 68, 68, 0.08);
     }
 
-    .answer.reveal-correct {
-      border-color: #b97810;
-      background: linear-gradient(#6b470b, #2a1d08);
-      box-shadow: 0 0 15px rgba(246, 179, 29, 0.4);
+    .answers.locked .answer {
+      opacity: 0.5;
+      pointer-events: none;
     }
 
+    /* Fixed Bottom Actions Group */
+    .bottom-actions {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      z-index: 30;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 12px;
+    }
+
+    .action-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      font-weight: 800;
+      border-radius: 999px;
+      padding: 10px 22px;
+      font-size: 13px;
+      transition: transform 0.15s ease;
+    }
+
+    .action-btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .btn-gold {
+      color: #000000;
+      background: #ffc954;
+      border: none;
+      box-shadow: 0 4px 15px rgba(255, 201, 84, 0.3);
+    }
+
+    .btn-dark {
+      color: #ffffff;
+      background: #000000;
+      border: 1px solid #333333;
+    }
+
+    /* Piano Keyboard Element Styling */
     .keyboard {
       position: relative;
       display: grid;
       grid-template-columns: repeat(8, 1fr);
-      height: 85px;
-      max-width: 230px;
-      margin: 14px auto;
+      height: 70px;
+      max-width: 190px;
+      margin: 10px auto auto auto;
       background: white;
       border: 1px solid #333;
+      border-radius: 3px;
+      overflow: hidden;
     }
 
     .white {
       color: #111;
-      border-right: 1px solid #222;
+      border-right: 1px solid #ccc;
       display: flex;
       align-items: flex-end;
       justify-content: center;
-      padding-bottom: 6px;
-      font-size: 10px;
-      font-weight: bold;
+      padding-bottom: 4px;
+      font-size: 9px;
+      font-weight: 800;
+      font-family: Arial, sans-serif;
     }
 
     .white.active {
@@ -300,8 +363,10 @@
       top: 0;
       width: 9%;
       height: 55%;
-      background: #000;
+      background: #111;
       z-index: 2;
+      border-bottom-left-radius: 2px;
+      border-bottom-right-radius: 2px;
     }
 
     .b1 { left: 8%; }
@@ -310,95 +375,71 @@
     .b4 { left: 58%; }
     .b5 { left: 70%; }
 
+    /* Staff & Speaker */
     .staff {
-      height: 80px;
-      margin: 12px 0;
+      height: 60px;
       display: grid;
       place-items: center;
-      font-size: 58px;
+      font-size: 46px;
       font-family: "Times New Roman", serif;
       background: repeating-linear-gradient(
         to bottom,
         transparent 0,
-        transparent 13px,
-        rgba(255,255,255,0.55) 14px,
-        rgba(255,255,255,0.55) 15px
+        transparent 9px,
+        rgba(255,255,255,0.4) 10px,
+        rgba(255,255,255,0.4) 11px
       );
     }
 
     .speaker {
-      width: 56px;
-      height: 56px;
-      margin: 12px auto;
+      width: 48px;
+      height: 48px;
+      margin: auto;
       border-radius: 50%;
-      border: 1px solid #4d3818;
+      border: 1px solid #3a2a14;
       display: grid;
       place-items: center;
-      font-size: 22px;
+      font-size: 18px;
       font-weight: bold;
-      background: #0b0905;
-      color: #f7f1e5;
+      background: #080808;
+      color: #ffc954;
       cursor: pointer;
-      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+      transition: transform 0.15s ease, border-color 0.15s ease;
     }
 
     .speaker:hover {
-      border-color: #b57d1e;
-      box-shadow: 0 0 16px rgba(246, 179, 29, 0.35);
+      border-color: #ffc954;
     }
 
     .speaker.playing {
-      transform: scale(1.04);
-      border-color: #f0b43a;
-      box-shadow: 0 0 18px rgba(246, 179, 29, 0.55);
+      transform: scale(1.05);
+      border-color: #ffc954;
+      box-shadow: 0 0 20px rgba(255, 201, 84, 0.2);
     }
 
-    .answers.locked .answer {
-      opacity: 0.5;
-      pointer-events: none;
+    /* Responsiveness */
+    @media (max-width: 1100px) {
+      .quiz-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 800px) {
+      .quiz-topbar-inner {
+        grid-template-columns: 1fr;
+        gap: 16px;
+        justify-content: center;
+        text-align: center;
+      }
+      .brand-wrapper { justify-content: center; }
+      .top-stats { justify-content: center; }
+      .quiz-grid { grid-template-columns: 1fr; }
+      .top-title h1 { font-size: 26px; }
     }
 
     @media (max-width: 520px) {
-      .quiz-topbar-inner {
-        flex-wrap: wrap;
-        justify-content: center;
-      }
-
-      .top-title {
-        order: -1;
-        width: 100%;
-        min-width: 0;
-      }
-
-      .top-stats {
-        width: 100%;
-        justify-content: center;
-      }
-
-      .stat-box {
-        flex: 1;
-        min-width: 0;
-      }
-
-      .quiz-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .quiz {
-        width: calc(100% - 14px);
-      }
-
-      .next-page-btn {
-        right: 12px;
-        bottom: 12px;
-        min-width: 148px;
-        padding: 10px 14px;
-        font-size: 13px;
-      }
-
-      h2 {
-        font-size: 20px;
-      }
+      .stat-box { flex: 1; min-width: 0; }
+      .quiz { width: calc(100% - 20px); }
+      .bottom-actions { right: 10px; bottom: 10px; gap: 8px; justify-content: center; width: calc(100% - 20px); }
+      .action-btn { padding: 10px 16px; font-size: 12px; }
     }
   </style>
 </head>
@@ -406,21 +447,31 @@
 <body>
   <header class="quiz-topbar">
     <div class="quiz-topbar-inner">
-      <a class="back-home" href="/">&#8592; Back to Home</a>
+      <div class="brand-wrapper">
+        <svg class="logo-icon" viewBox="0 0 24 24">
+          <path d="M9 18V5l12-2v13"></path>
+          <circle cx="6" cy="18" r="3"></circle>
+          <circle cx="18" cy="16" r="3"></circle>
+        </svg>
+        <div class="logo-text-col">
+          <span class="logo-main">PIANOVA</span>
+          <span class="logo-sub">Digital Academy</span>
+        </div>
+      </div>
 
       <div class="top-title">
-        <h1>&#9835; MUSIC THEORY TEST &#9835;</h1>
-        <p>30 Questions &#8226; Different Topics &#8226; Test your skills!</p>
+        <h1>MUSIC THEORY TEST</h1>
+        <p>Interactive Quiz Module</p>
       </div>
 
       <div class="top-stats">
         <div class="stat-box">
           <span class="stat-label">Score</span>
-          <span class="stat-value" id="scoreValue">0</span>
+          <span class="stat-value" id="scoreValue">1</span>
         </div>
         <div class="stat-box">
           <span class="stat-label">Time Left</span>
-          <span class="stat-value" id="timeValue">29:59</span>
+          <span class="stat-value" id="timeValue">21:07</span>
         </div>
       </div>
     </div>
@@ -430,8 +481,8 @@
     <section class="quiz-grid">
 
       <div class="card">
-        <div class="top"><div class="num">3</div><h2>Which note has 1 beat?</h2></div>
-        <div class="symbols"><span>𝅝</span><span>𝅗𝅥</span><span>𝅘𝅥</span><span>𝅘𝅥𝅮</span></div>
+        <div class="top"><div class="num">1</div><h2>Which note has 1 beat?</h2></div>
+        <div class="symbols"><span>𝅝</span><span>𝅗𝅥</span><span>𝅘𝅥</span><span>𝅘𝅥𝅮</span></div>
         <div class="answers">
           <div class="answer"><span>A</span>Semibreve</div>
           <div class="answer"><span>B</span>Minim</div>
@@ -441,7 +492,7 @@
       </div>
 
       <div class="card">
-        <div class="top"><div class="num">4</div><h2>Which symbol is used for “Play the note loudly”?</h2></div>
+        <div class="top"><div class="num">2</div><h2>Which symbol is used for “Play the note loudly”?</h2></div>
         <div class="answers">
           <div class="answer"><span>A</span><i>p</i></div>
           <div class="answer correct"><span>B</span><i>f</i></div>
@@ -451,8 +502,8 @@
       </div>
 
       <div class="card">
-        <div class="top"><div class="num">4</div><h2>Which note has 1/2 beat?</h2></div>
-        <div class="symbols"><span>𝅝</span><span>𝅗𝅥</span><span>𝅘𝅥</span><span>𝅘𝅥𝅮</span></div>
+        <div class="top"><div class="num">3</div><h2>Which note has 1/2 beat?</h2></div>
+        <div class="symbols"><span>𝅝</span><span>𝅗𝅥</span><span>𝅘𝅥</span><span>𝅘𝅥𝅮</span></div>
         <div class="answers">
           <div class="answer"><span>A</span>Semibreve</div>
           <div class="answer"><span>B</span>Minim</div>
@@ -462,8 +513,8 @@
       </div>
 
       <div class="card">
-        <div class="top"><div class="num">5</div><h2>Which note has 4 beats?</h2></div>
-        <div class="symbols"><span>𝅝</span><span>𝅗𝅥</span><span>𝅘𝅥</span><span>𝅘𝅥𝅮</span></div>
+        <div class="top"><div class="num">4</div><h2>Which note has 4 beats?</h2></div>
+        <div class="symbols"><span>𝅝</span><span>𝅗𝅥</span><span>𝅘𝅥</span><span>="𝅘𝅥𝅮"</span></div>
         <div class="answers">
           <div class="answer correct"><span>A</span>Semibreve</div>
           <div class="answer"><span>B</span>Minim</div>
@@ -473,7 +524,7 @@
       </div>
 
       <div class="card">
-        <div class="top"><div class="num">7</div><h2>Which key is A?</h2></div>
+        <div class="top"><div class="num">5</div><h2>Which key is A?</h2></div>
         <div class="keyboard">
           <div class="black b1"></div><div class="black b2"></div><div class="black b3"></div><div class="black b4"></div><div class="black b5"></div>
           <div class="white">C</div><div class="white">D</div><div class="white">E</div><div class="white">F</div>
@@ -488,7 +539,7 @@
       </div>
 
       <div class="card">
-        <div class="top"><div class="num">8</div><h2>How many beats does a crotchet have?</h2></div>
+        <div class="top"><div class="num">6</div><h2>How many beats does a crotchet have?</h2></div>
         <div class="answers">
           <div class="answer correct"><span>A</span>1</div>
           <div class="answer"><span>B</span>2</div>
@@ -498,7 +549,7 @@
       </div>
 
       <div class="card">
-        <div class="top"><div class="num">13</div><h2>Which of these is a rest symbol?</h2></div>
+        <div class="top"><div class="num">7</div><h2>Which of these is a rest symbol?</h2></div>
         <div class="symbols"><span>𝄽</span><span>𝄻</span><span>𝄼</span><span>𝄾</span></div>
         <div class="answers four">
           <div class="answer correct"><span>A</span></div>
@@ -509,7 +560,7 @@
       </div>
 
       <div class="card">
-        <div class="top"><div class="num">13</div><h2>Listen and identify the note.</h2></div>
+        <div class="top"><div class="num">8</div><h2>Listen and identify the note.</h2></div>
         <button class="speaker" data-note="D4" type="button" aria-label="Play note">)))</button>
         <div class="answers locked">
           <div class="answer"><span>A</span>C</div>
@@ -520,7 +571,7 @@
       </div>
 
       <div class="card">
-        <div class="top"><div class="num">14</div><h2>Listen and identify the note.</h2></div>
+        <div class="top"><div class="num">9</div><h2>Listen and identify the note.</h2></div>
         <button class="speaker" data-note="G4" type="button" aria-label="Play note">)))</button>
         <div class="answers locked">
           <div class="answer correct"><span>A</span>G</div>
@@ -531,7 +582,7 @@
       </div>
 
       <div class="card">
-        <div class="top"><div class="num">19</div><h2>How many lines are there on the staff?</h2></div>
+        <div class="top"><div class="num">10</div><h2>How many lines are there on the staff?</h2></div>
         <div class="answers">
           <div class="answer"><span>A</span>3</div>
           <div class="answer"><span>B</span>4</div>
@@ -541,7 +592,7 @@
       </div>
 
       <div class="card">
-        <div class="top"><div class="num">20</div><h2>Which clef is this?</h2></div>
+        <div class="top"><div class="num">11</div><h2>Which clef is this?</h2></div>
         <div class="staff">𝄢</div>
         <div class="answers">
           <div class="answer"><span>A</span>Treble Clef</div>
@@ -552,7 +603,7 @@
       </div>
 
       <div class="card">
-        <div class="top"><div class="num">20</div><h2>Which of these is a black key?</h2></div>
+        <div class="top"><div class="num">12</div><h2>Which of these is a black key?</h2></div>
         <div class="answers">
           <div class="answer"><span>A</span>C</div>
           <div class="answer"><span>B</span>D</div>
@@ -562,8 +613,8 @@
       </div>
 
       <div class="card">
-        <div class="top"><div class="num">25</div><h2>Which note value is represented by this symbol?</h2></div>
-        <div class="big-symbol">𝅘𝅥</div>
+        <div class="top"><div class="num">13</div><h2>Which note value is represented by this symbol?</h2></div>
+        <div class="big-symbol">𝅘𝅥</div>
         <div class="answers">
           <div class="answer"><span>A</span>Semibreve</div>
           <div class="answer"><span>B</span>Minim</div>
@@ -573,7 +624,7 @@
       </div>
 
       <div class="card">
-        <div class="top"><div class="num">26</div><h2>Which time signature is 4 beats per measure?</h2></div>
+        <div class="top"><div class="num">14</div><h2>Which time signature is 4 beats per measure?</h2></div>
         <div class="answers">
           <div class="answer"><span>A</span>2/4</div>
           <div class="answer"><span>B</span>3/4</div>
@@ -583,7 +634,7 @@
       </div>
 
       <div class="card">
-        <div class="top"><div class="num">27</div><h2>Which dynamic marking means “Very soft”?</h2></div>
+        <div class="top"><div class="num">15</div><h2>Which dynamic marking means “Very soft”?</h2></div>
         <div class="answers">
           <div class="answer"><span>A</span><i>p</i></div>
           <div class="answer correct"><span>B</span><i>pp</i></div>
@@ -595,16 +646,21 @@
     </section>
   </main>
 
-  <a class="next-page-btn" href="/dashboard">Next Page &#8594;</a>
+  <div class="bottom-actions">
+    <a class="action-btn btn-dark" href="/">Home</a>
+    <a class="action-btn btn-dark" href="/exit">Exit</a>
+    <a class="action-btn btn-gold" href="/dashboard">Next Lesson &rarr;</a>
+  </div>
 
   <script>
     (function initQuizCards() {
       const cards = document.querySelectorAll('.quiz-grid .card');
       const scoreElement = document.getElementById('scoreValue');
       const timeElement = document.getElementById('timeValue');
-      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-      let score = 0;
-      let totalSeconds = 29 * 60 + 59;
+      
+      let audioContext = null; 
+      let score = parseInt(scoreElement.textContent) || 0; 
+      let totalSeconds = 21 * 60 + 7; 
 
       const noteFrequencies = {
         C4: 261.63,
@@ -616,13 +672,15 @@
         B4: 493.88
       };
 
-      const playNote = async (noteName, speaker) => {
-        if (!noteFrequencies[noteName]) {
-          return;
+      const playNote = (noteName, speaker) => {
+        if (!noteFrequencies[noteName]) return;
+
+        if (!audioContext) {
+          audioContext = new (window.AudioContext || window.webkitAudioContext)();
         }
 
         if (audioContext.state === 'suspended') {
-          await audioContext.resume();
+          audioContext.resume();
         }
 
         const now = audioContext.currentTime;
@@ -666,25 +724,18 @@
         renderTime();
       }, 1000);
 
-      cards.forEach((card, index) => {
-        const numberBadge = card.querySelector('.num');
-        if (numberBadge) {
-          numberBadge.textContent = String(index + 1);
-        }
-
+      cards.forEach((card) => {
         const answers = Array.from(card.querySelectorAll('.answer'));
-        if (answers.length === 0) {
-          return;
-        }
+        if (answers.length === 0) return;
 
         const speaker = card.querySelector('.speaker');
         const answersContainer = card.querySelector('.answers');
         let canAnswer = !speaker;
 
         if (speaker && answersContainer) {
-          speaker.addEventListener('click', async () => {
+          speaker.addEventListener('click', () => {
             const noteName = speaker.dataset.note || '';
-            await playNote(noteName, speaker);
+            playNote(noteName, speaker);
             canAnswer = true;
             answersContainer.classList.remove('locked');
           });
@@ -700,9 +751,7 @@
 
         let locked = false;
         const handleAnswer = (selected) => {
-          if (locked || !canAnswer) {
-            return;
-          }
+          if (locked || !canAnswer) return;
           locked = true;
 
           selected.classList.add('selected');
@@ -718,7 +767,7 @@
             selected.classList.add('incorrect');
             const correctAnswer = answers.find((a) => a.dataset.correct === 'true');
             if (correctAnswer) {
-              correctAnswer.classList.add('reveal-correct');
+              correctAnswer.classList.add('reveal-green');
             }
           }
         };

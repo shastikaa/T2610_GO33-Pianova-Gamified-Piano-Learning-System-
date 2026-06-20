@@ -687,7 +687,7 @@
                 <button class="nav-btn active">⌂ Home</button>
                 <button class="nav-btn">♕ Leaderboard</button>
                 <button class="nav-btn">♙ Profile</button>
-                <button class="nav-btn" onclick="goExit()">⏻ Exit</button>
+                <button class="nav-btn" onclick="goexit()">⏻ exit</button>
             </nav>
 
             <div class="top-actions">
@@ -1063,7 +1063,7 @@
                         <div class="home-actions">
                             <button class="primary-btn" onclick="restartGame()">Play Again</button>
                             <button class="primary-btn" onclick="goNextLesson()">Next Lesson</button>
-                            <button class="ghost-btn" onclick="goExit()">Exit</button>
+                            <button class="ghost-btn" onclick="goexit()">exit</button>
                             <button class="ghost-btn" onclick="restartGame()">Home</button>
                         </div>
                     </div>
@@ -1075,7 +1075,7 @@
             window.location.href = '/lesson2-2';
         }
 
-        function goExit() {
+        function goexit() {
             if (window.location.protocol.startsWith('http')) {
                 window.location.href = '/';
             } else {

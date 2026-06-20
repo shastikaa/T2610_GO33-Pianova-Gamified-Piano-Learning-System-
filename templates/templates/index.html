@@ -673,6 +673,84 @@
             line-height: 1.45;
         }
 
+        .exercise-grid-beginner {
+            gap: 24px;
+            margin-top: 14px;
+        }
+
+        .beginner-card {
+            background: linear-gradient(180deg, #efe4cf 0%, #eadcc3 100%);
+            border: 2px solid rgba(214, 174, 86, 0.55);
+            border-radius: 24px;
+            padding: 14px 12px 18px;
+            color: #3b2b1b;
+            box-shadow: 0 8px 18px rgba(49, 32, 8, 0.2);
+        }
+
+        .beginner-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(214, 174, 86, 0.78);
+            box-shadow: 0 14px 24px rgba(49, 32, 8, 0.24);
+        }
+
+        .beginner-media {
+            height: 180px;
+            border: 0;
+            border-radius: 16px;
+            margin-bottom: 10px;
+            background: transparent;
+            box-shadow: none;
+            display: grid;
+            place-items: center;
+        }
+
+        .beginner-media::before {
+            content: none;
+        }
+
+        .beginner-emblem {
+            width: 176px;
+            height: 176px;
+            border-radius: 999px;
+            border: 4px solid rgba(217, 172, 76, 0.96);
+            background:
+                radial-gradient(circle at 24% 24%, rgba(255, 210, 109, 0.24), transparent 28%),
+                radial-gradient(circle at 75% 78%, rgba(255, 186, 67, 0.17), transparent 34%),
+                linear-gradient(180deg, #2a2216 0%, #110e08 100%);
+            box-shadow: inset 0 0 0 1px rgba(255, 235, 191, 0.16), 0 10px 18px rgba(0, 0, 0, 0.2);
+            display: grid;
+            place-items: center;
+            color: #f0cc73;
+        }
+
+        .beginner-symbol {
+            font-size: 5.1rem;
+            line-height: 1;
+            text-shadow: 0 4px 10px rgba(0, 0, 0, 0.28);
+        }
+
+        .beginner-symbol.notes {
+            font-size: 4.3rem;
+            letter-spacing: 2px;
+        }
+
+        .beginner-symbol.rhythm {
+            font-size: 4.5rem;
+        }
+
+        .beginner-card .exercise-name {
+            color: #3b2b1b;
+            font-weight: 800;
+            font-size: clamp(1.25rem, 1.95vw, 2.8rem);
+            line-height: 1.15;
+            text-align: center;
+            margin-bottom: 0;
+        }
+
+        .beginner-card .exercise-desc {
+            display: none;
+        }
+
         .expand-details.advanced-panel {
             background: linear-gradient(180deg, #12100d 0%, #0b0907 100%);
             border-top: 1px solid rgba(212, 175, 55, 0.2);
@@ -1091,9 +1169,7 @@
              With progression logic: each level unlocks after previous level is completed. -->
     </div>
 
-    <div class="reset-area">
-        <button class="reset-btn" id="resetProgressBtn">⟳ Reset all progress (start fresh)</button>
-    </div>
+
     <footer>
         ✨ Complete a lesson to unlock the next level ✨
     </footer>
@@ -1113,7 +1189,12 @@
             locked: false,
             unlockCondition: null, // always unlocked
             details: "Introduction to bass clef and treble clef notes, and understanding basic note beats.",
-            songsPreview: ["Treble Clef Notes", "Bass Clef Notes", "Note Values (Beats)", "Rhythm Practice"],
+            detailedExercises: [
+                { icon: "𝄞", title: "Treble Clef Notes", desc: "Learn treble clef notes and lines.", art: "staff" },
+                { icon: "𝄢", title: "Bass Clef Notes", desc: "Learn bass clef notes and spaces.", art: "staff" },
+                { icon: "𝅘𝅥", title: "Note Values (Beats)", desc: "Understand note durations and beats.", art: "flying" },
+                { icon: "⏱", title: "Rhythm Practice", desc: "Practice rhythm and timing.", art: "alphabet" }
+            ],
             chordHint: null
         },
         {
@@ -1278,18 +1359,7 @@
         renderLessonsUI();
     }
 
-    // Reset all progress: start over, only Level1 unlocked, nothing completed
-    function resetAllProgress() {
-        lessonsState = lessonsData.map(lesson => ({
-            id: lesson.id,
-            completed: false,
-            locked: lesson.id !== 1,
-        }));
-        // level1 unlocked
-        const level1 = lessonsState.find(l => l.id === 1);
-        if (level1) level1.locked = false;
-        syncAndSave();
-    }
+
     
     // ---------- UI Rendering (based on your design) ----------
     function renderLessonsUI() {
@@ -1465,8 +1535,8 @@
             descP.innerHTML = `📘 ${lessonMeta.details}`;
             detailsDiv.appendChild(descP);
             
-            // songs preview
-            if (lessonMeta.songsPreview && lessonMeta.songsPreview.length) {
+            // songs preview or detailed exercises
+            if ((lessonMeta.songsPreview && lessonMeta.songsPreview.length) || lessonMeta.detailedExercises) {
                 const songsTitle = document.createElement('div');
                 songsTitle.style.fontSize = '0.75rem';
                 songsTitle.style.fontWeight = 'bold';
@@ -1536,14 +1606,33 @@
                     detailsDiv.appendChild(showcase);
                 } else if (lessonMeta.detailedExercises && lessonMeta.detailedExercises.length) {
                     const exerciseGrid = document.createElement('div');
-                    exerciseGrid.className = 'exercise-grid';
+                    const isBeginnerShowcase = lessonMeta.id === 1;
+                    exerciseGrid.className = isBeginnerShowcase ? 'exercise-grid exercise-grid-beginner' : 'exercise-grid';
                     lessonMeta.detailedExercises.forEach((exercise) => {
                         const exerciseCard = document.createElement('div');
-                        exerciseCard.className = 'exercise-card';
+                        exerciseCard.className = isBeginnerShowcase ? 'exercise-card beginner-card' : 'exercise-card';
 
                         const mediaDiv = document.createElement('div');
-                        mediaDiv.className = `exercise-media ${exercise.art || ''}`.trim();
-                        if (exercise.art === 'alphabet') {
+                        mediaDiv.className = isBeginnerShowcase
+                            ? 'exercise-media beginner-media'
+                            : `exercise-media ${exercise.art || ''}`.trim();
+                        if (isBeginnerShowcase) {
+                            const titleLower = (exercise.title || '').toLowerCase();
+                            let symbol = '♪';
+                            let symbolClass = 'beginner-symbol';
+                            if (titleLower.includes('treble')) {
+                                symbol = '𝄞';
+                            } else if (titleLower.includes('bass')) {
+                                symbol = '𝄢';
+                            } else if (titleLower.includes('note values')) {
+                                symbol = '♪♫';
+                                symbolClass = 'beginner-symbol notes';
+                            } else if (titleLower.includes('rhythm')) {
+                                symbol = '⏱';
+                                symbolClass = 'beginner-symbol rhythm';
+                            }
+                            mediaDiv.innerHTML = `<div class="beginner-emblem"><span class="${symbolClass}">${symbol}</span></div>`;
+                        } else if (exercise.art === 'alphabet') {
                             mediaDiv.innerHTML = `
                                 <div class="alphabet-tags">
                                     <span class="a">A</span>
@@ -1674,16 +1763,8 @@
         }
     }
     
-    // Event listener for reset button
+    // Event listener for global events
     function bindGlobalEvents() {
-        const resetBtn = document.getElementById('resetProgressBtn');
-        if (resetBtn) {
-            resetBtn.addEventListener('click', () => {
-                if (confirm('Reset all progress? Level 1 will be available, others locked again.')) {
-                    resetAllProgress();
-                }
-            });
-        }
     }
     
     // Initial load

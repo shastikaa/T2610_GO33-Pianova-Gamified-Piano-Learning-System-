@@ -24,78 +24,12 @@
       padding: 0.7rem 1.2rem 1.2rem;
     }
 
-    .top-shell {
-      max-width: 1500px;
-      width: 100%;
-      border-radius: 2rem;
-      border: 1px solid rgba(255, 205, 126, 0.44);
-      background:
-        radial-gradient(circle at 12% -25%, rgba(255, 194, 88, 0.22), transparent 42%),
-        radial-gradient(circle at 94% 110%, rgba(61, 138, 215, 0.18), transparent 44%),
-        linear-gradient(180deg, rgba(10, 16, 26, 0.98), rgba(8, 12, 20, 0.95));
-      box-shadow:
-        0 16px 34px rgba(0,0,0,0.4),
-        0 0 0 1px rgba(255,255,255,0.02) inset,
-        inset 0 1px 0 rgba(255,255,255,0.07);
-      margin-bottom: 1.05rem;
-      transform: translateY(-4px);
-      overflow: hidden;
-    }
-
-    .top-nav {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 1rem;
-      padding: 0.9rem 1.25rem;
-      border-bottom: 1px solid rgba(255,255,255,0.08);
-      flex-wrap: wrap;
-    }
-
-    .top-brand {
-      color: #ffe0ad;
-      font-weight: 800;
-      font-size: 1.5rem;
-      letter-spacing: -0.2px;
-    }
-
-    .top-brand-sub {
-      color: #e8d1ad;
-      font-size: 0.95rem;
-      opacity: 0.92;
-      margin-top: 2px;
-    }
-
-    .top-link-row {
-      display: flex;
-      gap: 0.6rem;
-      flex-wrap: wrap;
-    }
-
-    .top-link {
-      color: #f3dfbc;
-      text-decoration: none;
-      border: 1px solid rgba(255,255,255,0.12);
-      background: linear-gradient(180deg, rgba(15, 20, 31, 0.94), rgba(10, 14, 23, 0.98));
-      padding: 0.58rem 1rem;
-      border-radius: 0.95rem;
-      font-weight: 700;
-      font-size: 0.95rem;
-      transition: 0.22s ease;
-    }
-
-    .top-link.active,
-    .top-link:hover {
-      background: linear-gradient(145deg, #5a4323, #2f2518);
-      border-color: rgba(255, 210, 130, 0.42);
-      box-shadow: 0 7px 14px rgba(0,0,0,0.22);
-    }
-
     .top-stats {
       display: grid;
       grid-template-columns: repeat(4, minmax(140px, 1fr));
       gap: 0.8rem;
-      padding: 0.95rem 1.2rem 1.1rem;
+      width: 100%;
+      margin-top: 0.2rem;
     }
 
     .top-stat-card {
@@ -111,6 +45,14 @@
       font-size: 0.95rem;
       margin-bottom: 0.3rem;
       font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .score-icon {
+      font-size: 0.92rem;
+      line-height: 1;
     }
 
     .top-stat-value {
@@ -218,6 +160,7 @@
       gap: 0.8rem;
       align-items: center;
       box-shadow: 0 10px 22px rgba(0,0,0,0.24);
+      margin-left: auto;
     }
 
     .level-text {
@@ -907,6 +850,82 @@
     .basic-complete-overlay.active {
       display: flex;
       animation: fadeInPage 0.35s ease;
+    }
+
+    .game-over-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(2, 4, 8, 0.88);
+      backdrop-filter: blur(6px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 10030;
+      padding: 1rem;
+    }
+
+    .game-over-overlay.active {
+      display: flex;
+      animation: fadeInPage 0.35s ease;
+    }
+
+    .game-over-card {
+      width: min(620px, 100%);
+      border-radius: 34px;
+      border: 2px solid rgba(255, 214, 112, 0.9);
+      background:
+        radial-gradient(circle at 50% 0%, rgba(255, 205, 94, 0.14), transparent 45%),
+        linear-gradient(160deg, rgba(8, 10, 15, 0.99), rgba(2, 4, 8, 0.99));
+      box-shadow: 0 30px 64px rgba(0, 0, 0, 0.62), 0 0 38px rgba(255, 199, 84, 0.22);
+      padding: 2rem 1.4rem 1.6rem;
+      text-align: center;
+    }
+
+    .game-over-title {
+      color: #f8cf59;
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 800;
+      margin-bottom: 0.7rem;
+    }
+
+    .game-over-score {
+      color: #f7e5be;
+      font-size: clamp(1.15rem, 2.6vw, 1.8rem);
+      margin-bottom: 1.3rem;
+    }
+
+    .game-over-actions {
+      display: flex;
+      gap: 0.8rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .game-over-btn {
+      min-width: 165px;
+      border: 1px solid rgba(255, 188, 74, 0.62);
+      border-radius: 999px;
+      padding: 0.7rem 1.2rem;
+      font-size: 1.02rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform 0.2s ease, filter 0.2s ease;
+    }
+
+    .game-over-btn.primary {
+      background: linear-gradient(180deg, #f6cf66 0%, #eab94a 100%);
+      color: #1e1407;
+      border-color: #f5ca63;
+    }
+
+    .game-over-btn.secondary {
+      background: rgba(7, 12, 20, 0.94);
+      color: #ffd793;
+    }
+
+    .game-over-btn:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.05);
     }
 
     .basic-complete-card {
@@ -1731,27 +1750,9 @@
         padding: 0.55rem 0.65rem 0.85rem;
       }
 
-      .top-shell {
-        margin-bottom: 0.8rem;
-        transform: none;
-      }
-
-      .top-nav {
-        padding: 0.75rem 0.85rem;
-      }
-
-      .top-link-row {
-        width: 100%;
-      }
-
-      .top-link {
-        flex: 1 1 112px;
-        text-align: center;
-      }
-
       .top-stats {
         grid-template-columns: repeat(2, minmax(140px, 1fr));
-        padding: 0.75rem 0.85rem 0.95rem;
+        margin-top: 0;
       }
 
       .top-stat-value {
@@ -1783,51 +1784,31 @@
   </style>
 </head>
 <body>
-<div class="top-shell">
-  <div class="top-nav">
-    <div>
-      <div class="top-brand">Pianova</div>
-      <div class="top-brand-sub">Play • Learn • Master</div>
-    </div>
-    <div class="top-link-row">
-      <a class="top-link" href="/dashboard">Dashboard</a>
-      <a class="top-link" href="/lessons">Lessons</a>
-      <a class="top-link active" href="/game1">Level 1</a>
-      <a class="top-link" href="/game2">Practice</a>
-      <a class="top-link" href="/logout">Logout</a>
-    </div>
-  </div>
-
-  <div class="top-stats">
-    <div class="top-stat-card">
-      <div class="top-stat-title">Score</div>
-      <div class="top-stat-value" id="topScore">0</div>
-    </div>
-    <div class="top-stat-card">
-      <div class="top-stat-title">Combo</div>
-      <div class="top-stat-value" id="topCombo">0 Keep going!</div>
-    </div>
-    <div class="top-stat-card">
-      <div class="top-stat-title">Lives</div>
-      <div class="top-hearts" id="topLives">♥ ♥ ♥ ♥ ♥</div>
-    </div>
-    <div class="top-stat-card">
-      <div class="top-stat-title" id="topLevelTitle">Level 1</div>
-      <div class="top-level-track"><div class="top-level-fill" id="topLevelFill"></div></div>
-      <div class="top-level-percent" id="topLevelPercent">0%</div>
-    </div>
-  </div>
-</div>
 <div class="game-container">
   <div class="lesson-header">
     <div class="title-badge">
       <h1>🎹 LEARN THE NOTES</h1>
       <div class="gamified-badge">✨ GAMIFIED PIANO LEARNING ✨</div>
     </div>
-    <div class="level-progress">
-      <span class="level-text" id="mainLevelText">⭐ LEVEL 3 · MASTER READER</span>
-      <span class="xp-points" id="mainXpPoints">🎯 0 XP</span>
-      <button class="quit-button" onclick="quitGame()">🚪 Quit Lesson</button>
+    <button class="quit-button" onclick="quitGame()">🚪 Quit Lesson</button>
+    <div class="top-stats">
+      <div class="top-stat-card">
+        <div class="top-stat-title"><span class="score-icon">🎯</span>Score</div>
+        <div class="top-stat-value" id="topScore">0</div>
+      </div>
+      <div class="top-stat-card">
+        <div class="top-stat-title">Combo</div>
+        <div class="top-stat-value" id="topCombo">0 Keep going!</div>
+      </div>
+      <div class="top-stat-card">
+        <div class="top-stat-title">Lives</div>
+        <div class="top-hearts" id="topLives">♥ ♥ ♥ ♥ ♥</div>
+      </div>
+      <div class="top-stat-card">
+        <div class="top-stat-title" id="topLevelTitle">Level 1</div>
+        <div class="top-level-track"><div class="top-level-fill" id="topLevelFill"></div></div>
+        <div class="top-level-percent" id="topLevelPercent">0%</div>
+      </div>
     </div>
   </div>
 
@@ -2101,7 +2082,7 @@
     <div class="basic-complete-card">
       <div class="basic-complete-top">🏆</div>
       <div class="basic-level-kicker">BASIC LEVEL</div>
-      <div class="basic-complete-title">COMPLETE!</div>
+      <div class="basic-complete-title">COMPLETED</div>
       <div class="basic-divider"></div>
       <p>You completed all 4 core lessons and mastered the note-reading foundation. Certificate is awarded after completing Advanced Level 4.</p>
       <div class="basic-complete-badges">
@@ -2111,8 +2092,19 @@
         <span class="basic-complete-badge"><span class="badge-check">✓</span><span class="badge-icon">𝄢</span>Bass<br>Spaces<span class="badge-stars">★★★</span></span>
       </div>
       <div class="basic-complete-actions">
-        <a class="basic-action-primary" href="/lessons"><span class="basic-btn-chip">🚀</span> Continue Practice <span class="basic-btn-chip">›</span></a>
-        <a class="basic-action-secondary" href="/lessons"><span class="basic-btn-chip">‹</span> Back To Lessons</a>
+        <a class="basic-action-primary" href="/lesson2-1-latest"><span class="basic-btn-chip">🚀</span> NEXT LEVEL <span class="basic-btn-chip">›</span></a>
+        <a class="basic-action-secondary" href="/"><span class="basic-btn-chip">‹</span> HOME</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="game-over-overlay" id="gameOverOverlay" aria-hidden="true">
+    <div class="game-over-card">
+      <h2 class="game-over-title">Game Over</h2>
+      <p class="game-over-score">Total Points: <span id="gameOverScore">0</span></p>
+      <div class="game-over-actions">
+        <button class="game-over-btn primary" id="gameOverRetryBtn" type="button">Try Again</button>
+        <button class="game-over-btn secondary" id="gameOverHomeBtn" type="button">Home</button>
       </div>
     </div>
   </div>
@@ -2132,6 +2124,20 @@
     const feedbackDiv = document.getElementById('feedbackMsg');
     let levelCompleted = false;
     let lesson1Perfect = false;
+    let lesson1Progress = 0;
+    let lesson2Progress = 0;
+    let lesson3Progress = 0;
+    let lesson4Progress = 0;
+    const MAX_LIVES = 5;
+    let currentLives = MAX_LIVES;
+    let currentXP = 0;
+    let comboStreak = 0;
+    let isGameOver = false;
+
+    const gameOverOverlay = document.getElementById('gameOverOverlay');
+    const gameOverScore = document.getElementById('gameOverScore');
+    const gameOverRetryBtn = document.getElementById('gameOverRetryBtn');
+    const gameOverHomeBtn = document.getElementById('gameOverHomeBtn');
 
     if (finishButton) {
       finishButton.disabled = true;
@@ -2291,9 +2297,11 @@
     }
 
     function updateTopHud() {
-      const xpText = document.querySelector('.xp-points')?.innerText || '0';
-      const xp = parseInt(xpText.match(/\d+/)?.[0] || 0, 10);
       const completed = [levelCompleted, lesson2Completed, lesson3Completed, basicLevelCompleted].filter(Boolean).length;
+      const lessonProgressValues = [lesson1Progress, lesson2Progress, lesson3Progress, lesson4Progress];
+      const partialProgress = Math.round(
+        lessonProgressValues.reduce((sum, value) => sum + value, 0) / lessonProgressValues.length
+      );
 
       const topScore = document.getElementById('topScore');
       const topCombo = document.getElementById('topCombo');
@@ -2302,54 +2310,67 @@
       const topLevelFill = document.getElementById('topLevelFill');
       const topLevelPercent = document.getElementById('topLevelPercent');
 
-      if (topScore) topScore.textContent = xp;
-      if (topCombo) topCombo.textContent = completed === 0 ? '0 Keep going!' : `${completed} On fire!`;
-      if (topLives) topLives.textContent = '♥ ♥ ♥ ♥ ♥';
+      if (topScore) topScore.textContent = currentXP;
+      if (topCombo) topCombo.textContent = comboStreak === 0 ? '0 Keep going!' : `${comboStreak} On fire!`;
+      if (topLives) topLives.textContent = `${'♥ '.repeat(currentLives).trim()} ${'♡ '.repeat(MAX_LIVES - currentLives).trim()}`.trim();
 
-      const percent = Math.min(100, completed * 25);
+      const percent = Math.min(100, Math.max(completed * 25, partialProgress));
       if (topLevelTitle) topLevelTitle.textContent = completed >= 4 ? 'Level Complete' : `Level ${completed + 1}`;
       if (topLevelFill) topLevelFill.style.width = `${percent}%`;
       if (topLevelPercent) topLevelPercent.textContent = `${percent}%`;
     }
 
     function grantXp(points) {
-      const xpSpan = document.querySelector('.xp-points');
-      if (!xpSpan) return;
-
-      let currentXP = parseInt(xpSpan.innerText.match(/\d+/)?.[0] || 0);
-      const newXP = currentXP + points;
-      xpSpan.innerHTML = `🎯 ${newXP} XP`;
-
-      const plusBadge = document.createElement('span');
-      plusBadge.innerText = `+${points} XP!`;
-      plusBadge.style.position = 'relative';
-      plusBadge.style.left = '10px';
-      plusBadge.style.fontWeight = 'bold';
-      plusBadge.style.color = '#ffd966';
-      plusBadge.style.fontSize = '0.8rem';
-      plusBadge.style.animation = 'fadeOutUp 1s forwards';
-      xpSpan.appendChild(plusBadge);
-
-      if (!document.querySelector('#xpFadeStyle')) {
-        const styleXp = document.createElement('style');
-        styleXp.id = 'xpFadeStyle';
-        styleXp.textContent = `
-          @keyframes fadeOutUp {
-            0% { opacity: 1; transform: translateY(0px); }
-            100% { opacity: 0; transform: translateY(-20px); }
-          }
-        `;
-        document.head.appendChild(styleXp);
-      }
-
-      setTimeout(() => {
-        if (plusBadge) plusBadge.remove();
-      }, 1000);
+      currentXP += points;
 
       updateTopHud();
     }
 
+    function openGameOverOverlay() {
+      if (gameOverScore) gameOverScore.textContent = String(currentXP);
+      if (gameOverOverlay) {
+        gameOverOverlay.classList.add('active');
+        gameOverOverlay.setAttribute('aria-hidden', 'false');
+      }
+      showRewardMessage('No lives left. Game over.', true);
+    }
+
+    function loseLife() {
+      if (isGameOver) return;
+      currentLives = Math.max(0, currentLives - 1);
+      comboStreak = 0;
+      updateTopHud();
+
+      if (currentLives <= 0) {
+        isGameOver = true;
+        openGameOverOverlay();
+      }
+    }
+
+    function registerCombo(isCorrect) {
+      if (isCorrect) {
+        comboStreak += 1;
+      } else {
+        comboStreak = 0;
+      }
+      updateTopHud();
+    }
+
+    if (gameOverRetryBtn) {
+      gameOverRetryBtn.addEventListener('click', () => {
+        window.location.reload();
+      });
+    }
+
+    if (gameOverHomeBtn) {
+      gameOverHomeBtn.addEventListener('click', () => {
+        window.location.href = '/dashboard';
+      });
+    }
+
     function finishLevelAction() {
+      if (isGameOver) return;
+
       if (!lesson1Perfect) {
         showRewardMessage('Complete all Lesson 1 answers correctly before going to Lesson 2.', true);
         return;
@@ -2422,6 +2443,8 @@
 
     if (finishLesson2Btn) {
       finishLesson2Btn.addEventListener('click', () => {
+        if (isGameOver) return;
+
         if (!lesson2Perfect) {
           showRewardMessage('Complete all Lesson 2 answers correctly before going to Lesson 3.', true);
           return;
@@ -2478,6 +2501,8 @@
 
     if (finishLesson3Btn) {
       finishLesson3Btn.addEventListener('click', () => {
+        if (isGameOver) return;
+
         if (!lesson3Perfect) {
           showRewardMessage('Complete all Lesson 3 answers correctly before going to Lesson 4.', true);
           return;
@@ -2559,6 +2584,10 @@
     const finishLesson4Btn = document.getElementById('finishLesson4Btn');
     const lesson4FeedbackMsg = document.getElementById('lesson4FeedbackMsg');
 
+    if (finishLesson4Btn) {
+      finishLesson4Btn.disabled = true;
+    }
+
     async function saveBasicLevelCompletion(scoreValue) {
       try {
         const response = await fetch('/api/complete-level1', {
@@ -2612,6 +2641,8 @@
 
     if (finishLesson4Btn) {
       finishLesson4Btn.addEventListener('click', async () => {
+        if (isGameOver) return;
+
         if (basicLevelCompleted) {
           openBasicCompleteOverlay();
           return;
@@ -2647,12 +2678,8 @@
 
         await saveBasicLevelCompletion(100);
         syncLessonProgressAfterLevel1();
-        showRewardMessage('LEGENDARY! You completed the Basic Level! Opening Lesson 2 now.', false);
+        showRewardMessage('LEGENDARY! You completed the Basic Level! Click NEXT LESSON to continue.', false);
         openBasicCompleteOverlay();
-
-        setTimeout(() => {
-          window.location.href = '/lesson2-1-latest';
-        }, 1400);
       });
     }
 
@@ -2719,6 +2746,7 @@
 
         zone.addEventListener('drop', (e) => {
           e.preventDefault();
+          if (isGameOver) return;
           zone.classList.remove('drag-over');
           if (!draggedTile || zone.classList.contains('filled')) return;
 
@@ -2730,7 +2758,12 @@
           slot.textContent = tileNote;
           slot.classList.add(correct ? 'slot-correct' : 'slot-wrong');
           zone.classList.add('filled', correct ? 'correct' : 'wrong');
-          if (correct) grantXp(250);
+          if (correct) {
+            grantXp(10);
+            registerCombo(true);
+          } else {
+            loseLife();
+          }
 
           // Mark tile as used and dim it
           usedTiles.add(draggedTile.id);
@@ -2746,6 +2779,7 @@
       function updateDragFeedback() {
         const correctCount = dragGame.querySelectorAll('.drop-slot.slot-correct').length;
         lesson1Perfect = droppedCount === 6 && correctCount === 6;
+        lesson1Progress = Math.round((correctCount / 6) * 100);
 
         if (finishButton) {
           finishButton.disabled = !lesson1Perfect;
@@ -2760,11 +2794,15 @@
           if (feedback) feedback.textContent = `Done: ${correctCount}/6 correct. Press Reset to retry.`;
           showRewardMessage('Some are wrong. Try again!', true);
         }
+
+        updateTopHud();
       }
 
       function resetDragGame() {
+        if (isGameOver) return;
         droppedCount = 0;
         lesson1Perfect = false;
+        lesson1Progress = 0;
         if (finishButton) finishButton.disabled = true;
         usedTiles.clear();
         draggedTile = null;
@@ -2778,6 +2816,7 @@
           if (slot) { slot.textContent = 'Drop here'; slot.className = 'drop-slot'; }
         });
         if (feedback) feedback.textContent = 'Drag all 6 tiles to the correct staff cards.';
+        updateTopHud();
       }
 
       if (resetBtn) resetBtn.addEventListener('click', resetDragGame);
@@ -2823,6 +2862,7 @@
 
         zone.addEventListener('drop', (e) => {
           e.preventDefault();
+          if (isGameOver) return;
           zone.classList.remove('drag-over');
           if (!draggedTile2 || zone.classList.contains('filled')) return;
 
@@ -2833,7 +2873,12 @@
           slot.textContent = tileNote;
           slot.classList.add(correct ? 'slot-correct' : 'slot-wrong');
           zone.classList.add('filled', correct ? 'correct' : 'wrong');
-          if (correct) grantXp(250);
+          if (correct) {
+            grantXp(10);
+            registerCombo(true);
+          } else {
+            loseLife();
+          }
 
           usedTiles2.add(draggedTile2.id);
           draggedTile2.classList.add('used');
@@ -2848,6 +2893,7 @@
       function updateDragFeedback2() {
         const correctCount = dragGame2.querySelectorAll('.drop-slot.slot-correct').length;
         lesson2Perfect = droppedCount2 === 4 && correctCount === 4;
+        lesson2Progress = Math.round((correctCount / 4) * 100);
         if (finishLesson2Btn) finishLesson2Btn.disabled = !lesson2Perfect;
 
         if (droppedCount2 < 4) {
@@ -2859,11 +2905,15 @@
           if (feedback2) feedback2.textContent = `Done: ${correctCount}/4 correct. Press Reset to retry.`;
           showRewardMessage('Some are wrong. Try again!', true);
         }
+
+        updateTopHud();
       }
 
       function resetDragGame2() {
+        if (isGameOver) return;
         droppedCount2 = 0;
         lesson2Perfect = false;
+        lesson2Progress = 0;
         if (finishLesson2Btn && !lesson2Completed) finishLesson2Btn.disabled = true;
         usedTiles2.clear();
         draggedTile2 = null;
@@ -2877,6 +2927,7 @@
           if (slot) { slot.textContent = 'Drop here'; slot.className = 'drop-slot'; }
         });
         if (feedback2) feedback2.textContent = 'Drag all 4 tiles to the correct staff cards.';
+        updateTopHud();
       }
 
       if (resetBtn2) resetBtn2.addEventListener('click', resetDragGame2);
@@ -2901,6 +2952,7 @@
 
     tapButtons.forEach(btn => {
       btn.addEventListener('click', () => {
+        if (isGameOver) return;
         showStaffNote(btn.dataset.note);
       });
     });
@@ -2924,6 +2976,7 @@
 
     bassTapButtons.forEach(btn => {
       btn.addEventListener('click', () => {
+        if (isGameOver) return;
         showBassStaffNote(btn.dataset.bnote);
       });
     });
@@ -2947,6 +3000,7 @@
 
     bassSpaceTapButtons.forEach(btn => {
       btn.addEventListener('click', () => {
+        if (isGameOver) return;
         showBassSpaceStaffNote(btn.dataset.bsnote);
       });
     });
@@ -2991,6 +3045,7 @@
 
         zone.addEventListener('drop', (e) => {
           e.preventDefault();
+          if (isGameOver) return;
           zone.classList.remove('drag-over');
           if (!draggedTile3 || zone.classList.contains('filled')) return;
 
@@ -3001,7 +3056,12 @@
           slot.textContent = tileNote;
           slot.classList.add(correct ? 'slot-correct' : 'slot-wrong');
           zone.classList.add('filled', correct ? 'correct' : 'wrong');
-          if (correct) grantXp(250);
+          if (correct) {
+            grantXp(10);
+            registerCombo(true);
+          } else {
+            loseLife();
+          }
 
           usedTiles3.add(draggedTile3.id);
           draggedTile3.classList.add('used');
@@ -3016,6 +3076,7 @@
       function updateDragFeedback3() {
         const correctCount = dragGame3.querySelectorAll('.drop-slot.slot-correct').length;
         lesson3Perfect = droppedCount3 === 5 && correctCount === 5;
+        lesson3Progress = Math.round((correctCount / 5) * 100);
         if (finishLesson3Btn) finishLesson3Btn.disabled = !lesson3Perfect;
 
         if (droppedCount3 < 5) {
@@ -3027,11 +3088,15 @@
           if (feedback3) feedback3.textContent = `Done: ${correctCount}/5 correct. Press Reset to retry.`;
           showRewardMessage('Some bass notes are wrong. Try again!', true);
         }
+
+        updateTopHud();
       }
 
       function resetDragGame3() {
+        if (isGameOver) return;
         droppedCount3 = 0;
         lesson3Perfect = false;
+        lesson3Progress = 0;
         if (finishLesson3Btn && !lesson3Completed) finishLesson3Btn.disabled = true;
         usedTiles3.clear();
         draggedTile3 = null;
@@ -3045,6 +3110,7 @@
           if (slot) { slot.textContent = 'Drop here'; slot.className = 'drop-slot'; }
         });
         if (feedback3) feedback3.textContent = 'Drag all 5 tiles to the correct bass staff cards.';
+        updateTopHud();
       }
 
       if (resetBtn3) resetBtn3.addEventListener('click', resetDragGame3);
@@ -3090,6 +3156,7 @@
 
         zone.addEventListener('drop', (e) => {
           e.preventDefault();
+          if (isGameOver) return;
           zone.classList.remove('drag-over');
           if (!draggedTile4 || zone.classList.contains('filled')) return;
 
@@ -3100,7 +3167,12 @@
           slot.textContent = tileNote;
           slot.classList.add(correct ? 'slot-correct' : 'slot-wrong');
           zone.classList.add('filled', correct ? 'correct' : 'wrong');
-          if (correct) grantXp(250);
+          if (correct) {
+            grantXp(10);
+            registerCombo(true);
+          } else {
+            loseLife();
+          }
 
           usedTiles4.add(draggedTile4.id);
           draggedTile4.classList.add('used');
@@ -3114,23 +3186,32 @@
 
       function updateDragFeedback4() {
         const correctCount = dragGame4.querySelectorAll('.drop-slot.slot-correct').length;
+        lesson4Progress = Math.round((correctCount / 5) * 100);
         if (droppedCount4 < 5) {
           lesson4Perfect = false;
+          if (finishLesson4Btn && !basicLevelCompleted) finishLesson4Btn.disabled = true;
           if (feedback4) feedback4.textContent = `Dropped: ${droppedCount4}/5 — Correct: ${correctCount}`;
         } else if (correctCount === 5) {
           lesson4Perfect = true;
+          if (finishLesson4Btn && !basicLevelCompleted) finishLesson4Btn.disabled = false;
           if (feedback4) feedback4.textContent = '🎉 Perfect! All 5 correct!';
           showRewardMessage('Excellent! You mastered Bass Clef spaces with bonus B note!', false);
         } else {
           lesson4Perfect = false;
+          if (finishLesson4Btn && !basicLevelCompleted) finishLesson4Btn.disabled = true;
           if (feedback4) feedback4.textContent = `Done: ${correctCount}/5 correct. Press Reset to retry.`;
           showRewardMessage('Some bass space notes are wrong. Try again!', true);
         }
+
+        updateTopHud();
       }
 
       function resetDragGame4() {
+        if (isGameOver) return;
         droppedCount4 = 0;
         lesson4Perfect = false;
+        lesson4Progress = 0;
+        if (finishLesson4Btn && !basicLevelCompleted) finishLesson4Btn.disabled = true;
         usedTiles4.clear();
         draggedTile4 = null;
         tiles4.forEach((t) => {
@@ -3143,10 +3224,13 @@
           if (slot) { slot.textContent = 'Drop here'; slot.className = 'drop-slot'; }
         });
         if (feedback4) feedback4.textContent = 'Drag all 5 tiles to the correct bass space staff cards.';
+        updateTopHud();
       }
 
       if (resetBtn4) resetBtn4.addEventListener('click', resetDragGame4);
     }
+
+    updateTopHud();
   })();
 
   const practiceSessionStartedAt = Date.now();

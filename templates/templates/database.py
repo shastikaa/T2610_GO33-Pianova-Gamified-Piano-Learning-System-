@@ -1000,5 +1000,19 @@ def get_user_metrics(user_id, current_level):
     }
 
 
+def get_completed_level_ids(user_id):
+    db = get_db()
+    rows = db.execute(
+        """
+        SELECT level_id
+        FROM progress
+        WHERE user_id = ? AND status = 'completed'
+        ORDER BY level_id ASC
+        """,
+        (user_id,),
+    ).fetchall()
+    return [int(row['level_id']) for row in rows]
+
+
 if __name__ == "__main__":
     print("Run the Flask app to initialize the database.")

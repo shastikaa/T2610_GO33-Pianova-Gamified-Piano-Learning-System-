@@ -1,5 +1,12 @@
 from functools import wraps
 import os
+import re
+import secrets
+import smtplib
+import ssl
+import time
+from email.message import EmailMessage
+from hashlib import sha256
 
 from flask import Flask, flash, redirect, render_template, request, session, url_for
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -13,6 +20,7 @@ from templates.templates.database import (
     get_all_accounts,
     get_admin_metrics,
     get_certificate_account_by_ref,
+    get_completed_level_ids,
     get_latest_certificate_for_user,
     get_recent_certificates,
     get_recent_progress,
@@ -39,12 +47,33 @@ init_database_app(app)
 ADMIN_LOGIN_USERNAME = os.getenv('PIANOVA_ADMIN_USERNAME', 'admin')
 ADMIN_LOGIN_PASSWORD = os.getenv('PIANOVA_ADMIN_PASSWORD', 'admin123')
 
+EMAIL_REGEX = re.compile(r'^[^\s@]+@[^\s@]+\.[^\s@]+$')
+AUTH_CODE_TTL_SECONDS = int(os.getenv('PIANOVA_AUTH_CODE_TTL_SECONDS', '300'))
+AUTH_CODE_RESEND_SECONDS = int(os.getenv('PIANOVA_AUTH_CODE_RESEND_SECONDS', '30'))
+AUTH_CODE_MAX_ATTEMPTS = int(os.getenv('PIANOVA_AUTH_CODE_MAX_ATTEMPTS', '5'))
+ALLOW_LOCAL_OTP_FALLBACK = str(os.getenv('PIANOVA_ALLOW_LOCAL_OTP_FALLBACK', 'false')).strip().lower() in {
+    '1',
+    'true',
+    'yes',
+}
+
+# In-memory auth code store. For production scale, move this to Redis/database.
+auth_code_store = {}
+
 
 @app.after_request
 def add_no_cache_headers(response):
     response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
     response.headers['Pragma'] = 'no-cache'
     response.headers['Expires'] = '0'
+
+    # Allow the auth APIs to be called from local preview origins (including file://).
+    if request.path.startswith('/api/auth/'):
+        origin = request.headers.get('Origin', '*')
+        response.headers['Access-Control-Allow-Origin'] = '*' if origin == 'null' else origin
+        response.headers['Access-Control-Allow-Methods'] = 'POST, OPTIONS'
+        response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
+
     return response
 
 
@@ -237,6 +266,74 @@ def level_label(current_level):
     return 'Advanced 🌟'
 
 
+def normalize_email(value):
+    return value.strip().lower()
+
+
+def is_valid_email(value):
+    return bool(EMAIL_REGEX.match(value))
+
+
+def hash_auth_code(code):
+    return sha256(code.encode('utf-8')).hexdigest()
+
+
+def generate_auth_code():
+    return f'{secrets.randbelow(1000000):06d}'
+
+
+def send_verification_email(recipient_email, code):
+    smtp_host = os.getenv('PIANOVA_SMTP_HOST', 'smtp.gmail.com')
+    smtp_port = int(os.getenv('PIANOVA_SMTP_PORT', '465'))
+    smtp_user = os.getenv('PIANOVA_SMTP_USER', '').strip()
+    # Gmail app passwords are often shown with spaces for readability.
+    # Remove all spaces so both "abcd efgh ijkl mnop" and "abcdefghijklmnop" work.
+    smtp_password = os.getenv('PIANOVA_SMTP_PASSWORD', '').strip().replace(' ', '')
+    smtp_from = os.getenv('PIANOVA_SMTP_FROM', smtp_user).strip()
+
+    if not smtp_user or not smtp_password or not smtp_from:
+        raise RuntimeError(
+            'SMTP is not configured. Set PIANOVA_SMTP_USER, PIANOVA_SMTP_PASSWORD, and PIANOVA_SMTP_FROM.'
+        )
+
+    message = EmailMessage()
+    message['Subject'] = 'Pianova Verification Code'
+    message['From'] = smtp_from
+    message['To'] = recipient_email
+    message.set_content(
+        (
+            'Welcome to Pianova!\n\n'
+            f'Your verification code is: {code}\n\n'
+            f'This code expires in {AUTH_CODE_TTL_SECONDS // 60} minutes.\n'
+            'If you did not request this, please ignore this email.'
+        )
+    )
+
+    use_tls = str(os.getenv('PIANOVA_SMTP_USE_TLS', 'false')).strip().lower() in {'1', 'true', 'yes'}
+
+    if use_tls:
+        with smtplib.SMTP(smtp_host, smtp_port, timeout=20) as server:
+            server.ehlo()
+            server.starttls(context=ssl.create_default_context())
+            server.login(smtp_user, smtp_password)
+            server.send_message(message)
+        return
+
+    with smtplib.SMTP_SSL(smtp_host, smtp_port, timeout=20, context=ssl.create_default_context()) as server:
+        server.login(smtp_user, smtp_password)
+        server.send_message(message)
+
+
+def cleanup_expired_auth_codes(now_ts):
+    expired_emails = [
+        email
+        for email, entry in auth_code_store.items()
+        if now_ts - float(entry.get('created_at', 0)) > AUTH_CODE_TTL_SECONDS
+    ]
+    for email in expired_emails:
+        auth_code_store.pop(email, None)
+
+
 @app.route('/')
 def home():
     if session.get('role') == 'admin':
@@ -323,6 +420,11 @@ def register():
     return render_template('register.html')
 
 
+@app.route('/register-auth', methods=['GET'])
+def register_auth_page():
+    return render_template('sirajcode.html')
+
+
 @app.route('/forgot-password', methods=['GET', 'POST'])
 def forgot_password():
     if request.method == 'POST':
@@ -352,6 +454,94 @@ def forgot_password():
         return redirect(url_for('login'))
 
     return render_template('forgot_password.html')
+
+
+@app.route('/api/auth/send-code', methods=['POST'])
+def send_auth_code_api():
+    data = request.get_json(silent=True) or {}
+    raw_email = str(data.get('email', '')).strip()
+
+    if not raw_email:
+        return {'message': 'Email is required.'}, 400
+
+    email = normalize_email(raw_email)
+    if not is_valid_email(email):
+        return {'message': 'Invalid email format.'}, 400
+
+    now_ts = time.time()
+    cleanup_expired_auth_codes(now_ts)
+
+    existing_entry = auth_code_store.get(email)
+    if existing_entry is not None:
+        elapsed = now_ts - float(existing_entry.get('created_at', 0))
+        if elapsed < AUTH_CODE_RESEND_SECONDS:
+            retry_in = int(AUTH_CODE_RESEND_SECONDS - elapsed)
+            return {'message': f'Please wait {retry_in}s before requesting another code.'}, 429
+
+    code = generate_auth_code()
+    auth_code_store[email] = {
+        'code_hash': hash_auth_code(code),
+        'created_at': now_ts,
+        'attempts': 0,
+    }
+
+    try:
+        send_verification_email(email, code)
+    except Exception as error:
+        error_text = str(error)
+        is_local_request = request.host.startswith('127.0.0.1') or request.host.startswith('localhost')
+
+        # Local development fallback: keep OTP active and return it only in debug mode.
+        if ALLOW_LOCAL_OTP_FALLBACK and (app.debug or is_local_request) and 'SMTP is not configured' in error_text:
+            return {
+                'message': 'SMTP is not configured. Using local OTP fallback for development.',
+                'debug_otp': code,
+            }
+
+        auth_code_store.pop(email, None)
+        return {'message': f'Email send failed: {error}'}, 500
+
+    return {'message': 'Verification code sent successfully.'}
+
+
+@app.route('/api/auth/verify-code', methods=['POST'])
+def verify_auth_code_api():
+    data = request.get_json(silent=True) or {}
+    raw_email = str(data.get('email', '')).strip()
+    code = str(data.get('code', '')).strip()
+
+    if not raw_email or not code:
+        return {'message': 'Email and verification code are required.'}, 400
+
+    email = normalize_email(raw_email)
+    if not is_valid_email(email):
+        return {'message': 'Invalid email format.'}, 400
+
+    now_ts = time.time()
+    cleanup_expired_auth_codes(now_ts)
+    entry = auth_code_store.get(email)
+
+    if entry is None:
+        return {'message': 'Verification code not found or expired.'}, 400
+
+    age_seconds = now_ts - float(entry.get('created_at', 0))
+    if age_seconds > AUTH_CODE_TTL_SECONDS:
+        auth_code_store.pop(email, None)
+        return {'message': 'Verification code expired. Please request a new one.'}, 400
+
+    entry['attempts'] = int(entry.get('attempts', 0)) + 1
+    if entry['attempts'] > AUTH_CODE_MAX_ATTEMPTS:
+        auth_code_store.pop(email, None)
+        return {'message': 'Too many failed attempts. Request a new code.'}, 429
+
+    if hash_auth_code(code) != entry.get('code_hash'):
+        return {'message': 'Invalid verification code.'}, 400
+
+    auth_code_store.pop(email, None)
+    session['verified_email'] = email
+    session['verified_at'] = int(now_ts)
+
+    return {'message': 'Email verified successfully.'}
 
 
 @app.route('/dashboard')
@@ -462,7 +652,12 @@ def admin_certificates():
 @role_required('user')
 def lessons():
     session['level'] = max(session.get('level', 1), 1)
-    return render_template('templates/index.html', level=session['level'])
+    completed_levels = get_completed_level_ids(session['user_id'])
+    return render_template(
+        'templates/index.html',
+        level=session['level'],
+        completed_levels=completed_levels,
+    )
 
 
 @app.route('/game', methods=['GET', 'POST'])

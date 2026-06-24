@@ -45,20 +45,39 @@ body {
   border-radius: 10px;
 }
 
+/* Close-fitting Topbar Flexbox Layout */
 .topbar {
   height: 54px;
-  display: grid;
-  grid-template-columns: auto auto auto 1fr auto auto auto;
-  gap: 12px;
+  display: flex;
   align-items: center;
   padding: 4px 12px;
+  gap: 16px;
+}
+
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.topbar-center {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: 8px;
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: auto;
 }
 
 .brand-wrapper {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding-right: 4px;
 }
 
 .logo-icon {
@@ -73,6 +92,7 @@ body {
   font-weight: 900;
   letter-spacing: 0.08em;
   background: linear-gradient(135deg, #ffffff 30%, #ffd700 70%, #b59410 100%);
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
@@ -82,7 +102,7 @@ body {
 .level,
 .score-box,
 .lives,
-.reset-top {
+.home-top {
   border: 1px solid rgba(212, 175, 55, 0.6);
   background: linear-gradient(180deg, rgba(30, 30, 30, 0.85), rgba(15, 15, 15, 0.95));
   box-shadow: 0 0 10px rgba(212, 175, 55, 0.15);
@@ -90,12 +110,14 @@ body {
 }
 
 .icon-btn,
-.reset-top {
+.home-top {
   width: 38px;
   height: 38px;
   color: #d4af37;
   font-size: 16px;
   cursor: pointer;
+  display: grid;
+  place-items: center;
 }
 
 .level {
@@ -104,6 +126,7 @@ body {
   font-size: 13px;
   color: #ffd700;
   text-shadow: 0 0 5px rgba(212, 175, 55, 0.5);
+  white-space: nowrap;
 }
 
 .title {
@@ -113,7 +136,7 @@ body {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  padding-left: 4px;
+  padding-left: 10px;
   border-left: 1px solid rgba(212, 175, 55, 0.25);
 }
 
@@ -197,7 +220,7 @@ body {
 .clef {
   font-size: 32px;
   color: #ffd700;
-  text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.85);
   text-align: center;
 }
 
@@ -298,6 +321,12 @@ body {
   border-color: #ffffff;
   transform: translateY(-2px);
   box-shadow: 0 0 8px #ffd700;
+}
+
+.note-pill.demo-current {
+  border-color: #d4af37;
+  background: rgba(212, 175, 55, 0.3);
+  box-shadow: 0 0 12px #ffd700;
 }
 
 .note-pill.miss {
@@ -449,6 +478,11 @@ body {
   animation: pulse 850ms infinite;
 }
 
+.music-note.demo-current {
+  transform: rotate(-18deg) scale(1.35);
+  box-shadow: 0 0 20px #ffffff, 0 0 30px #ffd700;
+}
+
 .note-label {
   position: absolute;
   top: 82%;
@@ -457,13 +491,19 @@ body {
   text-align: center;
   font-size: 13px;
   font-weight: 900;
-  color: #fef2f2;
+  color: #baa047;
 }
 
 .note-label.current {
   transform: translateY(-3px);
   color: #ffffff;
   text-shadow: 0 0 12px rgba(212, 175, 55, 1);
+}
+
+.note-label.demo-current {
+  color: #ffffff;
+  font-size: 15px;
+  text-shadow: 0 0 15px #ffd700;
 }
 
 .play-head {
@@ -475,6 +515,8 @@ body {
   background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.3), transparent);
   pointer-events: none;
   transform: translateX(-50%);
+  z-index: 10;
+  transition: left 0.2s ease;
 }
 
 .keyboard-wrap {
@@ -571,6 +613,16 @@ body {
 .key.target.black {
   background: linear-gradient(180deg, #3a3a3a 0%, #78350f 50%, #ffd700 100%);
   box-shadow: inset 0 0 8px rgba(212, 175, 55, 0.6), 5px 8px 12px rgba(0, 0, 0, 0.65);
+}
+
+.key.demo-active.white {
+  background: linear-gradient(180deg, #e0f2fe, #38bdf8);
+  box-shadow: 0 0 14px #38bdf8;
+}
+
+.key.demo-active.black {
+  background: linear-gradient(180deg, #0284c7, #0369a1);
+  box-shadow: 0 0 14px #38bdf8;
 }
 
 .bottom {
@@ -752,31 +804,36 @@ body {
 <div class="app">
 
 <header class="topbar">
-  <button class="icon-btn" id="pauseBtn">Ⅱ</button>
-  
-  <div class="brand-wrapper">
-    <svg class="logo-icon" viewBox="0 0 24 24">
-      <path d="M19,3H5C3.9,3,3,3.9,3,5v14c0,1.1,0.9,2,2,2h14c1.1,0,2-0.9,2-2V5C21,3.9,20.1,3,19,3z M11,15H9.5v4H8v-4H6.5v4H5V5h3v8h1.5V5h3V15z M19,19h-1.5v-4H16v4h-1.5V5h3v8H19V19z"/>
-    </svg>
-    <span class="logo-text">PIANOVA</span>
-  </div>
-
-  <div class="level">LESSON 4</div>
-  <div class="title">Jingle Bells</div>
-
-  <div class="score-box">
-    <div class="score-label">Score</div>
-    <div id="score">000000</div>
-    <div class="stars" id="stars">
-      <span>☆</span><span>☆</span><span>☆</span>
+  <div class="topbar-left">
+    <button class="icon-btn" id="pauseBtn" title="Pause">Ⅱ</button>
+    <div class="brand-wrapper">
+      <svg class="logo-icon" viewBox="0 0 24 24">
+        <path d="M19,3H5C3.9,3,3,3.9,3,5v14c0,1.1,0.9,2,2,2h14c1.1,0,2-0.9,2-2V5C21,3.9,20.1,3,19,3z M11,15H9.5v4H8v-4H6.5v4H5V5h3v8h1.5V5h3V15z M19,19h-1.5v-4H16v4h-1.5V5h3v8H19V19z"/>
+      </svg>
+      <span class="logo-text">PIANOVA</span>
     </div>
   </div>
 
-  <div class="lives">
-    <span class="heart">♥</span> x <span id="lives">3</span>
+  <div class="topbar-center">
+    <div class="level">LESSON 4</div>
+    <div class="title">Jingle Bells</div>
   </div>
 
-  <button class="reset-top" id="resetTopBtn">⚙</button>
+  <div class="topbar-right">
+    <div class="score-box">
+      <div class="score-label">Score</div>
+      <div id="score">000000</div>
+      <div class="stars" id="stars">
+        <span>☆</span><span>☆</span><span>☆</span>
+      </div>
+    </div>
+
+    <div class="lives">
+      <span class="heart">♥</span> x <span id="lives">5</span>
+    </div>
+
+    <button class="home-top" id="homeTopBtn" title="Home">🏠</button>
+  </div>
 </header>
 
 <section class="stage">
@@ -850,7 +907,7 @@ body {
   </div>
   <div class="info-card">
     <h3>Scoring</h3>
-    <p>Each landing note scores 50 points.</p>
+    <p>Each hit note scores a clean 10 pts.</p>
   </div>
   <div class="info-card">
     <h3>Length</h3>
@@ -865,6 +922,7 @@ body {
 <div class="controls">
   <button class="control-btn" id="demoBtn">Play Demo</button>
   <button class="control-btn secondary" id="resetBtn">Reset</button>
+  <button class="control-btn secondary" id="exitBtn">Exit</button>
 </div>
 
 </div>
@@ -937,8 +995,12 @@ whiteNotesOrder.forEach((note, i) => {
 let songIndex = 0;
 let score = 0;
 let combo = 0;
-let lives = 3;
+let lives = 5;
 let paused = false;
+
+// Independent State Tracking Attributes for Non-interactive Demo Guide
+let isDemoRunning = false;
+let demoIndex = 0;
 let demoTimer = null;
 let audioCtx = null;
 
@@ -957,7 +1019,8 @@ const timeNowEl = document.querySelector("#timeNow");
 const pauseBtn = document.querySelector("#pauseBtn");
 const demoBtn = document.querySelector("#demoBtn");
 const resetBtn = document.querySelector("#resetBtn");
-const resetTopBtn = document.querySelector("#resetTopBtn");
+const exitBtn = document.querySelector("#exitBtn");
+const homeTopBtn = document.querySelector("#homeTopBtn");
 
 const endGameModal = document.querySelector("#endGameModal");
 const modalTrophy = document.querySelector("#modalTrophy");
@@ -1015,7 +1078,8 @@ function createPiano() {
     key.setAttribute("aria-label", `Play ${pianoKey.note}`);
 
     key.addEventListener("pointerdown", () => {
-      playAttempt(pianoKey.note);
+      if (isDemoRunning) return; 
+      playAttempt(pianoKey.note, key);
     });
 
     keyboardEl.appendChild(key);
@@ -1076,24 +1140,24 @@ function playTone(note, correct = true) {
   });
 }
 
-function playAttempt(note) {
+function playAttempt(note, keyEl = null) {
   if (paused || songIndex >= melody.length) return;
 
   const expected = melody[songIndex];
   const correct = note === expected;
 
-  flashKey(note);
+  flashKey(note, keyEl, correct);
   playTone(note, correct);
 
   if (correct) {
     combo++;
-    score += 50; 
-    feedbackEl.textContent = "NICE!";
+    score += 10; 
+    
+    feedbackEl.textContent = combo >= 5 ? `${combo} COMBO!` : "NICE!";
     songIndex++;
 
     if (songIndex === melody.length) {
       feedbackEl.textContent = "DONE!";
-      stopDemo();
       showEndGamePopup(true);
     }
   } else {
@@ -1105,15 +1169,14 @@ function playAttempt(note) {
     if (lives === 0) {
       paused = true;
       feedbackEl.textContent = "GAMEOVER";
-      stopDemo();
       showEndGamePopup(false);
     }
   }
   render();
 }
 
-function flashKey(note) {
-  const keys = [...keyboardEl.querySelectorAll(`[data-note="${note}"]`)];
+function flashKey(note, keyEl, correct) {
+  const keys = keyEl ? [keyEl] : [...keyboardEl.querySelectorAll(`[data-note="${note}"]`)];
   keys.forEach((key) => {
     key.classList.add("active");
     setTimeout(() => {
@@ -1130,37 +1193,80 @@ function markMiss() {
 }
 
 function render() {
-  scoreEl.textContent = String(score).padStart(6, "0");
-  comboEl.textContent = combo;
-  livesEl.textContent = lives;
+  if (isDemoRunning) {
+    feedbackEl.textContent = "DEMO GUIDE RUNNING";
+    const percent = Math.round((demoIndex / melody.length) * 100);
 
-  const percent = Math.round((songIndex / melody.length) * 100);
-  progressBarEl.style.width = `${percent}%`;
-  progressTextEl.textContent = `${percent}%`;
-  timeNowEl.textContent = formatTime(Math.round((songIndex / melody.length) * 20));
+    progressBarEl.style.width = `${percent}%`;
+    progressTextEl.textContent = `${percent}%`;
+    timeNowEl.textContent = formatTime(Math.round((demoIndex / melody.length) * 20));
 
-  playHeadEl.style.setProperty("--head", `${(songIndex / Math.max(1, melody.length - 1)) * 92 + 1}%`);
+    playHeadEl.style.setProperty("--head", `${(demoIndex / Math.max(1, melody.length - 1)) * 92 + 1}%`);
 
-  [...noteListEl.children].forEach((el, index) => {
-    el.classList.toggle("done", index < songIndex);
-    el.classList.toggle("current", index === songIndex);
-  });
+    const activePill = noteListEl.querySelector(`[data-index="${demoIndex}"]`);
+    if (activePill) {
+      activePill.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
 
-  [...noteTrackEl.querySelectorAll(".music-note, .note-label")].forEach((el) => {
-    const index = Number(el.dataset.index);
-    el.classList.toggle("done", index < songIndex);
-    el.classList.toggle("current", index === songIndex);
-  });
+    [...noteListEl.children].forEach((el, index) => {
+      el.classList.toggle("done", index < demoIndex);
+      el.classList.toggle("demo-current", index === demoIndex);
+      el.classList.remove("current");
+    });
 
-  [...keyboardEl.querySelectorAll(".key")].forEach((key) => {
-    key.classList.toggle("target", key.dataset.note === melody[songIndex]);
-  });
+    [...noteTrackEl.querySelectorAll(".music-note, .note-label")].forEach((el) => {
+      const index = Number(el.dataset.index);
+      el.classList.toggle("done", index < demoIndex);
+      el.classList.toggle("demo-current", index === demoIndex);
+      el.classList.remove("current");
+    });
 
-  const starCount = score >= 1200 ? 3 : score >= 600 ? 2 : score > 0 ? 1 : 0;
-  starsEl.innerHTML = [0, 1, 2].map((index) => {
-      const active = index < starCount;
-      return `<span class="${active ? "on" : ""}">${active ? "★" : "☆"}</span>`;
-    }).join("");
+    [...keyboardEl.querySelectorAll(".key")].forEach((key) => {
+      key.classList.remove("target");
+      key.classList.toggle("demo-active", key.dataset.note === melody[demoIndex]);
+    });
+
+  } else {
+    scoreEl.textContent = String(score).padStart(6, "0");
+    comboEl.textContent = combo;
+    livesEl.textContent = lives;
+
+    const percent = Math.round((songIndex / melody.length) * 100);
+    progressBarEl.style.width = `${percent}%`;
+    progressTextEl.textContent = `${percent}%`;
+    timeNowEl.textContent = formatTime(Math.round((songIndex / melody.length) * 20));
+
+    playHeadEl.style.setProperty("--head", `${(songIndex / Math.max(1, melody.length - 1)) * 92 + 1}%`);
+
+    const activePill = noteListEl.querySelector(`[data-index="${songIndex}"]`);
+    if (activePill) {
+      activePill.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    [...noteListEl.children].forEach((el, index) => {
+      el.classList.remove("demo-current");
+      el.classList.toggle("done", index < songIndex);
+      el.classList.toggle("current", index === songIndex);
+    });
+
+    [...noteTrackEl.querySelectorAll(".music-note, .note-label")].forEach((el) => {
+      el.classList.remove("demo-current");
+      const index = Number(el.dataset.index);
+      el.classList.toggle("done", index < songIndex);
+      el.classList.toggle("current", index === songIndex);
+    });
+
+    [...keyboardEl.querySelectorAll(".key")].forEach((key) => {
+      key.classList.remove("demo-active");
+      key.classList.toggle("target", key.dataset.note === melody[songIndex]);
+    });
+
+    const starCount = score >= 220 ? 3 : score >= 130 ? 2 : score > 0 ? 1 : 0;
+    starsEl.innerHTML = [0, 1, 2].map((index) => {
+        const active = index < starCount;
+        return `<span class="${active ? "on" : ""}">${active ? "★" : "☆"}</span>`;
+      }).join("");
+  }
 }
 
 function formatTime(seconds) {
@@ -1177,9 +1283,12 @@ function showEndGamePopup(isPassed) {
     modalTitle.textContent = "Victory!";
     modalTitle.className = "modal-title pass";
     modalBody.textContent = `You finished the song! Total Score: ${score}.`;
-    const replayBtn = createModalButton("Replay", "primary", () => { closePopup(); resetGame(); });
+    
+    // Stripped Replay option from Victory container layout
+    const nextBtn = createModalButton("Next Lesson", "primary", () => { closePopup(); window.location.href = '/lesson3-5'; });
     const homeBtn = createModalButton("Home", "secondary", () => { closePopup(); window.location.href = '/lessons'; });
-    modalActions.appendChild(replayBtn);
+    
+    modalActions.appendChild(nextBtn);
     modalActions.appendChild(homeBtn);
   } else {
     modalTrophy.style.display = "block";
@@ -1206,56 +1315,73 @@ function createModalButton(text, type, clickHandler) {
 function closePopup() { endGameModal.classList.remove("open"); }
 
 function resetGame() {
-  songIndex = 0; score = 0; combo = 0; lives = 3; paused = false;
+  songIndex = 0; score = 0; combo = 0; lives = 5; paused = false;
   feedbackEl.textContent = "READY";
   stopDemo();
   render();
 }
 
-function playNextDemoStep() {
-  if (songIndex >= melody.length || lives === 0) {
+function startDemo() {
+  if (isDemoRunning) {
     stopDemo();
     return;
   }
-  playAttempt(melody[songIndex]);
-  if (songIndex < melody.length) {
-    demoTimer = setTimeout(playNextDemoStep, 400);
-  }
-}
 
-function startDemo() {
-  if (demoTimer) { stopDemo(); return; }
-  paused = false;
+  isDemoRunning = true;
+  demoIndex = 0;
   demoBtn.textContent = "Stop Demo";
   playNextDemoStep();
 }
 
+function playNextDemoStep() {
+  if (!isDemoRunning) return;
+
+  if (demoIndex >= melody.length) {
+    stopDemo();
+    feedbackEl.textContent = "YOUR TURN!";
+    return;
+  }
+  
+  playTone(melody[demoIndex], true);
+  render();
+  demoIndex++;
+  
+  demoTimer = setTimeout(playNextDemoStep, 400);
+}
+
 function stopDemo() {
+  isDemoRunning = false;
   if (demoTimer) { clearTimeout(demoTimer); }
   demoTimer = null;
   demoBtn.textContent = "Play Demo";
+  render();
 }
 
 document.addEventListener("keydown", (event) => {
+  if (isDemoRunning) return; 
   let key = event.key.toUpperCase();
   if (["A", "B", "C", "D", "E", "F", "G"].includes(key)) { playAttempt(key); }
   if (event.code === "Space") {
     event.preventDefault();
     paused = !paused;
     feedbackEl.textContent = paused ? "PAUSED" : "READY";
-    if (paused) stopDemo();
   }
 });
 
 pauseBtn.addEventListener("click", () => {
+  if (isDemoRunning) stopDemo();
   paused = !paused;
   feedbackEl.textContent = paused ? "PAUSED" : "READY";
-  if (paused) stopDemo();
 });
 
 demoBtn.addEventListener("click", startDemo);
 resetBtn.addEventListener("click", resetGame);
-resetTopBtn.addEventListener("click", resetGame);
+exitBtn.addEventListener("click", () => {
+  window.location.href = '/lessons';
+});
+homeTopBtn.addEventListener("click", () => {
+  window.location.href = '/lessons';
+});
 
 setupGame();
 </script>

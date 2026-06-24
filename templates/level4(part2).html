@@ -510,7 +510,7 @@
 </head>
 <body>
   <header class="topbar">
-    <a href="#" class="brand-container" aria-label="Pianova Home">
+    <a href="/lessons" class="brand-container" aria-label="Pianova Home">
       <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M9 18V5l12-2v13"/>
         <circle cx="6" cy="18" r="3"/>
@@ -640,7 +640,25 @@
     const score = document.querySelector("#score");
     const time = document.querySelector("#time");
     const userAnswers = new Map();
-    let seconds = 30 * 60; 
+    const TOTAL_SECONDS = 30 * 60;
+    const TIMER_END_KEY = 'level4_shared_timer_end';
+
+    const getRemainingSeconds = () => {
+      const now = Date.now();
+      let timerEnd = Number(sessionStorage.getItem(TIMER_END_KEY) || 0);
+
+      if (!timerEnd) {
+        timerEnd = now + (TOTAL_SECONDS * 1000);
+        sessionStorage.setItem(TIMER_END_KEY, String(timerEnd));
+      }
+
+      return Math.max(0, Math.floor((timerEnd - now) / 1000));
+    };
+
+    const clearSharedTimer = () => {
+      sessionStorage.removeItem(TIMER_END_KEY);
+    };
+
     let completed = false;
 
     function staff(type) {
@@ -697,10 +715,12 @@
       }
     }
 
+    const QUESTION_NUMBER_OFFSET = 15;
+
     function render() {
       quiz.innerHTML = questions.map((item, index) => `
         <article class="card" data-index="${index}">
-          <span class="badge">${index + 1}</span>
+          <span class="badge">${index + 1 + QUESTION_NUMBER_OFFSET}</span>
           <h2 class="question">${item.q}</h2>
           <div class="visual">${renderVisual(item.visual)}</div>
           <div class="answers">
@@ -747,23 +767,43 @@
         alert("Please answer all 15 questions before moving to the next level!");
         return;
       }
+
+      const fullScore = questions.length;
+      const currentScore = Number(score.textContent);
+      if (currentScore !== fullScore) {
+        alert(`You need full score (${fullScore}/${fullScore}) to continue. Your score is ${currentScore}/${fullScore}.`);
+        return;
+      }
+
       completed = true;
-      alert(`Level Completed! You scored ${score.textContent} out of ${questions.length}. Loading Level 2...`);
+      alert(`Level Completed! You scored ${score.textContent} out of ${questions.length}. Loading next part...`);
+      clearSharedTimer();
+      window.location.href = "/level4-part3";
     });
 
     document.querySelector("#exit-btn").addEventListener("click", () => {
       if (confirm("Are you sure you want to exit the quiz? Your progress will be lost.")) {
         completed = true;
         alert("Exiting game. Thank you for playing!");
+        clearSharedTimer();
+        window.location.href = "/lessons";
       }
     });
 
     setInterval(() => {
-      if (seconds <= 0 || completed) return;
-      seconds -= 1;
+      if (completed) return;
+
+      const seconds = getRemainingSeconds();
       const minutes = Math.floor(seconds / 60);
       const rest = String(seconds % 60).padStart(2, "0");
       time.textContent = `${minutes}:${rest}`;
+
+      if (seconds <= 0) {
+        completed = true;
+        alert("Time is up for Level 4 Part 1 and Part 2.");
+        clearSharedTimer();
+        window.location.href = "/lessons";
+      }
     }, 1000);
 
     render();

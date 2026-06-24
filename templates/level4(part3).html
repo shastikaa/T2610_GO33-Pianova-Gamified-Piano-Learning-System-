@@ -1078,7 +1078,7 @@
 
         <div class="action-stack modal-actions-grid">
           <button class="modal-btn primary" id="btnModalPlay">Play Again</button>
-          <button class="modal-btn secondary" id="btnModalHome">Home</button>
+          <button class="modal-btn secondary" id="btnModalHome">Finish Level</button>
         </div>
       </div>
     </section>
@@ -1096,6 +1096,15 @@
         <h2>Help</h2>
         <p>Follow the highlighted note on the staff, then press the matching piano key. Use Hear Phrase if you want to listen to the next phrase before playing.</p>
         <button class="modal-btn primary" id="btnCloseHelp" type="button">Got It</button>
+      </div>
+    </section>
+
+    <section class="game-overlay-panel" id="preCertificateOverlay" aria-hidden="true">
+      <div class="game-overlay-card">
+        <h2>Level 4 Completed</h2>
+        <p>You completed Part 3. Do you want to continue to the certificate page?</p>
+        <button class="modal-btn primary" id="btnPreCertContinue" type="button">Continue to Certificate</button>
+        <button class="modal-btn secondary" id="btnPreCertHome" type="button">Go Home</button>
       </div>
     </section>
 
@@ -1155,6 +1164,7 @@
     let totalMisplayedInputs = 0;
     let isDemonstrationRunning = false;
     let isGamePaused = false;
+    let hasShownAutoPreCertificatePopup = false;
 
     const sheetContainer = document.getElementById("sheetContainer");
     const pianoKeysBed = document.getElementById("pianoKeysBed");
@@ -1165,6 +1175,7 @@
     const completionModal = document.getElementById("completionModal");
     const pauseOverlay = document.getElementById("pauseOverlay");
     const helpOverlay = document.getElementById("helpOverlay");
+    const preCertificateOverlay = document.getElementById("preCertificateOverlay");
 
     function setupAudioContext() {
       if (!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -1422,6 +1433,13 @@
       if (strictAccuracy >= 98) document.getElementById("star3").classList.add("earned");
 
       completionModal.classList.add("visible");
+
+      // Auto-show final popup immediately after finishing "At Last".
+      if (!hasShownAutoPreCertificatePopup) {
+        hasShownAutoPreCertificatePopup = true;
+        preCertificateOverlay.classList.add("visible");
+        preCertificateOverlay.setAttribute("aria-hidden", "false");
+      }
     }
 
     function reinitializeGameState() {
@@ -1430,11 +1448,14 @@
       totalMisplayedInputs = 0;
       isDemonstrationRunning = false;
       isGamePaused = false;
+      hasShownAutoPreCertificatePopup = false;
       completionModal.classList.remove("visible");
       pauseOverlay.classList.remove("visible");
       pauseOverlay.setAttribute("aria-hidden", "true");
       helpOverlay.classList.remove("visible");
       helpOverlay.setAttribute("aria-hidden", "true");
+      preCertificateOverlay.classList.remove("visible");
+      preCertificateOverlay.setAttribute("aria-hidden", "true");
       hudStatus.textContent = "Sequence ready";
       hudStatus.style.color = "#ffe39a";
       document.getElementById("btnPause").disabled = false;
@@ -1453,7 +1474,14 @@
     document.getElementById("btnCloseHelp").addEventListener("click", () => setHelpVisibility(false));
     document.getElementById("btnModalPlay").addEventListener("click", reinitializeGameState);
     document.getElementById("btnModalHome").addEventListener("click", () => {
-      window.location.href = "/dashboard";
+      preCertificateOverlay.classList.add("visible");
+      preCertificateOverlay.setAttribute("aria-hidden", "false");
+    });
+    document.getElementById("btnPreCertContinue").addEventListener("click", () => {
+      window.location.href = "/precertificatepage";
+    });
+    document.getElementById("btnPreCertHome").addEventListener("click", () => {
+      window.location.href = "/lessons";
     });
 
     // Initial Bootstrap Layers Execution Engine

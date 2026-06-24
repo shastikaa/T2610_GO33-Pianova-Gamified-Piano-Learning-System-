@@ -3,9 +3,20 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Music Quiz</title>
-
+  <title>Music Theory Test</title>
   <style>
+    :root {
+      --bg: #070807;
+      --panel: #11100d;
+      --panel-soft: #17140f;
+      --gold: #ffc85a;
+      --text: #fff6df;
+      --muted: #cfc4aa;
+      --line: rgba(255, 200, 90, 0.24);
+      --green: #8ee08b;
+      --red: #ff756d;
+    }
+
     * {
       box-sizing: border-box;
     }
@@ -13,344 +24,398 @@
     body {
       margin: 0;
       min-height: 100vh;
-      font-family: Arial, Helvetica, sans-serif;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
       background:
-        radial-gradient(circle at 18% 10%, rgba(246, 179, 29, 0.18), transparent 38%),
-        radial-gradient(circle at 84% 86%, rgba(246, 179, 29, 0.11), transparent 44%),
-        linear-gradient(165deg, #0b0a08 0%, #15110a 48%, #070605 100%);
-      color: #f7f1e5;
+        radial-gradient(circle at 20% 4%, rgba(255, 198, 73, 0.13), transparent 23rem),
+        radial-gradient(circle at 76% 10%, rgba(255, 198, 73, 0.08), transparent 24rem),
+        linear-gradient(180deg, #07101a 0, #080806 8.5rem, #0b0906 100%);
     }
 
-    .quiz-topbar {
-      width: 100%;
-      border-bottom: 1px solid rgba(246, 179, 29, 0.24);
-      background:
-        radial-gradient(circle at 50% 0%, rgba(246, 179, 29, 0.15), transparent 52%),
-        linear-gradient(180deg, #0d131b 0%, #090d12 100%);
-      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      display: grid;
+      grid-template-columns: 16rem minmax(18rem, 1fr) 17rem;
+      gap: 1rem;
+      align-items: center;
+      min-height: 8.2rem;
+      padding: 1.35rem clamp(1rem, 3vw, 3rem);
+      border-bottom: 1px solid var(--line);
+      background: rgba(5, 8, 10, 0.88);
+      backdrop-filter: blur(14px);
+      box-shadow: 0 16px 34px rgba(0, 0, 0, 0.36);
     }
 
-    .quiz-topbar-inner {
-      width: min(1280px, calc(100% - 24px));
-      margin: 0 auto;
-      min-height: 86px;
+    .brand-container {
+      justify-self: start;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      padding: 10px 0;
-    }
-
-    .back-home {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
+      gap: 0.75rem;
       text-decoration: none;
-      color: #e8e1d0;
-      border: 1px solid rgba(246, 179, 29, 0.35);
-      border-radius: 8px;
-      padding: 10px 14px;
-      background: rgba(12, 12, 12, 0.78);
-      font-size: 14px;
-      white-space: nowrap;
-      transition: border-color 0.18s ease, box-shadow 0.18s ease;
+      padding: 0.5rem 0.75rem;
+      border-radius: 0.5rem;
+      transition: background 0.2s ease;
     }
 
-    .back-home:hover {
-      border-color: rgba(246, 179, 29, 0.7);
-      box-shadow: 0 0 12px rgba(246, 179, 29, 0.28);
+    .brand-container:hover {
+      background: rgba(255, 200, 90, 0.05);
     }
 
-    .top-title {
-      text-align: center;
-      line-height: 1.2;
-      flex: 1;
-      min-width: 260px;
+    .logo-icon {
+      width: 2.4rem;
+      height: 2.4rem;
+      color: var(--gold);
+      filter: drop-shadow(0 0 8px rgba(255, 200, 90, 0.4));
     }
 
-    .top-title h1 {
-      margin: 0;
-      color: #f6c65f;
-      font-size: clamp(24px, 3.2vw, 44px);
-      letter-spacing: 0.5px;
-    }
-
-    .top-title p {
-      margin: 6px 0 0;
-      color: rgba(247, 241, 229, 0.9);
-      font-size: clamp(13px, 1.6vw, 23px);
-    }
-
-    .top-stats {
+    .brand-text {
       display: flex;
-      align-items: stretch;
-      gap: 10px;
+      flex-direction: column;
     }
 
-    .stat-box {
-      min-width: 110px;
-      border: 1px solid rgba(246, 179, 29, 0.35);
-      border-radius: 8px;
-      background: rgba(9, 9, 9, 0.82);
-      padding: 8px 12px;
-      text-align: center;
-      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03);
-    }
-
-    .stat-label {
-      display: block;
-      color: rgba(247, 241, 229, 0.78);
-      font-size: 12px;
-      margin-bottom: 5px;
-    }
-
-    .stat-value {
+    .logo-name {
       color: #ffffff;
-      font-size: 30px;
-      font-weight: 700;
+      font-size: 1.35rem;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      line-height: 1.1;
+    }
+
+    .logo-tagline {
+      color: var(--gold);
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      opacity: 0.8;
+    }
+
+    .hero {
+      text-align: center;
+    }
+
+    h1 {
+      margin: 0;
+      color: var(--gold);
+      font-size: clamp(2.05rem, 3.5vw, 3.5rem);
+      line-height: 0.92;
+      text-transform: uppercase;
+      text-shadow: 0 0 28px rgba(255, 200, 90, 0.22);
+    }
+
+    .subtitle {
+      margin: 0.8rem 0 0;
+      color: var(--muted);
+      font-size: clamp(0.9rem, 1.5vw, 1.2rem);
+      font-weight: 650;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.65rem;
+    }
+
+    .stats .stat {
+      min-height: 4.4rem;
+      display: grid;
+      place-items: center;
+      padding: 0.55rem;
+      border: 1px solid var(--line);
+      border-radius: 0.55rem;
+      background: rgba(0, 0, 0, 0.33);
+    }
+
+    .stat span {
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+
+    .stat strong {
+      color: white;
+      font-size: clamp(1.35rem, 2.5vw, 2rem);
       line-height: 1;
     }
 
-    .quiz {
-      width: min(1760px, calc(100% - 20px));
-      margin: auto;
-      padding: 30px 0;
+    main {
+      padding: 2rem clamp(0.8rem, 2vw, 2rem) 4rem;
     }
 
     .quiz-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
-      gap: 18px;
+      grid-template-columns: repeat(3, minmax(18rem, 1fr));
+      gap: 1.25rem;
+      max-width: 118rem;
+      margin: 0 auto;
     }
 
     .card {
       position: relative;
-      background: linear-gradient(160deg, rgba(22, 18, 12, 0.95), rgba(10, 9, 7, 0.98));
-      border: 1px solid #5a3b12;
-      border-radius: 8px;
-      padding: 22px;
-      padding-top: 62px;
-      min-height: 280px;
-      box-shadow: 0 0 22px rgba(0, 0, 0, 0.48), inset 0 0 0 1px rgba(246, 179, 29, 0.08);
+      min-height: 18.8rem;
+      padding: 1.35rem;
+      border: 1px solid var(--line);
+      border-radius: 0.55rem;
+      background:
+        linear-gradient(180deg, rgba(23, 20, 15, 0.97), rgba(12, 11, 8, 0.97)),
+        repeating-linear-gradient(90deg, rgba(255, 200, 90, 0.025) 0 1px, transparent 1px 6px);
+      box-shadow: 0 18px 38px rgba(0, 0, 0, 0.28), inset 0 0 0 1px rgba(255, 255, 255, 0.025);
+      overflow: hidden;
     }
 
-    .top {
-      display: flex;
-      align-items: flex-start;
-      margin-bottom: 16px;
-    }
-
-    .num {
-      min-width: 34px;
-      height: 34px;
-      display: grid;
-      place-items: center;
-      border: 1px solid #6f4a12;
-      border-radius: 7px;
-      background: rgba(246, 179, 29, 0.18);
-      color: #ffd36a;
-      font-weight: bold;
+    .card::before {
+      content: "";
       position: absolute;
-      top: 12px;
-      left: 12px;
+      inset: 0;
+      pointer-events: none;
+      background: radial-gradient(circle at 12% 14%, rgba(255, 200, 90, 0.12), transparent 14rem);
     }
 
-    h2 {
-      margin: 0;
-      font-size: 22px;
-      line-height: 1.32;
-      color: #ffe9ba;
-      text-shadow: 0 1px 0 rgba(0, 0, 0, 0.35);
-    }
-
-    .next-page-btn {
-      position: fixed;
-      right: 18px;
-      bottom: 18px;
-      z-index: 30;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-width: 170px;
-      text-decoration: none;
-      font-weight: 700;
-      letter-spacing: 0.4px;
-      color: #201506;
-      background: linear-gradient(180deg, #ffd778 0%, #f4b232 100%);
-      border: 1px solid #9f6a0a;
-      border-radius: 999px;
-      padding: 12px 18px;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4), 0 0 18px rgba(246, 179, 29, 0.45);
-      transition: transform 0.18s ease, box-shadow 0.18s ease;
-    }
-
-    .next-page-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.48), 0 0 22px rgba(246, 179, 29, 0.58);
-    }
-
-    .symbols {
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      margin: 14px 0;
-      font-size: 42px;
-      font-family: "Times New Roman", serif;
-      color: white;
-    }
-
-    .big-symbol {
-      text-align: center;
-      font-size: 58px;
-      font-family: "Times New Roman", serif;
-      margin: 10px 0;
-    }
-
-    .answers {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      margin-top: 12px;
-    }
-
-    .answers.four {
-      grid-template-columns: repeat(4, 1fr);
-    }
-
-    .answer {
-      min-height: 40px;
-      border: 1px solid #2c2113;
-      border-radius: 6px;
-      background: #0b0b0a;
-      color: #f7f1e5;
-      font-size: 13px;
-      text-align: left;
-      padding: 8px;
-      cursor: pointer;
-      transition: border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
-    }
-
-    .answer span {
+    .badge {
+      position: relative;
       display: inline-grid;
       place-items: center;
-      width: 24px;
-      height: 24px;
-      margin-right: 6px;
-      border: 1px solid #5c4722;
-      border-radius: 4px;
-      color: #ffd36a;
-      font-weight: bold;
+      width: 2.65rem;
+      height: 2.65rem;
+      border-radius: 0.5rem;
+      color: #fff4cc;
+      background: linear-gradient(135deg, #8d6617, #493202);
+      border: 1px solid rgba(255, 200, 90, 0.35);
+      font-weight: 900;
+      box-shadow: 0 0 18px rgba(255, 200, 90, 0.14);
     }
 
-    .correct {
-      border-color: #b97810;
-      background: linear-gradient(#6b470b, #2a1d08);
-      box-shadow: 0 0 15px rgba(246, 179, 29, 0.4);
+    .question {
+      position: relative;
+      margin: 1rem 0 1.35rem;
+      min-height: 3.1rem;
+      color: var(--text);
+      font-size: clamp(1.08rem, 1.5vw, 1.55rem);
+      line-height: 1.2;
+      font-weight: 850;
     }
 
-    .answer:hover {
-      border-color: #785116;
-    }
-
-    .answer.selected {
-      border-color: #d9a236;
-      box-shadow: 0 0 8px rgba(246, 179, 29, 0.35);
-    }
-
-    .answer.incorrect {
-      border-color: #b34131;
-      background: linear-gradient(#46221c, #1d0d0b);
-      box-shadow: 0 0 10px rgba(179, 65, 49, 0.35);
-    }
-
-    .answer.reveal-correct {
-      border-color: #b97810;
-      background: linear-gradient(#6b470b, #2a1d08);
-      box-shadow: 0 0 15px rgba(246, 179, 29, 0.4);
-    }
-
-    .keyboard {
+    .visual {
       position: relative;
       display: grid;
-      grid-template-columns: repeat(8, 1fr);
-      height: 85px;
-      max-width: 230px;
-      margin: 14px auto;
-      background: white;
-      border: 1px solid #333;
+      place-items: center;
+      min-height: 4.2rem;
+      margin: 0.15rem 0 1.1rem;
     }
 
-    .white {
-      color: #111;
-      border-right: 1px solid #222;
+    .notes-row {
+      width: 100%;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      align-items: end;
+      color: white;
+      font-size: 2.55rem;
+      line-height: 1;
+      text-align: center;
+    }
+
+    .symbol-row {
       display: flex;
-      align-items: flex-end;
       justify-content: center;
-      padding-bottom: 6px;
-      font-size: 10px;
-      font-weight: bold;
+      gap: clamp(1.1rem, 3.5vw, 2.5rem);
+      width: 100%;
+      color: white;
+      font-size: 2.45rem;
     }
 
-    .white.active {
-      background: #f8e6a0;
+    .fraction-row {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 2.8rem;
+      font-weight: 800;
+      line-height: 0.95;
     }
 
-    .black {
+    .fraction-row span:first-child {
+      border-bottom: 3px solid white;
+      padding-bottom: 2px;
+      min-width: 1.8rem;
+      text-align: center;
+    }
+
+    .fraction-row span:last-child {
+      padding-top: 2px;
+    }
+
+    .staff {
+      position: relative;
+      width: min(21rem, 95%);
+      height: 5.8rem;
+    }
+
+    .staff .lines {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 1.1rem;
+      height: 3.2rem;
+      background: repeating-linear-gradient(to bottom, #d8d1c2 0 2px, transparent 2px 0.65rem);
+      opacity: 0.92;
+    }
+
+    .clef {
+      position: absolute;
+      left: 0.45rem;
+      top: -0.25rem;
+      font-family: Georgia, serif;
+      color: white;
+      font-size: 4.6rem;
+      line-height: 1;
+    }
+
+    .bass .clef {
+      top: 0.6rem;
+      font-size: 3.6rem;
+    }
+
+    .note-dot {
+      position: absolute;
+      width: 1.45rem;
+      height: 0.75rem;
+      border-radius: 50%;
+      background: white;
+      transform: rotate(-12deg);
+      left: 56%;
+      top: 2.62rem;
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.3);
+    }
+
+    .note-dot.e-line {
+      top: 3.72rem;
+    }
+
+    .piano {
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(8, 1.3rem);
+      width: 10.4rem;
+      height: 5.7rem;
+      border: 2px solid rgba(255, 255, 255, 0.28);
+      background: white;
+    }
+
+    .white-key {
+      position: relative;
+      height: 100%;
+      border-right: 1px solid #222;
+      color: #1e1b16;
+      display: grid;
+      align-items: end;
+      justify-items: center;
+      padding-bottom: 0.35rem;
+      font-weight: 800;
+      font-size: 0.7rem;
+    }
+
+    .white-key:last-child {
+      border-right: none;
+    }
+
+    .black-key {
       position: absolute;
       top: 0;
-      width: 9%;
-      height: 55%;
-      background: #000;
+      width: 0.8rem;
+      height: 2.9rem;
+      background: #050505;
+      border-radius: 0 0 0.15rem 0.15rem;
       z-index: 2;
     }
 
-    .b1 { left: 8%; }
-    .b2 { left: 20%; }
-    .b3 { left: 45%; }
-    .b4 { left: 58%; }
-    .b5 { left: 70%; }
-
-    .staff {
-      height: 80px;
-      margin: 12px 0;
-      display: grid;
-      place-items: center;
-      font-size: 58px;
-      font-family: "Times New Roman", serif;
-      background: repeating-linear-gradient(
-        to bottom,
-        transparent 0,
-        transparent 13px,
-        rgba(255,255,255,0.55) 14px,
-        rgba(255,255,255,0.55) 15px
-      );
-    }
+    .black-key.b1 { left: 1.0rem; }
+    .black-key.b2 { left: 2.6rem; }
+    .black-key.b3 { left: 5.2rem; }
+    .black-key.b4 { left: 6.8rem; }
+    .black-key.b5 { left: 8.4rem; }
 
     .speaker {
-      width: 56px;
-      height: 56px;
-      margin: 12px auto;
+      width: 3rem;
+      height: 3rem;
       border-radius: 50%;
-      border: 1px solid #4d3818;
-      display: grid;
-      place-items: center;
-      font-size: 22px;
-      font-weight: bold;
-      background: #0b0905;
-      color: #f7f1e5;
+      border: 1px solid var(--line);
+      background: rgba(0, 0, 0, 0.3);
+      color: var(--gold);
+      font-size: 1rem;
+      font-weight: 800;
       cursor: pointer;
-      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
-    }
-
-    .speaker:hover {
-      border-color: #b57d1e;
-      box-shadow: 0 0 16px rgba(246, 179, 29, 0.35);
     }
 
     .speaker.playing {
+      box-shadow: 0 0 14px rgba(255, 200, 90, 0.35);
       transform: scale(1.04);
-      border-color: #f0b43a;
-      box-shadow: 0 0 18px rgba(246, 179, 29, 0.55);
+    }
+
+    .answers {
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.65rem;
+      margin-top: auto;
+    }
+
+    .answer {
+      min-height: 2.85rem;
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      padding: 0.45rem 0.65rem;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 0.32rem;
+      color: white;
+      background: rgba(0, 0, 0, 0.23);
+      text-align: left;
+      font: inherit;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease, background 160ms ease;
+    }
+
+    .answer:hover,
+    .answer:focus-visible {
+      border-color: rgba(255, 200, 90, 0.58);
+      box-shadow: 0 0 0 3px rgba(255, 200, 90, 0.08);
+      outline: none;
+    }
+
+    .answer .letter {
+      flex: 0 0 auto;
+      display: inline-grid;
+      place-items: center;
+      min-width: 1.55rem;
+      height: 1.55rem;
+      border: 1px solid var(--line);
+      border-radius: 0.25rem;
+      color: var(--gold);
+      background: rgba(0, 0, 0, 0.32);
+      font-weight: 900;
+    }
+
+    .answer.correct {
+      border-color: rgba(142, 224, 139, 0.62) !important;
+      background: rgba(57, 118, 54, 0.2) !important;
+      box-shadow: 0 0 20px rgba(142, 224, 139, 0.14) !important;
+    }
+
+    .answer.wrong {
+      border-color: rgba(255, 117, 109, 0.62) !important;
+      background: rgba(130, 38, 35, 0.18) !important;
+    }
+
+    .answer.selected {
+      border-color: rgba(255, 200, 90, 0.92);
+      background: linear-gradient(90deg, rgba(255, 200, 90, 0.24), rgba(0, 0, 0, 0.2));
+      box-shadow: 0 0 24px rgba(255, 200, 90, 0.22), inset 0 0 0 1px rgba(255, 200, 90, 0.1);
     }
 
     .answers.locked .answer {
@@ -358,382 +423,420 @@
       pointer-events: none;
     }
 
-    @media (max-width: 520px) {
-      .quiz-topbar-inner {
-        flex-wrap: wrap;
-        justify-content: center;
+    .actions {
+      position: fixed;
+      right: clamp(1rem, 2.3vw, 2.2rem);
+      bottom: 1.2rem;
+      display: flex;
+      gap: 0.8rem;
+      z-index: 8;
+    }
+
+    .pill {
+      min-height: 3.4rem;
+      padding: 0 1.55rem;
+      border: 0;
+      border-radius: 99rem;
+      color: #211400;
+      background: linear-gradient(180deg, #ffe084, #ffb635);
+      box-shadow: 0 0 30px rgba(255, 190, 58, 0.36);
+      font-weight: 950;
+      font-size: 1.05rem;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .pill.ghost {
+      color: var(--text);
+      background: rgba(0, 0, 0, 0.54);
+      border: 1px solid var(--line);
+      box-shadow: none;
+    }
+
+    @media (max-width: 1100px) {
+      .topbar {
+        grid-template-columns: 1fr;
+        min-height: auto;
+        padding-top: 2rem;
+        gap: 1.5rem;
       }
 
-      .top-title {
-        order: -1;
-        width: 100%;
-        min-width: 0;
+      .brand-container {
+        justify-self: center;
       }
 
-      .top-stats {
-        width: 100%;
-        justify-content: center;
+      .stats {
+        width: min(22rem, 100%);
+        justify-self: center;
       }
 
-      .stat-box {
-        flex: 1;
-        min-width: 0;
+      .quiz-grid {
+        grid-template-columns: repeat(2, minmax(17rem, 1fr));
       }
+    }
 
+    @media (max-width: 700px) {
       .quiz-grid {
         grid-template-columns: 1fr;
       }
 
-      .quiz {
-        width: calc(100% - 14px);
+      .answers {
+        grid-template-columns: 1fr;
       }
 
-      .next-page-btn {
-        right: 12px;
-        bottom: 12px;
-        min-width: 148px;
-        padding: 10px 14px;
-        font-size: 13px;
+      .card {
+        min-height: auto;
       }
 
-      h2 {
-        font-size: 20px;
+      .actions {
+        position: sticky;
+        justify-content: center;
+        right: auto;
+        bottom: 0;
+        padding: 1rem;
+        background: linear-gradient(180deg, transparent, rgba(5, 5, 4, 0.9) 24%);
       }
     }
   </style>
 </head>
-
 <body>
-  <header class="quiz-topbar">
-    <div class="quiz-topbar-inner">
-      <a class="back-home" href="/">&#8592; Back to Home</a>
-
-      <div class="top-title">
-        <h1>&#9835; MUSIC THEORY TEST &#9835;</h1>
-        <p>30 Questions &#8226; Different Topics &#8226; Test your skills!</p>
+  <header class="topbar">
+    <a href="/lessons" class="brand-container" id="home-link" aria-label="Pianova Home">
+      <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 18V5l12-2v13"/>
+        <circle cx="6" cy="18" r="3"/>
+        <circle cx="18" cy="16" r="3"/>
+      </svg>
+      <div class="brand-text">
+        <span class="logo-name">Pianova</span>
+        <span class="logo-tagline">Digital Academy</span>
       </div>
+    </a>
 
-      <div class="top-stats">
-        <div class="stat-box">
-          <span class="stat-label">Score</span>
-          <span class="stat-value" id="scoreValue">0</span>
-        </div>
-        <div class="stat-box">
-          <span class="stat-label">Time Left</span>
-          <span class="stat-value" id="timeValue">29:59</span>
-        </div>
-      </div>
+    <div class="hero">
+      <h1>Music Theory Test</h1>
+      <p class="subtitle">Interactive Quiz Module</p>
+    </div>
+
+    <div class="stats" aria-label="Quiz status">
+      <div class="stat"><span>Score</span><strong id="score">0</strong></div>
+      <div class="stat"><span>Time Left</span><strong id="time">30:00</strong></div>
     </div>
   </header>
 
-  <main class="quiz">
-    <section class="quiz-grid">
-
-      <div class="card">
-        <div class="top"><div class="num">3</div><h2>Which note has 1 beat?</h2></div>
-        <div class="symbols"><span>𝅝</span><span>𝅗𝅥</span><span>𝅘𝅥</span><span>𝅘𝅥𝅮</span></div>
-        <div class="answers">
-          <div class="answer"><span>A</span>Semibreve</div>
-          <div class="answer"><span>B</span>Minim</div>
-          <div class="answer correct"><span>C</span>Crotchet</div>
-          <div class="answer"><span>D</span>Quaver</div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="top"><div class="num">4</div><h2>Which symbol is used for “Play the note loudly”?</h2></div>
-        <div class="answers">
-          <div class="answer"><span>A</span><i>p</i></div>
-          <div class="answer correct"><span>B</span><i>f</i></div>
-          <div class="answer"><span>C</span><i>mp</i></div>
-          <div class="answer"><span>D</span><i>ff</i></div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="top"><div class="num">4</div><h2>Which note has 1/2 beat?</h2></div>
-        <div class="symbols"><span>𝅝</span><span>𝅗𝅥</span><span>𝅘𝅥</span><span>𝅘𝅥𝅮</span></div>
-        <div class="answers">
-          <div class="answer"><span>A</span>Semibreve</div>
-          <div class="answer"><span>B</span>Minim</div>
-          <div class="answer"><span>C</span>Crotchet</div>
-          <div class="answer correct"><span>D</span>Quaver</div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="top"><div class="num">5</div><h2>Which note has 4 beats?</h2></div>
-        <div class="symbols"><span>𝅝</span><span>𝅗𝅥</span><span>𝅘𝅥</span><span>𝅘𝅥𝅮</span></div>
-        <div class="answers">
-          <div class="answer correct"><span>A</span>Semibreve</div>
-          <div class="answer"><span>B</span>Minim</div>
-          <div class="answer"><span>C</span>Crotchet</div>
-          <div class="answer"><span>D</span>Quaver</div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="top"><div class="num">7</div><h2>Which key is A?</h2></div>
-        <div class="keyboard">
-          <div class="black b1"></div><div class="black b2"></div><div class="black b3"></div><div class="black b4"></div><div class="black b5"></div>
-          <div class="white">C</div><div class="white">D</div><div class="white">E</div><div class="white">F</div>
-          <div class="white">G</div><div class="white active">A</div><div class="white">B</div><div class="white">C</div>
-        </div>
-        <div class="answers four">
-          <div class="answer"><span>A</span></div>
-          <div class="answer"><span>B</span></div>
-          <div class="answer correct"><span>C</span></div>
-          <div class="answer"><span>D</span></div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="top"><div class="num">8</div><h2>How many beats does a crotchet have?</h2></div>
-        <div class="answers">
-          <div class="answer correct"><span>A</span>1</div>
-          <div class="answer"><span>B</span>2</div>
-          <div class="answer"><span>C</span>3</div>
-          <div class="answer"><span>D</span>4</div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="top"><div class="num">13</div><h2>Which of these is a rest symbol?</h2></div>
-        <div class="symbols"><span>𝄽</span><span>𝄻</span><span>𝄼</span><span>𝄾</span></div>
-        <div class="answers four">
-          <div class="answer correct"><span>A</span></div>
-          <div class="answer"><span>B</span></div>
-          <div class="answer"><span>C</span></div>
-          <div class="answer"><span>D</span></div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="top"><div class="num">13</div><h2>Listen and identify the note.</h2></div>
-        <button class="speaker" data-note="D4" type="button" aria-label="Play note">)))</button>
-        <div class="answers locked">
-          <div class="answer"><span>A</span>C</div>
-          <div class="answer correct"><span>B</span>D</div>
-          <div class="answer"><span>C</span>E</div>
-          <div class="answer"><span>D</span>F</div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="top"><div class="num">14</div><h2>Listen and identify the note.</h2></div>
-        <button class="speaker" data-note="G4" type="button" aria-label="Play note">)))</button>
-        <div class="answers locked">
-          <div class="answer correct"><span>A</span>G</div>
-          <div class="answer"><span>B</span>A</div>
-          <div class="answer"><span>C</span>B</div>
-          <div class="answer"><span>D</span>C</div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="top"><div class="num">19</div><h2>How many lines are there on the staff?</h2></div>
-        <div class="answers">
-          <div class="answer"><span>A</span>3</div>
-          <div class="answer"><span>B</span>4</div>
-          <div class="answer correct"><span>C</span>5</div>
-          <div class="answer"><span>D</span>6</div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="top"><div class="num">20</div><h2>Which clef is this?</h2></div>
-        <div class="staff">𝄢</div>
-        <div class="answers">
-          <div class="answer"><span>A</span>Treble Clef</div>
-          <div class="answer correct"><span>B</span>Bass Clef</div>
-          <div class="answer"><span>C</span>Alto Clef</div>
-          <div class="answer"><span>D</span>Tenor Clef</div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="top"><div class="num">20</div><h2>Which of these is a black key?</h2></div>
-        <div class="answers">
-          <div class="answer"><span>A</span>C</div>
-          <div class="answer"><span>B</span>D</div>
-          <div class="answer correct"><span>C</span>F#</div>
-          <div class="answer"><span>D</span>E</div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="top"><div class="num">25</div><h2>Which note value is represented by this symbol?</h2></div>
-        <div class="big-symbol">𝅘𝅥</div>
-        <div class="answers">
-          <div class="answer"><span>A</span>Semibreve</div>
-          <div class="answer"><span>B</span>Minim</div>
-          <div class="answer correct"><span>C</span>Crotchet</div>
-          <div class="answer"><span>D</span>Quaver</div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="top"><div class="num">26</div><h2>Which time signature is 4 beats per measure?</h2></div>
-        <div class="answers">
-          <div class="answer"><span>A</span>2/4</div>
-          <div class="answer"><span>B</span>3/4</div>
-          <div class="answer correct"><span>C</span>4/4</div>
-          <div class="answer"><span>D</span>6/8</div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="top"><div class="num">27</div><h2>Which dynamic marking means “Very soft”?</h2></div>
-        <div class="answers">
-          <div class="answer"><span>A</span><i>p</i></div>
-          <div class="answer correct"><span>B</span><i>pp</i></div>
-          <div class="answer"><span>C</span><i>f</i></div>
-          <div class="answer"><span>D</span><i>ff</i></div>
-        </div>
-      </div>
-
-    </section>
+  <main>
+    <section class="quiz-grid" id="quiz" aria-label="Music theory questions"></section>
   </main>
 
-  <a class="next-page-btn" href="/dashboard">Next Page &#8594;</a>
+  <div class="actions">
+    <button class="pill ghost" id="exit-btn" type="button">Exit</button>
+    <a class="pill" id="next-part" href="/level4-part2">Next Part &rarr;</a>
+  </div>
 
   <script>
-    (function initQuizCards() {
-      const cards = document.querySelectorAll('.quiz-grid .card');
-      const scoreElement = document.getElementById('scoreValue');
-      const timeElement = document.getElementById('timeValue');
-      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-      let score = 0;
-      let totalSeconds = 29 * 60 + 59;
+    const questions = [
+      {
+        q: "Which note has 1 beat?",
+        visual: "note-values",
+        answers: ["Semibreve", "Minim", "Crotchet", "Quaver"],
+        correct: 2
+      },
+      {
+        q: "Which symbol is used for \"Play the note loudly\"?",
+        visual: "none",
+        answers: ["p", "f", "mp", "ff"],
+        correct: 1
+      },
+      {
+        q: "Which note has 1/2 beat?",
+        visual: "note-values",
+        answers: ["Semibreve", "Minim", "Crotchet", "Quaver"],
+        correct: 3
+      },
+      {
+        q: "Which note has 4 beats?",
+        visual: "note-values",
+        answers: ["Semibreve", "Minim", "Crotchet", "Quaver"],
+        correct: 0
+      },
+      {
+        q: "Which key is A?",
+        visual: "piano-a",
+        answers: ["A", "B", "C", "D"],
+        correct: 0
+      },
+      {
+        q: "How many beats does a crotchet have?",
+        visual: "none",
+        answers: ["1", "2", "3", "4"],
+        correct: 0
+      },
+      {
+        q: "Which of these is a rest symbol?",
+        visual: "rests",
+        answers: ["A", "B", "C", "D"],
+        correct: 0
+      },
+      {
+        q: "Listen and identify the note.",
+        visual: "speaker-d",
+        answers: ["C", "D", "E", "F"],
+        correct: 1
+      },
+      {
+        q: "Listen and identify the note.",
+        visual: "speaker-g",
+        answers: ["G", "A", "B", "C"],
+        correct: 0
+      },
+      {
+        q: "How many lines are there on the staff?",
+        visual: "none",
+        answers: ["3", "4", "5", "6"],
+        correct: 2
+      },
+      {
+        q: "Which clef is this?",
+        visual: "bass-clef",
+        answers: ["Treble Clef", "Bass Clef", "Alto Clef", "Tenor Clef"],
+        correct: 1
+      },
+      {
+        q: "Which of these is a black key?",
+        visual: "none",
+        answers: ["C", "D", "F#", "E"],
+        correct: 2
+      },
+      {
+        q: "Which note value is represented by this symbol?",
+        visual: "single-quarter",
+        answers: ["Semibreve", "Minim", "Crotchet", "Quaver"],
+        correct: 2
+      },
+      {
+        q: "Which time signature is 4 beats per measure?",
+        visual: "none",
+        answers: ["2/4", "3/4", "4/4", "6/8"],
+        correct: 2
+      },
+      {
+        q: "Which dynamic marking means \"Very soft\"?",
+        visual: "none",
+        answers: ["p", "pp", "f", "ff"],
+        correct: 1
+      }
+    ];
 
-      const noteFrequencies = {
-        C4: 261.63,
-        D4: 293.66,
-        E4: 329.63,
-        F4: 349.23,
-        G4: 392.0,
-        A4: 440.0,
-        B4: 493.88
-      };
+    const quiz = document.querySelector("#quiz");
+    const score = document.querySelector("#score");
+    const time = document.querySelector("#time");
+    const userAnswers = new Map();
 
-      const playNote = async (noteName, speaker) => {
-        if (!noteFrequencies[noteName]) {
-          return;
-        }
+    const TOTAL_SECONDS = 30 * 60;
+    const TIMER_END_KEY = "level4_shared_timer_end";
 
-        if (audioContext.state === 'suspended') {
-          await audioContext.resume();
-        }
+    const getRemainingSeconds = () => {
+      const now = Date.now();
+      let timerEnd = Number(sessionStorage.getItem(TIMER_END_KEY) || 0);
 
-        const now = audioContext.currentTime;
-        const oscillator = audioContext.createOscillator();
-        const gainNode = audioContext.createGain();
+      if (!timerEnd) {
+        timerEnd = now + (TOTAL_SECONDS * 1000);
+        sessionStorage.setItem(TIMER_END_KEY, String(timerEnd));
+      }
 
-        oscillator.type = 'triangle';
-        oscillator.frequency.setValueAtTime(noteFrequencies[noteName], now);
+      return Math.max(0, Math.floor((timerEnd - now) / 1000));
+    };
 
-        gainNode.gain.setValueAtTime(0.0001, now);
-        gainNode.gain.exponentialRampToValueAtTime(0.22, now + 0.03);
-        gainNode.gain.exponentialRampToValueAtTime(0.0001, now + 0.7);
+    const clearSharedTimer = () => {
+      sessionStorage.removeItem(TIMER_END_KEY);
+    };
 
-        oscillator.connect(gainNode);
-        gainNode.connect(audioContext.destination);
+    const noteFrequencies = {
+      C4: 261.63,
+      D4: 293.66,
+      E4: 329.63,
+      F4: 349.23,
+      G4: 392.0,
+      A4: 440.0,
+      B4: 493.88
+    };
 
-        speaker.classList.add('playing');
-        oscillator.start(now);
-        oscillator.stop(now + 0.72);
+    let audioContext = null;
 
-        setTimeout(() => {
-          speaker.classList.remove('playing');
-        }, 760);
-      };
+    function playNote(noteName, speakerButton) {
+      if (!noteFrequencies[noteName]) return;
 
-      const renderTime = () => {
-        const minutes = String(Math.floor(totalSeconds / 60)).padStart(2, '0');
-        const seconds = String(totalSeconds % 60).padStart(2, '0');
-        if (timeElement) {
-          timeElement.textContent = `${minutes}:${seconds}`;
-        }
-      };
+      if (!audioContext) {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      }
 
-      renderTime();
-      const timer = setInterval(() => {
-        if (totalSeconds <= 0) {
-          clearInterval(timer);
-          return;
-        }
-        totalSeconds -= 1;
-        renderTime();
-      }, 1000);
+      if (audioContext.state === "suspended") {
+        audioContext.resume();
+      }
 
-      cards.forEach((card, index) => {
-        const numberBadge = card.querySelector('.num');
-        if (numberBadge) {
-          numberBadge.textContent = String(index + 1);
-        }
+      const now = audioContext.currentTime;
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
 
-        const answers = Array.from(card.querySelectorAll('.answer'));
-        if (answers.length === 0) {
-          return;
-        }
+      oscillator.type = "triangle";
+      oscillator.frequency.setValueAtTime(noteFrequencies[noteName], now);
 
-        const speaker = card.querySelector('.speaker');
-        const answersContainer = card.querySelector('.answers');
-        let canAnswer = !speaker;
+      gainNode.gain.setValueAtTime(0.0001, now);
+      gainNode.gain.exponentialRampToValueAtTime(0.22, now + 0.03);
+      gainNode.gain.exponentialRampToValueAtTime(0.0001, now + 0.7);
 
-        if (speaker && answersContainer) {
-          speaker.addEventListener('click', async () => {
-            const noteName = speaker.dataset.note || '';
-            await playNote(noteName, speaker);
-            canAnswer = true;
-            answersContainer.classList.remove('locked');
-          });
-        }
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
 
-        answers.forEach((answer) => {
-          const isCorrect = answer.classList.contains('correct');
-          answer.dataset.correct = isCorrect ? 'true' : 'false';
-          answer.classList.remove('correct');
-          answer.setAttribute('role', 'button');
-          answer.setAttribute('tabindex', '0');
-        });
+      speakerButton.classList.add("playing");
+      oscillator.start(now);
+      oscillator.stop(now + 0.72);
 
-        let locked = false;
-        const handleAnswer = (selected) => {
-          if (locked || !canAnswer) {
-            return;
-          }
-          locked = true;
+      setTimeout(() => {
+        speakerButton.classList.remove("playing");
+      }, 760);
+    }
 
-          selected.classList.add('selected');
-          const selectedIsCorrect = selected.dataset.correct === 'true';
+    function staff(type) {
+      const isBass = type === "bass-clef";
+      return `
+        <div class="staff ${isBass ? "bass" : ""}">
+          <div class="lines"></div>
+          <div class="clef">${isBass ? "&#119074;" : "&#119070;"}</div>
+          ${isBass ? "" : '<div class="note-dot"></div>'}
+        </div>`;
+    }
 
-          if (selectedIsCorrect) {
-            selected.classList.add('reveal-correct');
-            score += 1;
-            if (scoreElement) {
-              scoreElement.textContent = String(score);
-            }
-          } else {
-            selected.classList.add('incorrect');
-            const correctAnswer = answers.find((a) => a.dataset.correct === 'true');
-            if (correctAnswer) {
-              correctAnswer.classList.add('reveal-correct');
-            }
-          }
-        };
+    function piano() {
+      const labels = ["C", "D", "E", "F", "G", "A", "B", "C"];
+      const keys = labels.map((label) => `<div class="white-key">${label}</div>`).join("");
+      return `<div class="piano">${keys}<i class="black-key b1"></i><i class="black-key b2"></i><i class="black-key b3"></i><i class="black-key b4"></i><i class="black-key b5"></i></div>`;
+    }
 
-        answers.forEach((answer) => {
-          answer.addEventListener('click', () => handleAnswer(answer));
-          answer.addEventListener('keydown', (event) => {
-            if (event.key === 'Enter' || event.key === ' ') {
-              event.preventDefault();
-              handleAnswer(answer);
-            }
-          });
+    function renderVisual(type) {
+      switch (type) {
+        case "note-values":
+          return `<div class="notes-row"><span>&#119133;</span><span>&#119134;</span><span>&#9833;</span><span>&#9834;</span></div>`;
+        case "single-quarter":
+          return `<div class="symbol-row"><span>&#9833;</span></div>`;
+        case "rests":
+          return `<div class="symbol-row"><span>&#119101;</span><span>&#119099;</span><span>&#119100;</span><span>&#119102;</span></div>`;
+        case "piano-a":
+          return piano();
+        case "bass-clef":
+          return staff(type);
+        case "speaker-d":
+          return `<button class="speaker" type="button" data-note="D4" aria-label="Play note">)))</button>`;
+        case "speaker-g":
+          return `<button class="speaker" type="button" data-note="G4" aria-label="Play note">)))</button>`;
+        default:
+          return "";
+      }
+    }
+
+    function render() {
+      quiz.innerHTML = questions.map((item, index) => {
+        const lockClass = item.visual.startsWith("speaker-") ? "locked" : "";
+        return `
+          <article class="card" data-index="${index}">
+            <span class="badge">${index + 1}</span>
+            <h2 class="question">${item.q}</h2>
+            <div class="visual">${renderVisual(item.visual)}</div>
+            <div class="answers ${lockClass}">
+              ${item.answers.map((answer, answerIndex) => `
+                <button class="answer" type="button" data-answer="${answerIndex}">
+                  <span class="letter">${String.fromCharCode(65 + answerIndex)}</span>
+                  <span>${answer}</span>
+                </button>
+              `).join("")}
+            </div>
+          </article>
+        `;
+      }).join("");
+
+      document.querySelectorAll(".speaker").forEach((speaker) => {
+        speaker.addEventListener("click", () => {
+          const card = speaker.closest(".card");
+          const answers = card.querySelector(".answers");
+          playNote(speaker.dataset.note, speaker);
+          answers.classList.remove("locked");
         });
       });
-    })();
+    }
+
+    quiz.addEventListener("click", (event) => {
+      const button = event.target.closest(".answer");
+      if (!button) return;
+
+      const answersBox = button.closest(".answers");
+      if (answersBox.classList.contains("locked")) return;
+
+      const card = button.closest(".card");
+      const index = Number(card.dataset.index);
+
+      if (userAnswers.has(index)) return;
+
+      const selectedAnswer = Number(button.dataset.answer);
+      const correctAnswer = questions[index].correct;
+
+      userAnswers.set(index, selectedAnswer);
+      button.classList.add("selected");
+
+      if (selectedAnswer === correctAnswer) {
+        button.classList.add("correct");
+        let currentScore = Number(score.textContent);
+        score.textContent = currentScore + 1;
+      } else {
+        button.classList.add("wrong");
+        const correctButton = card.querySelector(`[data-answer="${correctAnswer}"]`);
+        if (correctButton) {
+          correctButton.classList.add("correct");
+        }
+      }
+    });
+
+    document.querySelector("#exit-btn").addEventListener("click", () => {
+      if (confirm("Are you sure you want to exit the quiz? Your progress will be lost.")) {
+        clearSharedTimer();
+        window.location.href = "/lessons";
+      }
+    });
+
+    document.querySelector("#home-link").addEventListener("click", clearSharedTimer);
+
+    document.querySelector("#next-part").addEventListener("click", (event) => {
+      const fullScore = questions.length;
+      const currentScore = Number(score.textContent);
+
+      if (userAnswers.size < questions.length) {
+        event.preventDefault();
+        alert(`Please answer all ${questions.length} questions before moving to the next part.`);
+        return;
+      }
+
+      if (currentScore !== fullScore) {
+        event.preventDefault();
+        alert(`You need full score (${fullScore}/${fullScore}) to move to Part 2. Your score is ${currentScore}/${fullScore}.`);
+      }
+    });
+
+    setInterval(() => {
+      const seconds = getRemainingSeconds();
+      const minutes = String(Math.floor(seconds / 60)).padStart(2, "0");
+      const rest = String(seconds % 60).padStart(2, "0");
+      time.textContent = `${minutes}:${rest}`;
+
+      if (seconds <= 0) {
+        alert("Time is up for Level 4 Part 1 and Part 2.");
+        clearSharedTimer();
+        window.location.href = "/lessons";
+      }
+    }, 1000);
+
+    render();
   </script>
 </body>
 </html>

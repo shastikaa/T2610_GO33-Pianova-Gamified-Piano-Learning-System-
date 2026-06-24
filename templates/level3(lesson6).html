@@ -1218,6 +1218,8 @@ let demoIndex = 0;
 let demoTimer = null;
 let audioCtx = null;
 let isTabPressed = false;
+let level3CompletionSent = false;
+let autoAdvanceTimer = null;
 
 const scoreEl = document.querySelector("#score");
 const comboEl = document.querySelector("#combo");
@@ -1495,6 +1497,50 @@ function formatTime(seconds) {
   return `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
 }
 
+async function completeLevel3AndOpenLevel4() {
+  if (level3CompletionSent) return;
+  level3CompletionSent = true;
+
+  let completionSaved = false;
+
+  try {
+    const response = await fetch('/api/complete-level3', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ score })
+    });
+
+    if (response.ok) {
+      const result = await response.json().catch(() => ({}));
+      completionSaved = !!result.level_completed;
+    }
+  } catch (error) {
+    // Continue to next level even if save fails due to temporary network issues.
+  } finally {
+    // Keep lessons UI in sync only after successful completion save.
+    if (completionSaved) {
+      try {
+        const raw = localStorage.getItem('pianoLessonsProgress');
+        if (raw) {
+          const progress = JSON.parse(raw);
+          if (Array.isArray(progress)) {
+            progress.forEach((lesson) => {
+              if (!lesson || typeof lesson.id !== 'number') return;
+              if (lesson.id === 3) lesson.completed = true;
+              if (lesson.id === 4) lesson.locked = false;
+            });
+            localStorage.setItem('pianoLessonsProgress', JSON.stringify(progress));
+          }
+        }
+      } catch (storageError) {
+        // Non-blocking: backend completion remains the source of truth.
+      }
+    }
+
+    window.location.href = '/level4';
+  }
+}
+
 function showEndGamePopup(isPassed) {
   modalActionsContainer.innerHTML = "";
 
@@ -1503,21 +1549,28 @@ function showEndGamePopup(isPassed) {
     modalKicker.textContent = "BASIC LEVEL";
     modalTitle.textContent = "COMPLETED";
     modalBody.innerHTML = "You completed every treble clef and bass clef song in this level.";
-    modalCheer.textContent = "AMAZING PERFORMANCE! KEEP SHINING, THE NEXT LEVEL IS READY FOR YOU.";
+    modalCheer.textContent = "AMAZING PERFORMANCE! OPENING NEXT LEVEL...";
     modalCardsSection.style.display = "grid";
 
     const nextBtn = document.createElement("button");
     nextBtn.className = "btn-large btn-large-primary";
     nextBtn.innerHTML = `<span class="chip">🚀</span> <span class="button-text">NEXT LEVEL</span> <span class="chip">›</span>`;
-    nextBtn.onclick = () => { closePopup(); window.location.href = "/lesson2-1-latest"; };
+    nextBtn.onclick = () => { closePopup(); completeLevel3AndOpenLevel4(); };
 
     const homeBtnModal = document.createElement("button");
     homeBtnModal.className = "btn-large btn-large-secondary";
     homeBtnModal.innerHTML = `<span class="chip">‹</span> <span class="button-text">HOME</span>`;
-    homeBtnModal.onclick = () => { window.location.href = "index.html"; };
+    homeBtnModal.onclick = () => {
+      if (autoAdvanceTimer) clearTimeout(autoAdvanceTimer);
+      window.location.href = "/lessons";
+    };
 
     modalActionsContainer.appendChild(nextBtn);
     modalActionsContainer.appendChild(homeBtnModal);
+
+    autoAdvanceTimer = setTimeout(() => {
+      completeLevel3AndOpenLevel4();
+    }, 1200);
   } else {
     modalTrophy.textContent = "❌";
     modalKicker.textContent = "TRY AGAIN";
@@ -1534,7 +1587,7 @@ function showEndGamePopup(isPassed) {
     const homeBtnModal = document.createElement("button");
     homeBtnModal.className = "btn-large btn-large-secondary";
     homeBtnModal.innerHTML = `<span class="chip">‹</span> <span class="button-text">HOME</span>`;
-    homeBtnModal.onclick = () => { window.location.href = "index.html"; };
+    homeBtnModal.onclick = () => { window.location.href = "/lessons"; };
 
     modalActionsContainer.appendChild(retryBtn);
     modalActionsContainer.appendChild(homeBtnModal);
@@ -1548,6 +1601,8 @@ function closePopup() {
 }
 
 function resetGame() {
+  if (autoAdvanceTimer) clearTimeout(autoAdvanceTimer);
+  level3CompletionSent = false;
   songIndex = 0; score = 0; combo = 0; maxCombo = 0; lives = 5; paused = false; isTabPressed = false;
   stopDemo();
   feedbackEl.textContent = "READY";
@@ -1600,8 +1655,8 @@ window.addEventListener("blur", () => { isTabPressed = false; });
 pauseBtn.addEventListener("click", () => { if (isDemoRunning) stopDemo(); paused = !paused; feedbackEl.textContent = paused ? "PAUSED" : "READY"; });
 demoBtn.addEventListener("click", startDemo);
 resetBtn.addEventListener("click", resetGame);
-exitBtn.addEventListener("click", () => window.location.href = "index.html");
-homeBtn.addEventListener("click", () => window.location.href = "index.html");
+exitBtn.addEventListener("click", () => window.location.href = "/lessons");
+homeBtn.addEventListener("click", () => window.location.href = "/lessons");
 
 setupGame();
 </script>

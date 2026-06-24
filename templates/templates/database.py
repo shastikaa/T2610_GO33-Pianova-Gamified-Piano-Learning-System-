@@ -306,6 +306,157 @@ def _create_indexes(cursor):
     cursor.execute("CREATE INDEX IF NOT EXISTS idx_practice_sessions_user ON practice_sessions(user_id)")
 
 
+def _create_user_lookup_views(cursor):
+    cursor.execute("DROP VIEW IF EXISTS scores_with_usernames")
+    cursor.execute(
+        """
+        CREATE VIEW scores_with_usernames AS
+        SELECT
+            s.id,
+            s.user_id,
+            u.username,
+            s.game_type,
+            s.score,
+            s.recorded_at
+        FROM scores s
+        JOIN users u ON u.id = s.user_id
+        """
+    )
+
+    cursor.execute("DROP VIEW IF EXISTS quiz_scores_with_usernames")
+    cursor.execute(
+        """
+        CREATE VIEW quiz_scores_with_usernames AS
+        SELECT
+            qs.id,
+            qs.user_id,
+            u.username,
+            qs.level_id,
+            COALESCE(l.level_name, 'N/A') AS level_name,
+            qs.task_id,
+            COALESCE(t.task_name, 'N/A') AS task_name,
+            qs.quiz_name,
+            qs.score,
+            qs.total_questions,
+            qs.correct_answers,
+            qs.attempt_no,
+            qs.passed,
+            qs.submitted_at
+        FROM quiz_scores qs
+        JOIN users u ON u.id = qs.user_id
+        LEFT JOIN levels l ON l.id = qs.level_id
+        LEFT JOIN tasks t ON t.id = qs.task_id
+        """
+    )
+
+    cursor.execute("DROP VIEW IF EXISTS progress_with_usernames")
+    cursor.execute(
+        """
+        CREATE VIEW progress_with_usernames AS
+        SELECT
+            p.id,
+            p.user_id,
+            u.username,
+            p.level_id,
+            l.level_name,
+            p.status,
+            p.progress_percent,
+            p.started_at,
+            p.completed_at,
+            p.updated_at
+        FROM progress p
+        JOIN users u ON u.id = p.user_id
+        JOIN levels l ON l.id = p.level_id
+        """
+    )
+
+    cursor.execute("DROP VIEW IF EXISTS user_task_progress_with_usernames")
+    cursor.execute(
+        """
+        CREATE VIEW user_task_progress_with_usernames AS
+        SELECT
+            utp.id,
+            utp.user_id,
+            u.username,
+            utp.task_id,
+            t.task_name,
+            t.level_id,
+            utp.status,
+            utp.attempts,
+            utp.best_score,
+            utp.last_score,
+            utp.last_attempt_at,
+            utp.completed_at
+        FROM user_task_progress utp
+        JOIN users u ON u.id = utp.user_id
+        JOIN tasks t ON t.id = utp.task_id
+        """
+    )
+
+    cursor.execute("DROP VIEW IF EXISTS user_level_progress_with_usernames")
+    cursor.execute(
+        """
+        CREATE VIEW user_level_progress_with_usernames AS
+        SELECT
+            ulp.id,
+            ulp.user_id,
+            u.username,
+            ulp.level_id,
+            l.level_name,
+            ulp.status,
+            ulp.completed_tasks,
+            ulp.total_tasks,
+            ulp.attempts,
+            ulp.best_score,
+            ulp.started_at,
+            ulp.completed_at,
+            ulp.last_activity_at
+        FROM user_level_progress ulp
+        JOIN users u ON u.id = ulp.user_id
+        JOIN levels l ON l.id = ulp.level_id
+        """
+    )
+
+    cursor.execute("DROP VIEW IF EXISTS certificates_with_usernames")
+    cursor.execute(
+        """
+        CREATE VIEW certificates_with_usernames AS
+        SELECT
+            c.id,
+            c.user_id,
+            u.username,
+            c.level_id,
+            COALESCE(l.level_name, 'N/A') AS level_name,
+            c.cert_ref_id,
+            c.certificate_no,
+            c.title,
+            c.issued_for,
+            c.score_snapshot,
+            c.completion_date,
+            c.created_at
+        FROM certificates c
+        JOIN users u ON u.id = c.user_id
+        LEFT JOIN levels l ON l.id = c.level_id
+        """
+    )
+
+    cursor.execute("DROP VIEW IF EXISTS practice_sessions_with_usernames")
+    cursor.execute(
+        """
+        CREATE VIEW practice_sessions_with_usernames AS
+        SELECT
+            ps.id,
+            ps.user_id,
+            u.username,
+            ps.game_type,
+            ps.duration_seconds,
+            ps.started_at
+        FROM practice_sessions ps
+        JOIN users u ON u.id = ps.user_id
+        """
+    )
+
+
 def seed_levels(cursor):
     levels = [
         (1, 'Level 1', 'Basic Notes', 1, 0),
@@ -373,6 +524,7 @@ def init_db(app):
     _backfill_timestamp_columns(cursor)
     _backfill_certificate_reference_ids(cursor)
     _create_indexes(cursor)
+    _create_user_lookup_views(cursor)
 
     seed_user(cursor, 'admin', 'admin123', 'admin')
     seed_user(cursor, 'student', '1234', 'user')

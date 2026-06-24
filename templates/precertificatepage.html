@@ -247,9 +247,13 @@ function openDetail(type){
   modal.classList.add("open");
 }
 function closeDetail(){modal.classList.remove("open")}
-document.querySelector("#downloadBtn").onclick=downloadCertificate;
-document.querySelector("#modalDownload").onclick=downloadCertificate;
-document.querySelector("#printBtn").onclick=printCertificate;
+document.querySelector("#downloadBtn").onclick=()=>{window.location.href="/certificate?download=1"};
+document.querySelector("#modalDownload").onclick=()=>{window.location.href="/certificate?download=1"};
+document.querySelector("#printBtn").onclick=()=>{
+  const w=window.open("/certificate?print=1","_blank");
+  if(!w){showToast("Pop-up blocked. Allow pop-ups to print certificate.");return}
+  showToast("Certificate print page opened.");
+};
 document.querySelector("#closeModal").onclick=closeDetail;
 document.querySelector("#homeBtn").onclick=()=>{showToast("Home selected. Progress summary refreshed.");animateNumbers()};
 document.querySelectorAll(".req").forEach(b=>b.onclick=()=>openDetail(b.dataset.detail));

@@ -527,8 +527,10 @@
       <div class="statement">
         <div class="statement-divider"></div>
         <p class="cert-line">This is to certify that</p>
+        <p class="recipient-name">{{ issued_for }}</p>
         <div class="statement-divider"></div>
         <p class="completion-line">has successfully completed the</p>
+        <p class="course-name">{{ certificate_title }}</p>
         <p class="mastery-line">and achieved all Levels of Mastery.</p>
       </div>
     </div>
@@ -558,4 +560,80 @@
     </div>
   </div>
 </body>
+<script>
+  function triggerDownload(fileUrl, fileName) {
+    const link = document.createElement('a');
+    link.href = fileUrl;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  }
+
+  function downloadRenderedCertificate() {
+    const certificateNode = document.querySelector('.certificate');
+    if (!certificateNode) return;
+
+    const rect = certificateNode.getBoundingClientRect();
+    const width = Math.max(1, Math.round(rect.width));
+    const height = Math.max(1, Math.round(rect.height));
+    const styleTag = document.querySelector('style');
+    const embeddedStyles = styleTag ? styleTag.textContent : '';
+    const clonedCertificate = certificateNode.cloneNode(true);
+    const safeCertificateMarkup = clonedCertificate.outerHTML.replace(/<br\s*>/gi, '<br/>');
+
+    const svgMarkup = `<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
+  <foreignObject x="0" y="0" width="100%" height="100%">
+    <div xmlns="http://www.w3.org/1999/xhtml">
+      <style>${embeddedStyles}</style>
+      ${safeCertificateMarkup}
+    </div>
+  </foreignObject>
+</svg>`;
+
+    const svgBlob = new Blob([svgMarkup], { type: 'image/svg+xml;charset=utf-8' });
+    const svgUrl = URL.createObjectURL(svgBlob);
+    const image = new Image();
+
+    image.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      const context = canvas.getContext('2d');
+      if (context) {
+        try {
+          context.drawImage(image, 0, 0);
+          const pngUrl = canvas.toDataURL('image/png');
+          triggerDownload(pngUrl, 'pianova-certificate.png');
+        } catch (error) {
+          // Fallback when canvas export is blocked by browser security.
+          triggerDownload(svgUrl, 'pianova-certificate.svg');
+        }
+      }
+      setTimeout(() => URL.revokeObjectURL(svgUrl), 1500);
+    };
+
+    image.onerror = () => {
+      // Fallback when image rendering fails.
+      triggerDownload(svgUrl, 'pianova-certificate.svg');
+      setTimeout(() => URL.revokeObjectURL(svgUrl), 1500);
+    };
+
+    image.src = svgUrl;
+  }
+
+  // Auto-open print dialog when opened via /certificate?print=1
+  const searchParams = new URLSearchParams(window.location.search);
+  if (searchParams.get('download') === '1') {
+    window.addEventListener('load', () => {
+      setTimeout(downloadRenderedCertificate, 300);
+    });
+  }
+  if (searchParams.get('print') === '1') {
+    window.addEventListener('load', () => {
+      setTimeout(() => window.print(), 250);
+    });
+  }
+</script>
 </html>

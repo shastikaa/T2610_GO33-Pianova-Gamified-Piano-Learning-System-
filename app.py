@@ -685,7 +685,8 @@ def level1_notes():
 @login_required
 @role_required('user')
 def game2():
-    return render_template('game2.html')
+    # Legacy endpoint fallback: route old game2 entry to level4 part1.
+    return render_template('level4(part1).html')
 
 
 @app.route('/level1-lesson1', methods=['GET'])
@@ -798,13 +799,57 @@ def lesson3_4():
     return render_template('level3(lesson4).html')
 
 
+@app.route('/lesson3-5', methods=['GET'])
+@app.route('/level3(lesson5).html', methods=['GET'])
+@app.route('/level3(lesson5).html.html', methods=['GET'])
+@login_required
+@role_required('user')
+def lesson3_5():
+    return render_template('level3(lesson5).html')
+
+
+@app.route('/lesson3-6', methods=['GET'])
+@app.route('/level3(lesson6).html', methods=['GET'])
+@app.route('/level3(lesson6).html.html', methods=['GET'])
+@login_required
+@role_required('user')
+def lesson3_6():
+    return render_template('level3(lesson6).html')
+
+
 @app.route('/level4', methods=['GET'])
+@app.route('/level4-part1', methods=['GET'])
 @app.route('/game4', methods=['GET'])
 @app.route('/level4.html', methods=['GET'])
 @login_required
 @role_required('user')
 def level4():
-    return render_template('level4.html')
+    return render_template('level4(part1).html')
+
+
+@app.route('/level4-part2', methods=['GET'])
+@app.route('/level4(part2).html', methods=['GET'])
+@login_required
+@role_required('user')
+def level4_part2():
+    return render_template('level4(part2).html')
+
+
+@app.route('/level4-part3', methods=['GET'])
+@app.route('/level4(part3).html', methods=['GET'])
+@login_required
+@role_required('user')
+def level4_part3():
+    return render_template('level4(part3).html')
+
+
+@app.route('/precertificatepage', methods=['GET'])
+@app.route('/precertificatepage.html', methods=['GET'])
+@app.route('/precertificate.html', methods=['GET'])
+@login_required
+@role_required('user')
+def precertificate_page():
+    return render_template('precertificatepage.html')
 
 
 @app.route('/api/save-game2', methods=['POST'])
@@ -877,6 +922,31 @@ def complete_level1():
     save_progress(user_id, 1, 'completed')
     save_task_progress(user_id, task_id=1, status='completed', last_score=score)
     session['level'] = max(int(session.get('level', 1)), 1)
+
+    return {
+        'status': 'ok',
+        'level_completed': True,
+        'certificate_issued': False,
+        'certificate_no': None,
+        'certificate_url': None,
+    }
+
+
+@app.route('/api/complete-level3', methods=['POST'])
+@login_required
+@role_required('user')
+def complete_level3():
+    data = request.get_json(silent=True) or {}
+
+    try:
+        score = int(data.get('score', 0))
+    except (TypeError, ValueError):
+        score = 0
+    score = max(0, min(score, 1000))
+
+    user_id = session['user_id']
+    save_progress(user_id, 3, 'completed')
+    session['level'] = max(int(session.get('level', 1)), 3)
 
     return {
         'status': 'ok',

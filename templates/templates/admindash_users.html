@@ -746,8 +746,9 @@
         <thead>
           <tr>
             <th>No.</th>
+            <th>User ID</th>
             <th>Username</th>
-            <th>Password</th>
+            <th>Password Status</th>
             <th>Joined On</th>
             <th>Role</th>
             <th>Actions</th>
@@ -759,16 +760,17 @@
           {% for account in accounts %}
           <tr>
             <td>{{ loop.index }}</td>
+            <td>#{{ account.id }}</td>
             <td><div class="user-cell"><span class="face"></span>{{ account.username }}</div></td>
-            <td class="password-cell" data-password="{{ account.password }}">{{ account.password }}</td>
+            <td class="password-cell masked" data-password="{{ account.password }}">Stored securely</td>
             <td>{{ (account.created_at or '')[:10] if account.created_at else 'N/A' }}</td>
             <td><span class="role">{{ account.role|capitalize }}</span></td>
-            <td><button class="action copy-password-btn" type="button" data-password="{{ account.password }}">Copy</button></td>
+            <td><button class="action copy-password-btn" type="button" data-password="{{ account.password }}">Copy Hash</button></td>
           </tr>
           {% endfor %}
           {% else %}
           <tr>
-            <td colspan="6">No registered users yet.</td>
+            <td colspan="7">No registered users yet.</td>
           </tr>
           {% endif %}
         </tbody>
@@ -789,28 +791,24 @@
 
       const toggleBtn = document.getElementById('togglePasswordsBtn');
       const passwordCells = Array.from(document.querySelectorAll('.password-cell[data-password]'));
-      let showingPasswords = true;
+      let showingPasswords = false;
 
       function applyPasswordVisibility() {
         for (const cell of passwordCells) {
           const value = cell.getAttribute('data-password') || '';
           if (showingPasswords) {
-            if (value.length > 38) {
-              cell.textContent = value.slice(0, 26) + '...' + value.slice(-9);
-            } else {
-              cell.textContent = value;
-            }
+            cell.textContent = value ? 'Stored hash' : '';
             cell.title = value;
             cell.classList.remove('masked');
           } else {
-            cell.textContent = value ? '********' : '';
+            cell.textContent = value ? 'Stored securely' : '';
             cell.title = '';
             cell.classList.add('masked');
           }
         }
 
         if (toggleBtn) {
-          toggleBtn.textContent = showingPasswords ? 'Hide Passwords' : 'Show Passwords';
+          toggleBtn.textContent = showingPasswords ? 'Show Stored Hashes' : 'Hide Stored Hashes';
         }
       }
 

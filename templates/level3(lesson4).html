@@ -1285,7 +1285,7 @@ function showEndGamePopup(isPassed) {
     modalBody.textContent = `You finished the song! Total Score: ${score}.`;
     
     // Stripped Replay option from Victory container layout
-    const nextBtn = createModalButton("Next Lesson", "primary", () => { closePopup(); window.location.href = '/lessons/5'; });
+    const nextBtn = createModalButton("Next Lesson", "primary", () => { closePopup(); window.location.href = '/lesson3-5'; });
     const homeBtn = createModalButton("Home", "secondary", () => { closePopup(); window.location.href = '/lessons'; });
     
     modalActions.appendChild(nextBtn);

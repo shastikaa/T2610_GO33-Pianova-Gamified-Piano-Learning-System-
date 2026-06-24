@@ -1319,10 +1319,16 @@ function showEndGamePopup(isPassed) {
     // Removed Replay button strictly for direct clean continuation mapping flow
     const nextLevelBtn = createModalButton("next lesson", "primary", () => {
       closePopup();
-      window.location.href = "lessons.html";
+      window.location.href = "/lesson3-6";
+    });
+
+    const homeBtn = createModalButton("Home", "secondary", () => {
+      closePopup();
+      window.location.href = "/lessons";
     });
 
     modalActions.appendChild(nextLevelBtn);
+    modalActions.appendChild(homeBtn);
   } else {
     modalTrophy.textContent = "❌";
     modalTitle.textContent = "Failed!";
@@ -1437,7 +1443,7 @@ demoBtn.addEventListener("click", startDemo);
 resetBtn.addEventListener("click", resetGame);
 
 const handleexit = () => {
-  window.location.href = "index.html";
+  window.location.href = "/lessons";
 };
 
 homeBtn.addEventListener("click", handleexit);

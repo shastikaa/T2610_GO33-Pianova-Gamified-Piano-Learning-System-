@@ -16,6 +16,7 @@ from templates.templates.database import (
     add_score,
     add_practice_session,
     create_user,
+    delete_user_by_username,
     fetch_user_by_username,
     get_all_accounts,
     get_admin_metrics,
@@ -633,6 +634,51 @@ def admin_users():
         metrics=get_admin_metrics(),
         accounts=get_registered_users(),
     )
+
+
+@app.route('/admin-users/reset-password', methods=['POST'])
+@login_required
+@role_required('admin')
+def admin_reset_user_password():
+    username = request.form.get('username', '').strip()
+    new_password = request.form.get('new_password', '')
+
+    if not username or not new_password:
+        flash('Username and new password are required.', 'error')
+        return redirect(url_for('admin_users'))
+
+    if len(new_password) < 4:
+        flash('New password must be at least 4 characters.', 'error')
+        return redirect(url_for('admin_users'))
+
+    account = fetch_user_by_username(username)
+    if account is None or account['role'] != 'user':
+        flash('User not found.', 'error')
+        return redirect(url_for('admin_users'))
+
+    reset_password(username, generate_password_hash(new_password))
+    flash(f'Password reset for {username}.', 'success')
+    return redirect(url_for('admin_users'))
+
+
+@app.route('/admin-users/delete', methods=['POST'])
+@login_required
+@role_required('admin')
+def admin_delete_user():
+    username = request.form.get('username', '').strip()
+
+    if not username:
+        flash('Username is required.', 'error')
+        return redirect(url_for('admin_users'))
+
+    account = fetch_user_by_username(username)
+    if account is None or account['role'] != 'user':
+        flash('User not found.', 'error')
+        return redirect(url_for('admin_users'))
+
+    delete_user_by_username(username)
+    flash(f'User {username} deleted.', 'success')
+    return redirect(url_for('admin_users'))
 
 
 @app.route('/admin-certificates')

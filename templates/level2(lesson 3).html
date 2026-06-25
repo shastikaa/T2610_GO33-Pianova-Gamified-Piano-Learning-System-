@@ -43,48 +43,7 @@
         #020304;
     }
 
-    .music-bg {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      overflow: hidden;
-      color: rgba(242, 185, 62, 0.24);
-      z-index: 0;
-    }
-
-    .music-bg span {
-      position: absolute;
-      font-family: Georgia, "Times New Roman", serif;
-      font-size: clamp(2.4rem, 5.6vw, 6.2rem);
-      line-height: 1;
-      opacity: 0.28;
-      text-shadow: 0 0 22px rgba(242, 185, 62, 0.35);
-      filter: drop-shadow(0 0 12px rgba(242, 185, 62, 0.22));
-      animation: floatNote 8s ease-in-out infinite;
-    }
-
-    .music-bg span:nth-child(1) { left: 3.5%; top: 35%; }
-    .music-bg span:nth-child(2) { right: 3.5%; top: 29%; animation-delay: 1.2s; }
-    .music-bg span:nth-child(3) { left: 5%; bottom: 13%; font-size: clamp(1.8rem, 3.2vw, 3.5rem); animation-delay: 2.4s; }
-    .music-bg span:nth-child(4) { right: 5%; bottom: 15%; font-size: clamp(2rem, 3.6vw, 4rem); animation-delay: 3.2s; }
-    .music-bg span:nth-child(5) { left: 9%; top: 18%; font-size: clamp(1.7rem, 2.8vw, 3rem); animation-delay: 4s; }
-    .music-bg span:nth-child(6) { right: 8%; top: 58%; font-size: clamp(1.8rem, 3.4vw, 3.7rem); animation-delay: 5s; }
-
-    @keyframes floatNote {
-      0%, 100% {
-        transform: translateY(0) rotate(-4deg);
-        opacity: 0.18;
-      }
-
-      50% {
-        transform: translateY(-24px) rotate(5deg);
-        opacity: 0.5;
-      }
-    }
-
     .game-page {
-      position: relative;
-      z-index: 1;
       width: min(1180px, calc(100vw - 48px));
       height: min(720px, calc(100dvh - 18px));
       margin: 0 auto;
@@ -1020,24 +979,9 @@
         font-size: 0.78rem;
       }
     }
-
-    @media (max-width: 1280px) {
-      .music-bg {
-        opacity: 0.35;
-      }
-    }
   </style>
 </head>
 <body>
-  <div class="music-bg" aria-hidden="true">
-    <span>&#119070;</span>
-    <span>&#9835;</span>
-    <span>&#9834;</span>
-    <span>&#9836;</span>
-    <span>&#9833;</span>
-    <span>&#119074;</span>
-  </div>
-
   <main class="game-page">
     <header class="top-border">
       <div class="brand-block">
@@ -1048,11 +992,16 @@
         </div>
       </div>
 
-      <div aria-hidden="true"></div>
+      <nav class="main-nav" aria-label="Game navigation">
+        <button class="nav-btn active" id="navHomeBtn" type="button">&#8962; Home</button>
+        <button class="nav-btn" id="navLeaderboardBtn" type="button">&#9819; Leaderboard</button>
+        <button class="nav-btn" id="navProfileBtn" type="button">&#9817; Profile</button>
+        <button class="nav-btn" id="navexitBtn" type="button">&#9211; exit</button>
+      </nav>
 
       <div class="top-actions">
-        <button class="round-action" id="topHomeBtn" type="button" aria-label="Home">&#8962;</button>
-        <button class="round-action" id="topExitBtn" type="button" aria-label="Exit">&#9211;</button>
+        <button class="round-action" id="soundToggleBtn" type="button" aria-label="Sound on">&#9834;</button>
+        <button class="round-action" id="topResetBtn" type="button" aria-label="Restart">&#9881;</button>
       </div>
     </header>
 
@@ -1061,7 +1010,7 @@
         <div class="stat-icon" aria-hidden="true">&#9733;</div>
         <div>
           <div class="stat-label">Score</div>
-          <div class="stat-value" id="scoreValue">0</div>
+          <div class="stat-value" id="scoreValue">1/10</div>
         </div>
       </div>
 
@@ -1070,7 +1019,7 @@
         <div>
           <div class="stat-label">Combo</div>
           <div class="combo-row">
-            <span class="stat-value" id="comboValue">0</span>
+            <span class="stat-value" id="comboValue">1</span>
             <span class="combo-note" id="comboMessage">Keep going!</span>
           </div>
         </div>
@@ -1089,7 +1038,7 @@
           <div class="stat-label">Level 1</div>
           <div class="progress-row">
             <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
-            <strong class="combo-note" id="progressPercent">0%</strong>
+            <strong class="combo-note" id="progressPercent">10%</strong>
           </div>
         </div>
       </div>
@@ -1130,10 +1079,12 @@
       <section class="game-over-screen" id="gameOverScreen" aria-hidden="true">
         <div class="game-over-card">
           <div class="game-over-heart" aria-hidden="true">&#9829;</div>
-          <h2 class="game-over-title" id="gameOverTitle">Try Again</h2>
-          <p class="game-over-score">Final score: <strong id="gameOverScore">0 / 100</strong></p>
+          <h2 class="game-over-title">Try Again</h2>
+          <p class="game-over-score">Final score: <strong id="gameOverScore">0 / 10</strong></p>
           <div class="game-over-actions">
             <button class="game-over-btn" id="btnGameOverPlayAgain" type="button">Play Again</button>
+            <button class="game-over-btn" id="btnGameOverNext" type="button">Next Lesson</button>
+            <button class="game-over-btn alt" id="btnGameOverexit" type="button">exit</button>
           </div>
         </div>
       </section>
@@ -1194,8 +1145,8 @@
     };
     const horizontalNodeSpacings = [40, 50, 60, 70];
 
-    let scoresCount = 0;
-    let currentCombo = 0;
+    let scoresCount = 1;
+    let currentCombo = 1;
     let remainingLives = TOTAL_LIVES;
     let stageIndex = 0;
     let questionIndex = 1;
@@ -1211,8 +1162,8 @@
     const instructionText = document.getElementById("instructionText");
     const gameBoard = document.querySelector(".game-board");
     const gameOverScreen = document.getElementById("gameOverScreen");
-    const gameOverTitle = document.getElementById("gameOverTitle");
     const gameOverScore = document.getElementById("gameOverScore");
+    const soundToggleBtn = document.getElementById("soundToggleBtn");
 
     function assertAudioContext() {
       if (!audioContextInstance) {
@@ -1382,7 +1333,7 @@
           triggerMessageFlush("Perfect Phrase!", "success");
 
           if (questionIndex > TOTAL_QUESTIONS) {
-            showGameOverScreen();
+            completeLesson();
             return;
           }
 
@@ -1411,15 +1362,22 @@
       propagateStatsToDashboard();
     }
 
+    function completeLesson() {
+      lessonComplete = true;
+      questionIndex = TOTAL_QUESTIONS;
+      placementSequencePointer = targetGeneratedNotes.length;
+      synchronizeNotationPanel();
+      propagateStatsToDashboard();
+      triggerMessageFlush("Congratulations! You passed Lesson 3!", "success");
+    }
+
     function showGameOverScreen() {
-      const won = scoresCount >= TOTAL_QUESTIONS && remainingLives > 0;
+      remainingLives = 0;
       currentCombo = 0;
       lessonComplete = true;
       propagateStatsToDashboard();
-      gameOverTitle.textContent = won ? "Maestro!" : "Try Again";
-      gameOverScore.textContent = `${Math.min(scoresCount * 10, 100)} / 100`;
-      document.getElementById("btnGameOverPlayAgain").textContent = won ? "Next Lesson" : "Play Again";
-      document.getElementById("btnGameOverPlayAgain").dataset.nextLesson = won ? "true" : "false";
+      const completedQuestions = Math.max(0, scoresCount - 1);
+      gameOverScore.textContent = `${completedQuestions} / ${TOTAL_QUESTIONS}`;
       gameBoard.classList.add("game-over-active");
       gameOverScreen.setAttribute("aria-hidden", "false");
       statusMessage.textContent = "Try again";
@@ -1428,8 +1386,8 @@
     }
 
     function propagateStatsToDashboard() {
-      const completionRatio = remainingLives <= 0 ? 0 : Math.round((scoresCount / TOTAL_QUESTIONS) * 100);
-      document.getElementById("scoreValue").textContent = Math.min(scoresCount * 10, 100);
+      const completionRatio = remainingLives <= 0 ? 0 : Math.max(10, Math.round((scoresCount / TOTAL_QUESTIONS) * 100));
+      document.getElementById("scoreValue").textContent = `${scoresCount}/${TOTAL_QUESTIONS}`;
       document.getElementById("comboValue").textContent = currentCombo;
       document.getElementById("comboMessage").textContent = currentCombo > 4 ? "Excellent!" : "Keep going!";
       document.getElementById("livesValue").textContent = "\u2665".repeat(remainingLives) + "\u2661".repeat(TOTAL_LIVES - remainingLives);
@@ -1449,8 +1407,8 @@
     }
 
     function rebootSessionState(alertPrompt = "Sequence ready") {
-      scoresCount = 0;
-      currentCombo = 0;
+      scoresCount = 1;
+      currentCombo = 1;
       remainingLives = TOTAL_LIVES;
       stageIndex = 0;
       questionIndex = 1;
@@ -1486,6 +1444,9 @@
 
     function toggleSoundState() {
       isSoundMuted = !isSoundMuted;
+      soundToggleBtn.classList.toggle("muted", isSoundMuted);
+      soundToggleBtn.setAttribute("aria-label", isSoundMuted ? "Sound off" : "Sound on");
+      soundToggleBtn.innerHTML = isSoundMuted ? "&#9833;" : "&#9834;";
       triggerMessageFlush(isSoundMuted ? "Sound muted" : "Sound on", isSoundMuted ? "error" : "success");
     }
 
@@ -1503,16 +1464,16 @@
 
     document.getElementById("btnListen").addEventListener("click", streamSequenceAudio);
     document.getElementById("btnReset").addEventListener("click", () => rebootSessionState());
-    document.getElementById("topHomeBtn").addEventListener("click", () => navigateTo("/lessons"));
-    document.getElementById("topExitBtn").addEventListener("click", () => navigateTo("/"));
-    document.getElementById("btnGameOverPlayAgain").addEventListener("click", event => {
-      if (event.currentTarget.dataset.nextLesson === "true") {
-        navigateTo(window.location.protocol.startsWith("http") ? "/lesson2-4" : "level 2(lesson 4).html");
-        return;
-      }
-      rebootSessionState("New round ready");
-    });
+    document.getElementById("topResetBtn").addEventListener("click", () => rebootSessionState());
+    document.getElementById("btnGameOverPlayAgain").addEventListener("click", () => rebootSessionState("New round ready"));
+    document.getElementById("btnGameOverNext").addEventListener("click", () => navigateTo("/lesson2-4"));
+    document.getElementById("btnGameOverexit").addEventListener("click", () => navigateTo("/lessons"));
+    document.getElementById("navHomeBtn").addEventListener("click", () => navigateTo("/dashboard"));
+    document.getElementById("navLeaderboardBtn").addEventListener("click", () => navigateTo("/dashboard#scores"));
+    document.getElementById("navProfileBtn").addEventListener("click", () => navigateTo("/dashboard"));
+    document.getElementById("navexitBtn").addEventListener("click", () => navigateTo("/lessons"));
     document.getElementById("lessonMenuBtn").addEventListener("click", () => navigateTo("/lessons"));
+    soundToggleBtn.addEventListener("click", toggleSoundState);
 
     drawStaffLinesGrid();
     buildPianoKeyboardLayout();

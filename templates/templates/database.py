@@ -579,6 +579,12 @@ def reset_password(username, new_password_hash):
     db.commit()
 
 
+def delete_user_by_username(username):
+    db = get_db()
+    db.execute("DELETE FROM users WHERE username = ?", (username,))
+    db.commit()
+
+
 def save_progress(user_id, level_id, status):
     normalized_status = status if status in PROGRESS_STATUSES else 'in_progress'
     progress_percent = 100 if normalized_status == 'completed' else 0

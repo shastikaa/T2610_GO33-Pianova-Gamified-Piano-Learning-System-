@@ -311,7 +311,7 @@ function showCompletion(won) {
                 <div class="home-actions">
                     <button class="primary-btn" onclick="restartGame()">Play Again</button>
                     <button class="primary-btn" onclick="goNextLesson()">Next Lesson</button>
-                    <button class="ghost-btn" onclick="goexit()">exit</button>
+                    <button class="ghost-btn" onclick="goExit()">Exit</button>
                 </div>
             </div>
         </section>
@@ -326,7 +326,7 @@ function goNextLesson() {
     }
 }
 
-function goexit() {
+function goExit() {
     if (window.location.protocol.startsWith('http')) {
         window.location.href = '/';
     } else {

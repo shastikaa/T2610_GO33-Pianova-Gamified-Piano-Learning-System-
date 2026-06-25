@@ -83,7 +83,7 @@
   // Main finish level action
   function finishLevelAction() {
     if (levelCompleted) {
-      showRewardMessage("🎉 Level already mastered! Try the next level soon! 🎉", false);
+      showRewardMessage("🎉 Level already mastered! Try the next lesson soon! 🎉", false);
       return;
     }
     

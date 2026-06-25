@@ -335,8 +335,7 @@
 
             try {
                 const data = await postJson('{{ url_for("send_auth_code_api") }}', { email });
-                const localCode = data.debug_otp ? ` Local test OTP: ${data.debug_otp}` : '';
-                setStatus(`${data.message}${localCode}`, 'success');
+                setStatus(data.message, 'success');
                 otpInput.focus();
             } catch (error) {
                 setStatus(error.message, 'error');

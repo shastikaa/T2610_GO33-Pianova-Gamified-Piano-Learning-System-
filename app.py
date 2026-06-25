@@ -37,6 +37,36 @@ from templates.templates.database import (
     save_task_progress,
 )
 
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+
+def load_env_file(path=None):
+    path = path or os.path.join(BASE_DIR, '.env')
+
+    if not os.path.exists(path):
+        return
+
+    env_values = {}
+    with open(path, encoding='utf-8') as env_file:
+        for raw_line in env_file:
+            line = raw_line.strip()
+            if not line or line.startswith('#') or '=' not in line:
+                continue
+
+            key, value = line.split('=', 1)
+            key = key.strip()
+            value = value.strip().strip('"').strip("'")
+
+            if key:
+                env_values[key] = value
+
+    for key, value in env_values.items():
+        os.environ.setdefault(key, value)
+
+
+load_env_file()
+
 app = Flask(__name__, static_folder='static')
 app.secret_key = "secret123"
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
@@ -288,8 +318,8 @@ def send_verification_email(recipient_email, code):
     smtp_port = int(os.getenv('PIANOVA_SMTP_PORT', '465'))
     smtp_user = os.getenv('PIANOVA_SMTP_USER', '').strip()
     # Gmail app passwords are often shown with spaces for readability.
-    # Remove all spaces so both "abcd efgh ijkl mnop" and "abcdefghijklmnop" work.
-    smtp_password = os.getenv('PIANOVA_SMTP_PASSWORD', '').strip().replace(' ', '')
+    # Remove whitespace so both "abcd efgh ijkl mnop" and "abcdefghijklmnop" work.
+    smtp_password = ''.join(os.getenv('PIANOVA_SMTP_PASSWORD', '').split())
     smtp_from = os.getenv('PIANOVA_SMTP_FROM', smtp_user).strip()
 
     if not smtp_user or not smtp_password or not smtp_from:
@@ -313,16 +343,28 @@ def send_verification_email(recipient_email, code):
     use_tls = str(os.getenv('PIANOVA_SMTP_USE_TLS', 'false')).strip().lower() in {'1', 'true', 'yes'}
 
     if use_tls:
-        with smtplib.SMTP(smtp_host, smtp_port, timeout=20) as server:
-            server.ehlo()
-            server.starttls(context=ssl.create_default_context())
-            server.login(smtp_user, smtp_password)
-            server.send_message(message)
+        try:
+            with smtplib.SMTP(smtp_host, smtp_port, timeout=20) as server:
+                server.ehlo()
+                server.starttls(context=ssl.create_default_context())
+                server.login(smtp_user, smtp_password)
+                server.send_message(message)
+        except smtplib.SMTPAuthenticationError as error:
+            raise RuntimeError(
+                'Gmail rejected the SMTP login. Use a Google App Password for '
+                f'{smtp_user}, not the normal Gmail password, then restart the app.'
+            ) from error
         return
 
-    with smtplib.SMTP_SSL(smtp_host, smtp_port, timeout=20, context=ssl.create_default_context()) as server:
-        server.login(smtp_user, smtp_password)
-        server.send_message(message)
+    try:
+        with smtplib.SMTP_SSL(smtp_host, smtp_port, timeout=20, context=ssl.create_default_context()) as server:
+            server.login(smtp_user, smtp_password)
+            server.send_message(message)
+    except smtplib.SMTPAuthenticationError as error:
+        raise RuntimeError(
+            'Gmail rejected the SMTP login. Use a Google App Password for '
+            f'{smtp_user}, not the normal Gmail password, then restart the app.'
+        ) from error
 
 
 def cleanup_expired_auth_codes(now_ts):
@@ -515,7 +557,6 @@ def send_auth_code_api():
         if ALLOW_LOCAL_OTP_FALLBACK and (app.debug or is_local_request) and 'SMTP is not configured' in error_text:
             return {
                 'message': 'SMTP is not configured. Using local OTP fallback for development.',
-                'debug_otp': code,
             }
 
         auth_code_store.pop(email, None)

@@ -16,6 +16,7 @@ from templates.templates.database import (
     add_score,
     add_practice_session,
     create_user,
+    fetch_user_by_email,
     fetch_user_by_username,
     get_all_accounts,
     get_admin_metrics,
@@ -386,11 +387,17 @@ def login():
 def register():
     if request.method == 'POST':
         username = request.form.get('username', '').strip()
+        raw_email = request.form.get('email', '').strip()
         password = request.form.get('password', '')
         confirm_password = request.form.get('confirm_password', '')
 
-        if not username or not password:
-            flash('Username and password are required.', 'error')
+        if not username or not raw_email or not password:
+            flash('Username, email, and password are required.', 'error')
+            return render_template('register.html')
+
+        email = normalize_email(raw_email)
+        if not is_valid_email(email):
+            flash('Please enter a valid email address.', 'error')
             return render_template('register.html')
 
         if password != confirm_password:
@@ -401,7 +408,15 @@ def register():
             flash('That username is already taken.', 'error')
             return render_template('register.html')
 
-        create_user(username, generate_password_hash(password), 'user')
+        if fetch_user_by_email(email) is not None:
+            flash('That email is already registered.', 'error')
+            return render_template('register.html')
+
+        if session.get('verified_email') != email:
+            flash('Please verify your email with the OTP before creating your account.', 'error')
+            return render_template('register.html')
+
+        create_user(username, generate_password_hash(password), 'user', email=email)
         created_user = fetch_user_by_username(username)
 
         if created_user is None:
@@ -413,6 +428,8 @@ def register():
         session['user'] = created_user['username']
         session['role'] = 'user'
         session['level'] = 1
+        session.pop('verified_email', None)
+        session.pop('verified_at', None)
 
         flash('Account created successfully.', 'success')
         return redirect(url_for('user_dashboard'))
@@ -467,6 +484,9 @@ def send_auth_code_api():
     email = normalize_email(raw_email)
     if not is_valid_email(email):
         return {'message': 'Invalid email format.'}, 400
+
+    if fetch_user_by_email(email) is not None:
+        return {'message': 'That email is already registered.'}, 409
 
     now_ts = time.time()
     cleanup_expired_auth_codes(now_ts)

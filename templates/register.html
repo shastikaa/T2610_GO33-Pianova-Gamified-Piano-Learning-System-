@@ -24,7 +24,7 @@
             font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
             background: #070603;
             color: var(--text);
-            overflow: hidden;
+            overflow-x: hidden;
         }
 
         .video-bg {
@@ -68,8 +68,8 @@
         }
 
         .card {
-            width: min(460px, 100%);
-            padding: 32px;
+            width: min(410px, 100%);
+            padding: 24px;
             border-radius: 24px;
             background: var(--panel);
             border: 1px solid var(--border);
@@ -80,7 +80,7 @@
         h1 {
             margin: 0;
             text-align: center;
-            font-size: clamp(1.8rem, 4vw, 2.4rem);
+            font-size: clamp(1.6rem, 3.4vw, 2.1rem);
             letter-spacing: 0.05em;
             color: var(--gold-soft);
             text-shadow: 0 0 28px rgba(241, 193, 91, 0.28);
@@ -93,14 +93,21 @@
 
         .subtext {
             margin-top: 12px;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
             text-align: center;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
         }
 
         form {
             display: grid;
-            gap: 14px;
+            gap: 12px;
+        }
+
+        .field-row {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            gap: 10px;
+            align-items: end;
         }
 
         label {
@@ -111,7 +118,7 @@
 
         input {
             width: 100%;
-            padding: 13px 14px;
+            padding: 11px 12px;
             border-radius: 13px;
             border: 1px solid rgba(243, 202, 109, 0.2);
             background: rgba(12, 10, 5, 0.65);
@@ -133,7 +140,7 @@
             border: 0;
             border-radius: 13px;
             margin-top: 4px;
-            padding: 13px 18px;
+            padding: 11px 16px;
             font-weight: 700;
             letter-spacing: 0.03em;
             background: linear-gradient(140deg, #c7912f, #f4cd73 50%, #ab7723);
@@ -148,6 +155,43 @@
             box-shadow: 0 14px 28px rgba(183, 129, 31, 0.4);
         }
 
+        button:disabled {
+            cursor: not-allowed;
+            opacity: 0.62;
+            transform: none;
+        }
+
+        .mini-button {
+            min-width: 112px;
+            margin-top: 0;
+            padding: 11px 12px;
+            white-space: nowrap;
+        }
+
+        .verify-panel {
+            display: grid;
+            gap: 10px;
+            padding: 12px;
+            border: 1px solid rgba(243, 202, 109, 0.18);
+            border-radius: 14px;
+            background: rgba(12, 10, 5, 0.38);
+        }
+
+        .status {
+            min-height: 18px;
+            margin: -4px 0 0;
+            font-size: 0.82rem;
+            color: var(--muted);
+        }
+
+        .status.success {
+            color: #9ee7b8;
+        }
+
+        .status.error {
+            color: var(--danger);
+        }
+
         .flash {
             margin-bottom: 12px;
             padding: 11px 12px;
@@ -159,9 +203,9 @@
         }
 
         .signin {
-            margin-top: 16px;
+            margin-top: 12px;
             text-align: center;
-            font-size: 0.92rem;
+            font-size: 0.88rem;
         }
 
         a {
@@ -182,6 +226,14 @@
             .card {
                 padding: 24px 20px;
                 border-radius: 20px;
+            }
+
+            .field-row {
+                grid-template-columns: 1fr;
+            }
+
+            .mini-button {
+                width: 100%;
             }
         }
     </style>
@@ -206,6 +258,23 @@
                     <label for="username">Username</label>
                     <input id="username" name="username" type="text" placeholder="Choose username" required>
                 </div>
+                <div class="verify-panel">
+                    <div class="field-row">
+                        <div>
+                            <label for="email">Email</label>
+                            <input id="email" name="email" type="email" placeholder="you@example.com" required autocomplete="email">
+                        </div>
+                        <button id="sendCodeBtn" class="mini-button" type="button">Send OTP</button>
+                    </div>
+                    <div class="field-row">
+                        <div>
+                            <label for="otp_code">OTP code</label>
+                            <input id="otp_code" name="otp_code" type="text" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" placeholder="6-digit code" autocomplete="one-time-code">
+                        </div>
+                        <button id="verifyCodeBtn" class="mini-button" type="button">Verify</button>
+                    </div>
+                    <p id="otpStatus" class="status" aria-live="polite"></p>
+                </div>
                 <div>
                     <label for="password">Password</label>
                     <input id="password" name="password" type="password" placeholder="Create password" required>
@@ -219,5 +288,84 @@
             <p class="signin">Already registered? <a href="{{ url_for('login') }}">Go back to login</a>.</p>
         </section>
     </main>
+    <script>
+        const emailInput = document.getElementById('email');
+        const otpInput = document.getElementById('otp_code');
+        const sendCodeBtn = document.getElementById('sendCodeBtn');
+        const verifyCodeBtn = document.getElementById('verifyCodeBtn');
+        const otpStatus = document.getElementById('otpStatus');
+
+        let verifiedEmail = '';
+
+        function setStatus(message, type = '') {
+            otpStatus.textContent = message;
+            otpStatus.className = `status ${type}`.trim();
+        }
+
+        async function postJson(url, payload) {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+            });
+            const data = await response.json().catch(() => ({}));
+            if (!response.ok) {
+                throw new Error(data.message || 'Request failed.');
+            }
+            return data;
+        }
+
+        emailInput.addEventListener('input', () => {
+            if (verifiedEmail && emailInput.value.trim().toLowerCase() !== verifiedEmail) {
+                verifiedEmail = '';
+                setStatus('Email changed. Please verify this email.', 'error');
+            }
+        });
+
+        sendCodeBtn.addEventListener('click', async () => {
+            const email = emailInput.value.trim();
+            if (!email) {
+                setStatus('Enter your email first.', 'error');
+                emailInput.focus();
+                return;
+            }
+
+            sendCodeBtn.disabled = true;
+            setStatus('Sending OTP...');
+
+            try {
+                const data = await postJson('{{ url_for("send_auth_code_api") }}', { email });
+                const localCode = data.debug_otp ? ` Local test OTP: ${data.debug_otp}` : '';
+                setStatus(`${data.message}${localCode}`, 'success');
+                otpInput.focus();
+            } catch (error) {
+                setStatus(error.message, 'error');
+            } finally {
+                sendCodeBtn.disabled = false;
+            }
+        });
+
+        verifyCodeBtn.addEventListener('click', async () => {
+            const email = emailInput.value.trim();
+            const code = otpInput.value.trim();
+            if (!email || !code) {
+                setStatus('Enter your email and OTP code.', 'error');
+                return;
+            }
+
+            verifyCodeBtn.disabled = true;
+            setStatus('Checking OTP...');
+
+            try {
+                const data = await postJson('{{ url_for("verify_auth_code_api") }}', { email, code });
+                verifiedEmail = email.toLowerCase();
+                setStatus(data.message, 'success');
+            } catch (error) {
+                setStatus(error.message, 'error');
+            } finally {
+                verifyCodeBtn.disabled = false;
+            }
+        });
+    </script>
 </body>
 </html>

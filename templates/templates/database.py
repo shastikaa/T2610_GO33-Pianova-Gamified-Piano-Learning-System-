@@ -53,6 +53,7 @@ def _create_tables(cursor):
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             username TEXT UNIQUE NOT NULL,
+            email TEXT UNIQUE,
             password TEXT NOT NULL,
             role TEXT NOT NULL CHECK(role IN ('admin', 'user')),
             is_active INTEGER NOT NULL DEFAULT 1,
@@ -222,6 +223,7 @@ def _create_tables(cursor):
 
 def _ensure_backward_compatibility_columns(cursor):
     # Older DB files may have created minimal versions of these tables.
+    _add_column_if_missing(cursor, 'users', 'email', 'TEXT')
     _add_column_if_missing(cursor, 'users', 'is_active', 'INTEGER NOT NULL DEFAULT 1')
     _add_column_if_missing(cursor, 'users', 'created_at', 'TEXT')
     _add_column_if_missing(cursor, 'users', 'updated_at', 'TEXT')
@@ -287,6 +289,7 @@ def _backfill_certificate_reference_ids(cursor):
 
 def _create_indexes(cursor):
     cursor.execute("CREATE INDEX IF NOT EXISTS idx_users_role ON users(role)")
+    cursor.execute("CREATE UNIQUE INDEX IF NOT EXISTS idx_users_email_unique ON users(email) WHERE email IS NOT NULL")
     cursor.execute("CREATE INDEX IF NOT EXISTS idx_tasks_level ON tasks(level_id)")
     cursor.execute("CREATE INDEX IF NOT EXISTS idx_scores_user ON scores(user_id)")
     cursor.execute("CREATE INDEX IF NOT EXISTS idx_scores_game_type ON scores(game_type)")
@@ -546,16 +549,23 @@ def seed_user(cursor, username, password, role):
 
 def fetch_user_by_username(username):
     return get_db().execute(
-        "SELECT id, username, password, role FROM users WHERE username = ?",
+        "SELECT id, username, email, password, role FROM users WHERE username = ?",
         (username,),
     ).fetchone()
 
 
-def create_user(username, password_hash, role='user'):
+def fetch_user_by_email(email):
+    return get_db().execute(
+        "SELECT id, username, email, password, role FROM users WHERE email = ?",
+        (email,),
+    ).fetchone()
+
+
+def create_user(username, password_hash, role='user', email=None):
     db = get_db()
     db.execute(
-        "INSERT INTO users (username, password, role) VALUES (?, ?, ?)",
-        (username, password_hash, role),
+        "INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?)",
+        (username, email, password_hash, role),
     )
     db.commit()
 

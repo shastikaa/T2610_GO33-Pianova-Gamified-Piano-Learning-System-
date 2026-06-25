@@ -355,6 +355,20 @@
       text-align: center;
     }
 
+    .signature.left {
+      transform: translateX(-48px);
+    }
+
+    .signature.right {
+      text-align: right;
+      transform: translateX(38px);
+    }
+
+    .signature.right .role,
+    .signature.right .role-ornament {
+      text-align: center;
+    }
+
     .signature .sign {
       font-family: "Great Vibes", cursive;
       font-size: clamp(24px, 2.7vw, 42px);
@@ -385,13 +399,13 @@
       align-items: flex-end;
       justify-content: center;
       padding-inline: clamp(18px, 2.8vw, 30px);
-      transform: translateY(8px);
+      transform: translateY(30px);
     }
 
     .laurel {
       position: absolute;
-      bottom: 16px;
-      font-size: clamp(66px, 7.5vw, 114px);
+      bottom: 12px;
+      font-size: clamp(34px, 4.2vw, 58px);
       color: rgba(239, 179, 36, 0.92);
       line-height: 1;
       text-shadow: 0 0 10px rgba(239, 179, 36, 0.28);
@@ -402,8 +416,8 @@
 
     .seal {
       position: relative;
-      width: clamp(92px, 9.2vw, 136px);
-      height: clamp(92px, 9.2vw, 136px);
+      width: clamp(54px, 5.2vw, 76px);
+      height: clamp(54px, 5.2vw, 76px);
       border-radius: 50%;
       background:
         radial-gradient(circle at 30% 24%, #fff2bf, #f3c65f 52%, #ad731e 78%, #7d500f);
@@ -426,7 +440,7 @@
       justify-content: center;
       text-align: center;
       font-family: "Cinzel", serif;
-      font-size: clamp(11px, 1.05vw, 16px);
+      font-size: clamp(6px, 0.62vw, 8px);
       font-weight: 700;
       line-height: 1.06;
       letter-spacing: 0.6px;
@@ -436,8 +450,8 @@
     .seal::after {
       content: "";
       position: absolute;
-      width: clamp(16px, 1.9vw, 24px);
-      height: clamp(24px, 3vw, 36px);
+      width: clamp(9px, 1.1vw, 13px);
+      height: clamp(14px, 1.7vw, 20px);
       bottom: -17%;
       background: linear-gradient(180deg, #efc15a, #8d5c15);
       clip-path: polygon(0 0, 100% 0, 50% 100%);
@@ -464,8 +478,15 @@
         gap: 12px;
       }
       .seal-wrap { order: 1; }
-      .signature.left { order: 2; }
-      .signature.right { order: 3; }
+      .signature.left {
+        order: 2;
+        transform: none;
+      }
+      .signature.right {
+        order: 3;
+        text-align: center;
+        transform: none;
+      }
       .laurel { font-size: clamp(58px, 12vw, 78px); }
     }
 

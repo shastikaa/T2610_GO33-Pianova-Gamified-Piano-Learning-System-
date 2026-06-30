@@ -268,6 +268,14 @@
             min-width: 120px;
             box-shadow: 0 6px 16px rgba(155, 89, 182, 0.3);
         }
+        .btn-disabled {
+            background: linear-gradient(135deg, #6f6f72, #59595d);
+            color: rgba(255, 255, 255, 0.92);
+            box-shadow: none;
+            cursor: not-allowed;
+            pointer-events: none;
+            opacity: 0.85;
+        }
         .hero-art {
             position: relative;
             min-height: 280px;
@@ -773,7 +781,12 @@
                             </h2>
                             <p>Let's make beautiful music today!</p>
                             <div class="hero-actions">
-                                <a class="btn btn-primary" href="{{ lessons_card_url if lessons_card_url is defined else url_for('lessons') }}">▶ Continue Lesson</a>
+                                {% if all_levels_completed %}
+                                <span class="btn btn-primary btn-disabled" aria-disabled="true">✓ All Levels Completed</span>
+                                <a class="btn btn-secondary" href="{{ url_for('certificate_page') }}">⬇ Download Certificate</a>
+                                {% else %}
+                                <a class="btn btn-primary" href="{{ continue_lesson_href if continue_lesson_href is defined else url_for('lessons') }}">▶ Continue Lesson</a>
+                                {% endif %}
                             </div>
                         </div>
 

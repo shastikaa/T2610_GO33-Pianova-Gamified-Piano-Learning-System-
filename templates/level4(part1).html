@@ -504,7 +504,7 @@
 </head>
 <body>
   <header class="topbar">
-    <a href="/lessons" class="brand-container" id="home-link" aria-label="Pianova Home">
+    <a href="/dashboard" class="brand-container" id="home-link" aria-label="Pianova Home">
       <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M9 18V5l12-2v13"/>
         <circle cx="6" cy="18" r="3"/>
@@ -523,7 +523,7 @@
 
     <div class="stats" aria-label="Quiz status">
       <div class="stat"><span>Score</span><strong id="score">0</strong></div>
-      <div class="stat"><span>Time Left</span><strong id="time">30:00</strong></div>
+      <div class="stat"><span>Time Left</span><strong id="time">15:00</strong></div>
     </div>
   </header>
 
@@ -533,6 +533,7 @@
 
   <div class="actions">
     <button class="pill ghost" id="exit-btn" type="button">Exit</button>
+    <button class="pill ghost" id="home-btn" type="button">Home</button>
     <a class="pill" id="next-part" href="/level4-part2">Next Part &rarr;</a>
   </div>
 
@@ -635,10 +636,21 @@
     const time = document.querySelector("#time");
     const userAnswers = new Map();
 
-    const TOTAL_SECONDS = 30 * 60;
+    const TOTAL_SECONDS = 15 * 60;
     const TIMER_END_KEY = "level4_shared_timer_end";
+    const TIMER_LOGIN_NONCE_KEY = "level4_timer_login_nonce";
+    const CURRENT_LOGIN_NONCE = "{{ session.get('login_nonce', '') }}";
+
+    const syncTimerLoginNonce = () => {
+      const storedNonce = sessionStorage.getItem(TIMER_LOGIN_NONCE_KEY) || "";
+      if (storedNonce !== CURRENT_LOGIN_NONCE) {
+        sessionStorage.removeItem(TIMER_END_KEY);
+        sessionStorage.setItem(TIMER_LOGIN_NONCE_KEY, CURRENT_LOGIN_NONCE);
+      }
+    };
 
     const getRemainingSeconds = () => {
+      syncTimerLoginNonce();
       const now = Date.now();
       let timerEnd = Number(sessionStorage.getItem(TIMER_END_KEY) || 0);
 
@@ -653,6 +665,18 @@
     const clearSharedTimer = () => {
       sessionStorage.removeItem(TIMER_END_KEY);
     };
+
+    const resetPart1Quiz = () => {
+      userAnswers.clear();
+      score.textContent = "0";
+      clearSharedTimer();
+      render();
+      if (lessonProgressController) {
+        lessonProgressController.save();
+      }
+    };
+
+    syncTimerLoginNonce();
 
     const noteFrequencies = {
       C4: 261.63,
@@ -805,6 +829,11 @@
       }
     });
 
+    document.querySelector("#home-btn").addEventListener("click", () => {
+      clearSharedTimer();
+      window.location.href = "/dashboard";
+    });
+
     document.querySelector("#home-link").addEventListener("click", clearSharedTimer);
 
     document.querySelector("#next-part").addEventListener("click", (event) => {
@@ -820,6 +849,7 @@
       if (currentScore !== fullScore) {
         event.preventDefault();
         alert(`You need full score (${fullScore}/${fullScore}) to move to Part 2. Your score is ${currentScore}/${fullScore}.`);
+        resetPart1Quiz();
       }
     });
 
@@ -837,6 +867,68 @@
     }, 1000);
 
     render();
+  </script>
+  <script src="/static/lesson-progress.js"></script>
+  <script>
+    function restorePart1Answers() {
+      let restoredScore = 0;
+      userAnswers.forEach((selectedAnswer, rawIndex) => {
+        const index = Number(rawIndex);
+        const card = document.querySelector(`.card[data-index="${index}"]`);
+        if (!card) {
+          return;
+        }
+
+        const selectedButton = card.querySelector(`[data-answer="${selectedAnswer}"]`);
+        const correctAnswer = questions[index].correct;
+        if (selectedButton) {
+          selectedButton.classList.add('selected');
+        }
+
+        if (selectedAnswer === correctAnswer) {
+          if (selectedButton) {
+            selectedButton.classList.add('correct');
+          }
+          restoredScore += 1;
+        } else {
+          if (selectedButton) {
+            selectedButton.classList.add('wrong');
+          }
+          const correctButton = card.querySelector(`[data-answer="${correctAnswer}"]`);
+          if (correctButton) {
+            correctButton.classList.add('correct');
+          }
+        }
+      });
+
+      score.textContent = String(restoredScore);
+    }
+
+    const lessonProgressController = window.PianovaLessonProgress.attach({
+      levelId: 4,
+      getState() {
+        return {
+          answers: Array.from(userAnswers.entries()),
+          timerEnd: Number(sessionStorage.getItem(TIMER_END_KEY) || 0),
+          loginNonce: CURRENT_LOGIN_NONCE,
+        };
+      },
+      applyState(state) {
+        userAnswers.clear();
+        (state.answers || []).forEach(([index, answer]) => {
+          userAnswers.set(Number(index), Number(answer));
+        });
+        if (state.timerEnd && state.loginNonce === CURRENT_LOGIN_NONCE) {
+          sessionStorage.setItem(TIMER_END_KEY, String(state.timerEnd));
+        }
+        render();
+        restorePart1Answers();
+      },
+    });
+  </script>
+  <script src="/static/practice-tracker.js"></script>
+  <script>
+    window.PianovaPracticeTracker.attach({ gameType: 'level4_part1' });
   </script>
 </body>
 </html>

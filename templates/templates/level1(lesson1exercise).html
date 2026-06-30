@@ -554,6 +554,7 @@
 
       <section class="actions">
         <button class="action-btn primary" id="backBtn" disabled>→ NEXT LESSON</button>
+        <button class="action-btn" id="homeBtn">⌂ HOME</button>
         <button class="action-btn" id="quitBtn">✕ QUIT LESSON</button>
       </section>
     </section>
@@ -608,6 +609,7 @@
     const streakText = document.getElementById("streak");
     const livesText = document.getElementById("lives");
     const backBtn = document.getElementById("backBtn");
+    const homeBtn = document.getElementById("homeBtn");
     const quitBtn = document.getElementById("quitBtn");
     const pianoBar = document.getElementById("pianoBar");
     const gameOverModal = document.getElementById("gameOverModal");
@@ -792,6 +794,10 @@
       window.location.href = "/level1-notes";
     });
 
+    homeBtn.addEventListener("click", () => {
+      window.location.href = "/dashboard";
+    });
+
     quitBtn.addEventListener("click", () => {
       const shouldQuit = window.confirm("Quit this lesson and return to dashboard?");
       if (!shouldQuit) {
@@ -803,6 +809,41 @@
     renderPianoBar();
     renderStats();
     newQuestion();
+  </script>
+  <script src="/static/lesson-progress.js"></script>
+  <script>
+    window.PianovaLessonProgress.attach({
+      levelId: 1,
+      lessonPath: '/level1-lesson1exercise',
+      getState() {
+        return {
+          currentQuestionIndex,
+          score,
+          combo,
+          streak,
+          lives,
+          modalOpen: gameOverModal.classList.contains('open'),
+        };
+      },
+      applyState(state) {
+        currentQuestionIndex = Math.max(0, Math.min(Number(state.currentQuestionIndex || 0), orderedQuestions.length - 1));
+        currentQuestion = orderedQuestions[currentQuestionIndex];
+        score = Math.max(0, Number(state.score || 0));
+        combo = Math.max(0, Number(state.combo || 0));
+        streak = Math.max(0, Number(state.streak || 0));
+        lives = Math.max(0, Number(state.lives || MAX_LIVES));
+        renderStats();
+        newQuestion();
+        if (state.modalOpen) {
+          disableGame(false, true);
+          openGameOverModal();
+        }
+      },
+    });
+  </script>
+  <script src="/static/practice-tracker.js"></script>
+  <script>
+    window.PianovaPracticeTracker.attach({ gameType: 'level1_exercise' });
   </script>
 </body>
 </html>

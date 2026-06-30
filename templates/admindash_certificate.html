@@ -235,7 +235,7 @@
 
     .stats {
       display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 11px;
       width: 100%;
       margin-bottom: 12px;
@@ -495,14 +495,21 @@
     }
 
     .download {
-      width: 40px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 120px;
       height: 34px;
+      padding: 0 12px;
       border: 1px solid rgba(215, 139, 28, 0.35);
       border-radius: 6px;
       background: #09090b;
       color: #edb13a;
-      font-size: 19px;
+      font-size: 12px;
+      font-weight: 600;
+      text-decoration: none;
       cursor: pointer;
+      white-space: nowrap;
     }
 
     .table-foot {
@@ -633,14 +640,6 @@
         </div>
       </div>
 
-      <div class="card mini-stat">
-        <div class="icon">📖</div>
-        <div>
-          <p>Students Completed Lessons</p>
-          <h2>{{ metrics.completed_lessons }}</h2>
-        </div>
-      </div>
-
       <div class="card level-card">
         <div class="donut" data-gradient="{{ metrics.level_overview_donut }}"></div>
 
@@ -702,9 +701,23 @@
             <td>{{ cert.certificate_no or cert.cert_ref_id or ('CERT-' ~ cert.id) }}</td>
             <td><div class="person"><span class="face"></span>{{ cert.username }}</div></td>
             <td>{{ (cert.completion_date or '')[:10] if cert.completion_date else 'N/A' }}</td>
-            <td><div class="person"><span class="face"></span>{{ cert.username }}</div></td>
-            <td>{{ (cert.completion_date or '')[:10] if cert.completion_date else 'N/A' }}</td>
-            <td><button class="download">⇩</button></td>
+            <td>
+              {% if cert.download_count and cert.download_count > 0 %}
+              <div class="person"><span class="face"></span>{{ cert.username }}</div>
+              {% else %}
+              Not downloaded
+              {% endif %}
+            </td>
+            <td>
+              {% if cert.downloaded_at %}
+              {{ cert.downloaded_at[:19].replace('T', ' ') }}
+              {% else %}
+              Not downloaded
+              {% endif %}
+            </td>
+            <td>
+              <a class="download" href="{{ url_for('admin_certificate_view', certificate_id=cert.id) }}">View Certificate</a>
+            </td>
           </tr>
           {% endfor %}
           {% else %}

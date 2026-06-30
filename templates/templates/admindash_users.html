@@ -236,7 +236,7 @@
 
     .stats {
       display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 12px;
       width: 100%;
       margin-bottom: 13px;
@@ -380,6 +380,31 @@
       padding: 19px 13px 14px;
     }
 
+    .flash-wrap {
+      display: grid;
+      gap: 8px;
+      margin: 0 8px 14px 16px;
+    }
+
+    .flash-item {
+      padding: 9px 12px;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      font-size: 13px;
+    }
+
+    .flash-item.success {
+      background: rgba(39, 139, 76, 0.16);
+      border-color: rgba(81, 186, 121, 0.48);
+      color: #d6ffdf;
+    }
+
+    .flash-item.error {
+      background: rgba(164, 42, 42, 0.2);
+      border-color: rgba(226, 98, 98, 0.45);
+      color: #ffd9d9;
+    }
+
     .panel-head {
       display: flex;
       justify-content: space-between;
@@ -464,6 +489,7 @@
     table {
       width: 100%;
       border-collapse: collapse;
+      table-layout: fixed;
       font-size: 14px;
     }
 
@@ -482,17 +508,15 @@
       padding: 0 12px;
       border-bottom: 1px solid rgba(255,255,255,0.055);
       color: #fff4e4;
+      vertical-align: middle;
     }
 
     .password-cell {
       font-family: Consolas, "Courier New", monospace;
       font-size: 12px;
-      max-width: 260px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      display: inline-block;
-      vertical-align: middle;
     }
 
     .password-cell.masked {
@@ -561,6 +585,36 @@
       font-size: 12px;
       font-weight: 600;
       cursor: pointer;
+    }
+
+    .action-group {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      justify-content: flex-start;
+      flex-wrap: wrap;
+    }
+
+    th:nth-child(1), td:nth-child(1) { width: 7%; }
+    th:nth-child(2), td:nth-child(2) { width: 9%; }
+    th:nth-child(3), td:nth-child(3) { width: 22%; }
+    th:nth-child(4), td:nth-child(4) { width: 15%; }
+    th:nth-child(5), td:nth-child(5) { width: 13%; }
+    th:nth-child(6), td:nth-child(6) { width: 10%; }
+    th:nth-child(7), td:nth-child(7) { width: 24%; }
+
+    .action.reset {
+      border-color: rgba(215, 139, 28, 0.45);
+      color: #f4bf58;
+    }
+
+    .action.clear {
+      border-color: rgba(200, 87, 87, 0.45);
+      color: #ff9f9f;
+    }
+
+    .action-form {
+      margin: 0;
     }
 
     .table-foot {
@@ -691,14 +745,6 @@
         </div>
       </div>
 
-      <div class="card mini-stat">
-        <div class="icon">📖</div>
-        <div>
-          <p>Students Completed Lessons</p>
-          <h2>{{ metrics.completed_lessons }}</h2>
-        </div>
-      </div>
-
       <div class="card level-card">
         <div class="donut" data-gradient="{{ metrics.level_overview_donut }}"></div>
 
@@ -742,6 +788,16 @@
         </div>
       </div>
 
+      {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+      <div class="flash-wrap">
+        {% for category, message in messages %}
+        <div class="flash-item {{ category }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+      {% endif %}
+      {% endwith %}
+
       <table>
         <thead>
           <tr>
@@ -762,10 +818,20 @@
             <td>{{ loop.index }}</td>
             <td>#{{ account.id }}</td>
             <td><div class="user-cell"><span class="face"></span>{{ account.username }}</div></td>
-            <td class="password-cell masked" data-password="{{ account.password }}">Stored securely</td>
+            <td class="password-cell masked" data-password="{{ account.password }}">{{ 'Stored securely' if account.password else 'No password set' }}</td>
             <td>{{ (account.created_at or '')[:10] if account.created_at else 'N/A' }}</td>
             <td><span class="role">{{ account.role|capitalize }}</span></td>
-            <td><button class="action copy-password-btn" type="button" data-password="{{ account.password }}">Copy Hash</button></td>
+            <td>
+              <div class="action-group">
+                <form class="action-form reset-password-form" method="post" action="{{ url_for('admin_reset_user_password_route', user_id=account.id) }}">
+                  <input type="hidden" name="new_password" value="" />
+                  <button class="action reset" type="submit" data-username="{{ account.username }}">Reset Password</button>
+                </form>
+                <form class="action-form" method="post" action="{{ url_for('admin_delete_user_account_route', user_id=account.id) }}" onsubmit="return confirm('Delete account for {{ account.username }}? This cannot be undone.');">
+                  <button class="action clear" type="submit">Delete Account</button>
+                </form>
+              </div>
+            </td>
           </tr>
           {% endfor %}
           {% else %}
@@ -797,11 +863,11 @@
         for (const cell of passwordCells) {
           const value = cell.getAttribute('data-password') || '';
           if (showingPasswords) {
-            cell.textContent = value ? 'Stored hash' : '';
+            cell.textContent = value ? 'Stored hash' : 'No password set';
             cell.title = value;
             cell.classList.remove('masked');
           } else {
-            cell.textContent = value ? 'Stored securely' : '';
+            cell.textContent = value ? 'Stored securely' : 'No password set';
             cell.title = '';
             cell.classList.add('masked');
           }
@@ -819,27 +885,29 @@
         });
       }
 
-      for (const button of document.querySelectorAll('.copy-password-btn')) {
-        button.addEventListener('click', async function () {
-          const value = button.getAttribute('data-password') || '';
-          if (!value) {
+      for (const form of document.querySelectorAll('.reset-password-form')) {
+        form.addEventListener('submit', function (event) {
+          event.preventDefault();
+
+          const button = form.querySelector('button[data-username]');
+          const username = button ? (button.getAttribute('data-username') || 'this user') : 'this user';
+          const password = window.prompt('Enter new password for ' + username + ':');
+
+          if (password === null) {
             return;
           }
 
-          try {
-            await navigator.clipboard.writeText(value);
-            const original = button.textContent;
-            button.textContent = 'Copied';
-            setTimeout(function () {
-              button.textContent = original;
-            }, 900);
-          } catch (err) {
-            const original = button.textContent;
-            button.textContent = 'Failed';
-            setTimeout(function () {
-              button.textContent = original;
-            }, 900);
+          if (password.trim().length < 4) {
+            window.alert('Password must be at least 4 characters.');
+            return;
           }
+
+          const field = form.querySelector('input[name="new_password"]');
+          if (field) {
+            field.value = password.trim();
+          }
+
+          form.submit();
         });
       }
 

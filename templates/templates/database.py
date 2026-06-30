@@ -180,6 +180,8 @@ def _create_tables(cursor):
             best_score INTEGER NOT NULL DEFAULT 0,
             started_at TEXT,
             completed_at TEXT,
+            last_lesson_path TEXT,
+            last_lesson_state TEXT,
             last_activity_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
             UNIQUE(user_id, level_id),
             FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
@@ -199,6 +201,8 @@ def _create_tables(cursor):
             title TEXT NOT NULL DEFAULT 'Pianova Completion Certificate',
             issued_for TEXT,
             score_snapshot INTEGER,
+            download_count INTEGER NOT NULL DEFAULT 0,
+            downloaded_at TEXT,
             completion_date TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
             created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
@@ -254,7 +258,12 @@ def _ensure_backward_compatibility_columns(cursor):
     _add_column_if_missing(cursor, 'certificates', 'title', "TEXT NOT NULL DEFAULT 'Pianova Completion Certificate'")
     _add_column_if_missing(cursor, 'certificates', 'issued_for', 'TEXT')
     _add_column_if_missing(cursor, 'certificates', 'score_snapshot', 'INTEGER')
+    _add_column_if_missing(cursor, 'certificates', 'download_count', 'INTEGER NOT NULL DEFAULT 0')
+    _add_column_if_missing(cursor, 'certificates', 'downloaded_at', 'TEXT')
     _add_column_if_missing(cursor, 'certificates', 'created_at', 'TEXT')
+
+    _add_column_if_missing(cursor, 'user_level_progress', 'last_lesson_path', 'TEXT')
+    _add_column_if_missing(cursor, 'user_level_progress', 'last_lesson_state', 'TEXT')
 
 
 def _backfill_timestamp_columns(cursor):
@@ -579,6 +588,26 @@ def reset_password(username, new_password_hash):
     db.commit()
 
 
+def admin_reset_user_password(user_id, new_password_hash):
+    db = get_db()
+    cursor = db.execute(
+        "UPDATE users SET password = ? WHERE id = ? AND role = 'user'",
+        (new_password_hash, user_id),
+    )
+    db.commit()
+    return cursor.rowcount
+
+
+def admin_delete_user_account(user_id):
+    db = get_db()
+    cursor = db.execute(
+        "DELETE FROM users WHERE id = ? AND role = 'user'",
+        (user_id,),
+    )
+    db.commit()
+    return cursor.rowcount
+
+
 def save_progress(user_id, level_id, status):
     normalized_status = status if status in PROGRESS_STATUSES else 'in_progress'
     progress_percent = 100 if normalized_status == 'completed' else 0
@@ -764,6 +793,80 @@ def save_task_progress(user_id, task_id, status='in_progress', last_score=0):
     db.commit()
 
 
+def save_lesson_checkpoint(user_id, level_id, lesson_path, lesson_state=None):
+    normalized_path = (lesson_path or '').strip()
+    if not normalized_path:
+        return
+
+    db = get_db()
+    db.execute(
+        """
+        INSERT INTO user_level_progress (
+            user_id,
+            level_id,
+            status,
+            completed_tasks,
+            total_tasks,
+            attempts,
+            best_score,
+            started_at,
+            last_lesson_path,
+            last_lesson_state,
+            last_activity_at
+        )
+        VALUES (
+            ?,
+            ?,
+            'in_progress',
+            0,
+            (SELECT COUNT(*) FROM tasks WHERE level_id = ?),
+            1,
+            0,
+            CURRENT_TIMESTAMP,
+            ?,
+            ?,
+            CURRENT_TIMESTAMP
+        )
+        ON CONFLICT(user_id, level_id) DO UPDATE SET
+            status = CASE
+                WHEN user_level_progress.status = 'completed' THEN user_level_progress.status
+                ELSE 'in_progress'
+            END,
+            total_tasks = excluded.total_tasks,
+            last_lesson_path = excluded.last_lesson_path,
+            last_lesson_state = COALESCE(excluded.last_lesson_state, user_level_progress.last_lesson_state),
+            last_activity_at = CURRENT_TIMESTAMP
+        """,
+        (user_id, level_id, level_id, normalized_path, lesson_state),
+    )
+    db.commit()
+
+
+def get_lesson_checkpoint(user_id, level_id):
+    row = get_db().execute(
+        """
+        SELECT last_lesson_path, last_lesson_state
+        FROM user_level_progress
+        WHERE user_id = ? AND level_id = ?
+        LIMIT 1
+        """,
+        (user_id, level_id),
+    ).fetchone()
+    if row is None:
+        return None
+    return {
+        'last_lesson_path': (row['last_lesson_path'] or '').strip() or None,
+        'last_lesson_state': (row['last_lesson_state'] or '').strip() or None,
+    }
+
+
+def get_last_lesson_path(user_id, level_id):
+    checkpoint = get_lesson_checkpoint(user_id, level_id)
+    if checkpoint is None:
+        return None
+    return checkpoint['last_lesson_path']
+
+
 def issue_certificate(user_id, level_id=None, issued_for=None, score_snapshot=None):
     db = get_db()
     existing = db.execute(
@@ -846,6 +949,8 @@ def get_latest_certificate_for_user(user_id):
             title,
             issued_for,
             score_snapshot,
+            download_count,
+            downloaded_at,
             completion_date,
             created_at
         FROM certificates
@@ -855,6 +960,21 @@ def get_latest_certificate_for_user(user_id):
         """,
         (user_id,),
     ).fetchone()
+
+
+def mark_certificate_downloaded(certificate_id):
+    db = get_db()
+    db.execute(
+        """
+        UPDATE certificates
+        SET
+            download_count = COALESCE(download_count, 0) + 1,
+            downloaded_at = CURRENT_TIMESTAMP
+        WHERE id = ?
+        """,
+        (certificate_id,),
+    )
+    db.commit()
 
 
 def add_practice_session(user_id, game_type, duration_seconds):
@@ -1066,7 +1186,9 @@ def get_recent_certificates(limit=25):
             c.certificate_no,
             u.username,
             COALESCE(l.level_name, 'N/A') AS level_name,
-            c.completion_date
+            c.completion_date,
+            COALESCE(c.download_count, 0) AS download_count,
+            c.downloaded_at
         FROM certificates c
         JOIN users u ON u.id = c.user_id
         LEFT JOIN levels l ON l.id = c.level_id
@@ -1075,6 +1197,34 @@ def get_recent_certificates(limit=25):
         """,
         (limit,),
     ).fetchall()
+
+
+def get_certificate_by_id(certificate_id):
+    return get_db().execute(
+        """
+        SELECT
+            c.id,
+            c.cert_ref_id,
+            c.certificate_no,
+            c.title,
+            c.issued_for,
+            c.score_snapshot,
+            c.completion_date,
+            c.download_count,
+            c.downloaded_at,
+            c.level_id,
+            c.user_id,
+            u.username,
+            u.role,
+            COALESCE(l.level_name, 'N/A') AS level_name
+        FROM certificates c
+        JOIN users u ON u.id = c.user_id
+        LEFT JOIN levels l ON l.id = c.level_id
+        WHERE c.id = ?
+        LIMIT 1
+        """,
+        (certificate_id,),
+    ).fetchone()
 
 
 def get_certificate_account_by_ref(cert_ref_id):
@@ -1140,24 +1290,31 @@ def get_weekly_practice_hours(user_id, days=7):
     return points
 
 
-def get_user_metrics(user_id, current_level):
+def get_user_metrics(user_id, current_level=None):
     db = get_db()
-    score_total = db.execute(
+    # Primary total comes from per-task best scores so each lesson contributes once.
+    task_score_total = db.execute(
+        "SELECT COALESCE(SUM(best_score), 0) FROM user_task_progress WHERE user_id = ?",
+        (user_id,),
+    ).fetchone()[0]
+
+    # Legacy rows in scores are kept for backward compatibility.
+    legacy_score_total = db.execute(
         "SELECT COALESCE(SUM(score), 0) FROM scores WHERE user_id = ?",
         (user_id,),
     ).fetchone()[0]
-    completed = db.execute(
-        "SELECT COUNT(*) FROM progress WHERE user_id = ? AND status = 'completed'",
-        (user_id,),
-    ).fetchone()[0]
+
+    score_total = max(int(task_score_total or 0), int(legacy_score_total or 0))
+    completed = len(get_completed_level_ids(user_id))
     practice_seconds = db.execute(
         "SELECT COALESCE(SUM(duration_seconds), 0) FROM practice_sessions WHERE user_id = ?",
         (user_id,),
     ).fetchone()[0]
+    resolved_level = get_current_level(user_id) if current_level is None else int(current_level)
     return {
         'score_total': score_total,
         'completed_lessons': completed,
-        'current_level': current_level,
+        'current_level': resolved_level,
         'practice_seconds': practice_seconds,
     }
 
@@ -1166,14 +1323,40 @@ def get_completed_level_ids(user_id):
     db = get_db()
     rows = db.execute(
         """
-        SELECT level_id
-        FROM progress
-        WHERE user_id = ? AND status = 'completed'
+        SELECT p.level_id
+        FROM progress p
+        WHERE p.user_id = ?
+          AND p.status = 'completed'
+          AND (
+              p.level_id != 2
+              OR EXISTS (
+                  SELECT 1
+                  FROM user_task_progress utp
+                  WHERE utp.user_id = p.user_id
+                    AND utp.task_id = 6
+                    AND utp.status = 'completed'
+              )
+          )
         ORDER BY level_id ASC
         """,
         (user_id,),
     ).fetchall()
     return [int(row['level_id']) for row in rows]
+
+
+def get_current_level(user_id):
+    completed_levels = set(get_completed_level_ids(user_id))
+    db = get_db()
+    max_level_row = db.execute(
+        "SELECT COALESCE(MAX(level_order), 1) FROM levels"
+    ).fetchone()
+    max_level = int(max_level_row[0] or 1)
+
+    current_level = 1
+    while current_level in completed_levels and current_level < max_level:
+        current_level += 1
+
+    return current_level
 
 
 if __name__ == "__main__":

@@ -1,4 +1,5 @@
 from functools import wraps
+import json
 import os
 import re
 import secrets
@@ -15,14 +16,21 @@ from templates.templates.database import (
     add_quiz_score,
     add_score,
     add_practice_session,
+    admin_delete_user_account,
+    admin_reset_user_password,
     create_user,
     fetch_user_by_email,
     fetch_user_by_username,
     get_all_accounts,
     get_admin_metrics,
+    get_certificate_by_id,
     get_certificate_account_by_ref,
     get_completed_level_ids,
+    get_current_level,
+    get_lesson_checkpoint,
+    get_last_lesson_path,
     get_latest_certificate_for_user,
+    mark_certificate_downloaded,
     get_recent_certificates,
     get_recent_progress,
     get_recent_scores,
@@ -33,6 +41,7 @@ from templates.templates.database import (
     init_db,
     issue_certificate,
     reset_password,
+    save_lesson_checkpoint,
     save_progress,
     save_task_progress,
 )
@@ -82,11 +91,9 @@ EMAIL_REGEX = re.compile(r'^[^\s@]+@[^\s@]+\.[^\s@]+$')
 AUTH_CODE_TTL_SECONDS = int(os.getenv('PIANOVA_AUTH_CODE_TTL_SECONDS', '300'))
 AUTH_CODE_RESEND_SECONDS = int(os.getenv('PIANOVA_AUTH_CODE_RESEND_SECONDS', '30'))
 AUTH_CODE_MAX_ATTEMPTS = int(os.getenv('PIANOVA_AUTH_CODE_MAX_ATTEMPTS', '5'))
-ALLOW_LOCAL_OTP_FALLBACK = str(os.getenv('PIANOVA_ALLOW_LOCAL_OTP_FALLBACK', 'false')).strip().lower() in {
-    '1',
-    'true',
-    'yes',
-}
+
+AUTH_CODE_PURPOSE_REGISTER = 'register'
+AUTH_CODE_PURPOSE_RESET = 'reset'
 
 # In-memory auth code store. For production scale, move this to Redis/database.
 auth_code_store = {}
@@ -109,6 +116,8 @@ def add_no_cache_headers(response):
 
 
 def verify_password(stored_password, provided_password):
+    if not stored_password:
+        return False
     if stored_password.startswith('pbkdf2:') or stored_password.startswith('scrypt:'):
         return check_password_hash(stored_password, provided_password)
     return stored_password == provided_password
@@ -131,6 +140,27 @@ def role_required(expected_role):
             if session.get('role') != expected_role:
                 flash('You do not have access to that page.', 'error')
                 return redirect(url_for('home'))
+            return view_func(*args, **kwargs)
+
+        return wrapped_view
+
+    return decorator
+
+
+def level_required(min_level, redirect_endpoint='lessons'):
+    def decorator(view_func):
+        @wraps(view_func)
+        def wrapped_view(*args, **kwargs):
+            if session.get('role') != 'user':
+                return view_func(*args, **kwargs)
+
+            current_level = get_current_level(session['user_id'])
+            session['level'] = current_level
+
+            if current_level < min_level:
+                flash(f'Finish level {min_level - 1} before opening this lesson.', 'error')
+                return redirect(url_for(redirect_endpoint))
+
             return view_func(*args, **kwargs)
 
         return wrapped_view
@@ -279,12 +309,35 @@ def practice_href_for_level(current_level):
     return url_for('game2') if current_level >= 2 else url_for('game')
 
 
-def continue_lesson_href_for_level(current_level):
+def default_lesson_href_for_level(current_level):
     if current_level <= 1:
         return url_for('game')
     if current_level == 2:
         return url_for('lesson2_1_latest')
-    return url_for('game2')
+    if current_level == 3:
+        return url_for('lesson3_1')
+    return url_for('level4')
+
+
+def continue_lesson_href_for_user(user_id):
+    current_level = get_current_level(user_id)
+    return get_last_lesson_path(user_id, current_level) or default_lesson_href_for_level(current_level)
+
+
+def continue_lesson_href_for_level(user_id, level_id):
+    return get_last_lesson_path(user_id, level_id) or default_lesson_href_for_level(level_id)
+
+
+def record_lesson_checkpoint(level_id, lesson_path=None):
+    normalized_path = _normalize_lesson_path(lesson_path) or request.path
+    save_lesson_checkpoint(session['user_id'], level_id, normalized_path)
+
+
+def _normalize_lesson_path(lesson_path):
+    normalized_path = (lesson_path or '').strip()
+    if not normalized_path.startswith('/'):
+        return None
+    return normalized_path
 
 
 def level_label(current_level):
@@ -408,6 +461,7 @@ def login():
             session['user'] = admin_user['username']
             session['role'] = 'admin'
             session['level'] = 1
+            session['login_nonce'] = secrets.token_hex(16)
             return redirect(url_for('admin_dashboard'))
 
         user = fetch_user_by_username(username)
@@ -419,7 +473,8 @@ def login():
         session['user_id'] = user['id']
         session['user'] = user['username']
         session['role'] = 'user'
-        session['level'] = 1
+        session['level'] = get_current_level(user['id'])
+        session['login_nonce'] = secrets.token_hex(16)
         return redirect(url_for('user_dashboard'))
 
     return render_template('login.html')
@@ -469,7 +524,8 @@ def register():
         session['user_id'] = created_user['id']
         session['user'] = created_user['username']
         session['role'] = 'user'
-        session['level'] = 1
+        session['level'] = get_current_level(created_user['id'])
+        session['login_nonce'] = secrets.token_hex(16)
         session.pop('verified_email', None)
         session.pop('verified_at', None)
 
@@ -488,11 +544,13 @@ def register_auth_page():
 def forgot_password():
     if request.method == 'POST':
         username = request.form.get('username', '').strip()
+        raw_email = request.form.get('email', '').strip()
+        otp_code = request.form.get('otp_code', '').strip()
         new_password = request.form.get('new_password', '')
         confirm_password = request.form.get('confirm_password', '')
 
-        if not username or not new_password:
-            flash('All fields are required.', 'error')
+        if not username or not raw_email or not otp_code or not new_password:
+            flash('Username, email, OTP, and new password are required.', 'error')
             return render_template('forgot_password.html')
 
         if new_password != confirm_password:
@@ -508,7 +566,22 @@ def forgot_password():
             flash('No account found with that username.', 'error')
             return render_template('forgot_password.html')
 
+        email = normalize_email(raw_email)
+        if not is_valid_email(email):
+            flash('Please enter a valid email address.', 'error')
+            return render_template('forgot_password.html')
+
+        if normalize_email(str(user.get('email', ''))) != email:
+            flash('That email does not match the username.', 'error')
+            return render_template('forgot_password.html')
+
+        if session.get('reset_verified_email') != email:
+            flash('Please verify your email with the OTP before resetting your password.', 'error')
+            return render_template('forgot_password.html')
+
         reset_password(username, generate_password_hash(new_password))
+        session.pop('reset_verified_email', None)
+        session.pop('reset_verified_at', None)
         flash('Password reset successfully. You can now log in.', 'success')
         return redirect(url_for('login'))
 
@@ -519,16 +592,24 @@ def forgot_password():
 def send_auth_code_api():
     data = request.get_json(silent=True) or {}
     raw_email = str(data.get('email', '')).strip()
+    purpose = str(data.get('purpose', AUTH_CODE_PURPOSE_REGISTER)).strip().lower()
 
     if not raw_email:
         return {'message': 'Email is required.'}, 400
+
+    if purpose not in {AUTH_CODE_PURPOSE_REGISTER, AUTH_CODE_PURPOSE_RESET}:
+        return {'message': 'Invalid verification purpose.'}, 400
 
     email = normalize_email(raw_email)
     if not is_valid_email(email):
         return {'message': 'Invalid email format.'}, 400
 
-    if fetch_user_by_email(email) is not None:
-        return {'message': 'That email is already registered.'}, 409
+    existing_user = fetch_user_by_email(email)
+    if purpose == AUTH_CODE_PURPOSE_REGISTER:
+        if existing_user is not None:
+            return {'message': 'That email is already registered.'}, 409
+    elif existing_user is None:
+        return {'message': 'No account found with that email.'}, 404
 
     now_ts = time.time()
     cleanup_expired_auth_codes(now_ts)
@@ -545,20 +626,12 @@ def send_auth_code_api():
         'code_hash': hash_auth_code(code),
         'created_at': now_ts,
         'attempts': 0,
+        'purpose': purpose,
     }
 
     try:
         send_verification_email(email, code)
     except Exception as error:
-        error_text = str(error)
-        is_local_request = request.host.startswith('127.0.0.1') or request.host.startswith('localhost')
-
-        # Local development fallback: keep OTP active and return it only in debug mode.
-        if ALLOW_LOCAL_OTP_FALLBACK and (app.debug or is_local_request) and 'SMTP is not configured' in error_text:
-            return {
-                'message': 'SMTP is not configured. Using local OTP fallback for development.',
-            }
-
         auth_code_store.pop(email, None)
         return {'message': f'Email send failed: {error}'}, 500
 
@@ -570,9 +643,13 @@ def verify_auth_code_api():
     data = request.get_json(silent=True) or {}
     raw_email = str(data.get('email', '')).strip()
     code = str(data.get('code', '')).strip()
+    purpose = str(data.get('purpose', AUTH_CODE_PURPOSE_REGISTER)).strip().lower()
 
     if not raw_email or not code:
         return {'message': 'Email and verification code are required.'}, 400
+
+    if purpose not in {AUTH_CODE_PURPOSE_REGISTER, AUTH_CODE_PURPOSE_RESET}:
+        return {'message': 'Invalid verification purpose.'}, 400
 
     email = normalize_email(raw_email)
     if not is_valid_email(email):
@@ -583,6 +660,9 @@ def verify_auth_code_api():
     entry = auth_code_store.get(email)
 
     if entry is None:
+        return {'message': 'Verification code not found or expired.'}, 400
+
+    if entry.get('purpose') != purpose:
         return {'message': 'Verification code not found or expired.'}, 400
 
     age_seconds = now_ts - float(entry.get('created_at', 0))
@@ -599,8 +679,12 @@ def verify_auth_code_api():
         return {'message': 'Invalid verification code.'}, 400
 
     auth_code_store.pop(email, None)
-    session['verified_email'] = email
-    session['verified_at'] = int(now_ts)
+    if purpose == AUTH_CODE_PURPOSE_RESET:
+        session['reset_verified_email'] = email
+        session['reset_verified_at'] = int(now_ts)
+    else:
+        session['verified_email'] = email
+        session['verified_at'] = int(now_ts)
 
     return {'message': 'Email verified successfully.'}
 
@@ -609,8 +693,11 @@ def verify_auth_code_api():
 @login_required
 @role_required('user')
 def user_dashboard():
-    metrics = get_user_metrics(session['user_id'], session.get('level', 1))
+    session['level'] = get_current_level(session['user_id'])
+    metrics = get_user_metrics(session['user_id'])
     current_level = int(metrics.get('current_level', 1))
+    completed_levels = set(get_completed_level_ids(session['user_id']))
+    all_levels_completed = {1, 2, 3, 4}.issubset(completed_levels)
     weekly_practice = get_weekly_practice_hours(session['user_id'])
     practice_points, practice_scale_max = build_practice_time_points(weekly_practice)
     weekly_seconds = sum(int(item.get('seconds', 0)) for item in weekly_practice)
@@ -625,6 +712,8 @@ def user_dashboard():
         weekly_practice_time=format_duration_seconds(weekly_seconds),
         practice_time=format_practice_time(metrics),
         current_level_label=level_label(current_level),
+        all_levels_completed=all_levels_completed,
+        continue_lesson_href=continue_lesson_href_for_user(session['user_id']),
         lessons_card_url=url_for('lessons'),
         practice_href=practice_href_for_level(current_level),
         next_lesson=build_next_lesson_card(current_level),
@@ -654,7 +743,7 @@ def weekly_practice_api():
     return {
         'weekly_practice_time': format_duration_seconds(weekly_seconds),
         'total_practice_time': format_duration_seconds(
-            get_user_metrics(session['user_id'], session.get('level', 1)).get('practice_seconds', 0)
+            get_user_metrics(session['user_id']).get('practice_seconds', 0)
         ),
         'chart': chart,
         'scale_max_hours': round(practice_scale_max, 2),
@@ -696,6 +785,38 @@ def admin_users():
     )
 
 
+@app.route('/admin-users/<int:user_id>/reset-password', methods=['POST'])
+@login_required
+@role_required('admin')
+def admin_reset_user_password_route(user_id):
+    new_password = (request.form.get('new_password') or '').strip()
+
+    if len(new_password) < 4:
+        flash('New password must be at least 4 characters.', 'error')
+        return redirect(url_for('admin_users'))
+
+    updated_rows = admin_reset_user_password(user_id, generate_password_hash(new_password))
+    if updated_rows <= 0:
+        flash('User not found or password could not be reset.', 'error')
+    else:
+        flash('User password reset successfully.', 'success')
+
+    return redirect(url_for('admin_users'))
+
+
+@app.route('/admin-users/<int:user_id>/delete-account', methods=['POST'])
+@login_required
+@role_required('admin')
+def admin_delete_user_account_route(user_id):
+    updated_rows = admin_delete_user_account(user_id)
+    if updated_rows <= 0:
+        flash('User not found or account could not be deleted.', 'error')
+    else:
+        flash('User account deleted successfully.', 'success')
+
+    return redirect(url_for('admin_users'))
+
+
 @app.route('/admin-certificates')
 @login_required
 @role_required('admin')
@@ -708,16 +829,46 @@ def admin_certificates():
     )
 
 
+@app.route('/admin-certificates/<int:certificate_id>/view', methods=['GET'])
+@login_required
+@role_required('admin')
+def admin_certificate_view(certificate_id):
+    certificate = get_certificate_by_id(certificate_id)
+
+    if certificate is None:
+        flash('Certificate not found.', 'error')
+        return redirect(url_for('admin_certificates'))
+
+    issued_for = (certificate['issued_for'] or '').strip() or (certificate['username'] or 'Student')
+    certificate_title = (certificate['title'] or '').strip() or 'Beginner Piano Course'
+
+    return render_template(
+        'certificate.html',
+        username=session.get('user', 'Admin'),
+        certificate=certificate,
+        issued_for=issued_for,
+        certificate_title=certificate_title,
+        home_href=url_for('admin_certificates'),
+    )
+
+
 @app.route('/lessons')
 @login_required
 @role_required('user')
 def lessons():
-    session['level'] = max(session.get('level', 1), 1)
+    session['level'] = get_current_level(session['user_id'])
     completed_levels = get_completed_level_ids(session['user_id'])
+    level_resume_hrefs = {
+        1: continue_lesson_href_for_level(session['user_id'], 1),
+        2: continue_lesson_href_for_level(session['user_id'], 2),
+        3: continue_lesson_href_for_level(session['user_id'], 3),
+        4: continue_lesson_href_for_level(session['user_id'], 4),
+    }
     return render_template(
         'templates/index.html',
         level=session['level'],
         completed_levels=completed_levels,
+        level_resume_hrefs=level_resume_hrefs,
     )
 
 
@@ -725,6 +876,7 @@ def lessons():
 @login_required
 @role_required('user')
 def game():
+    record_lesson_checkpoint(1, '/game')
     return render_template('templates/game1.html')
 
 
@@ -732,6 +884,7 @@ def game():
 @login_required
 @role_required('user')
 def game1_entry():
+    record_lesson_checkpoint(1)
     return render_template('templates/level1(lesson1).html')
 
 
@@ -739,6 +892,7 @@ def game1_entry():
 @login_required
 @role_required('user')
 def level1_notes():
+    record_lesson_checkpoint(1, '/game')
     return render_template('templates/game1.html')
 
 
@@ -754,6 +908,7 @@ def game2():
 @login_required
 @role_required('user')
 def level1_lesson1():
+    record_lesson_checkpoint(1)
     return render_template('templates/level1(lesson1).html')
 
 
@@ -761,6 +916,7 @@ def level1_lesson1():
 @login_required
 @role_required('user')
 def level1_lesson1exercise():
+    record_lesson_checkpoint(1)
     return render_template('templates/level1(lesson1exercise).html')
 
 
@@ -768,6 +924,7 @@ def level1_lesson1exercise():
 @login_required
 @role_required('user')
 def lesson2_1():
+    record_lesson_checkpoint(2, '/lesson2-1-latest')
     return render_template('level2(lesson 1).html')
 
 
@@ -775,6 +932,7 @@ def lesson2_1():
 @login_required
 @role_required('user')
 def lesson2_2():
+    record_lesson_checkpoint(2)
     return render_template('level 2(lesson 2).html')
 
 
@@ -783,6 +941,7 @@ def lesson2_2():
 @login_required
 @role_required('user')
 def lesson2_3():
+    record_lesson_checkpoint(2, '/lesson2-3')
     lesson3_template = 'level2(lesson 3).html'
     lesson3_path = os.path.join(app.root_path, 'templates', lesson3_template)
     if os.path.exists(lesson3_path):
@@ -801,6 +960,7 @@ def level2_home():
 @login_required
 @role_required('user')
 def lesson2_4():
+    record_lesson_checkpoint(2)
     return render_template('level 2(lesson 4).html')
 
 
@@ -808,6 +968,7 @@ def lesson2_4():
 @login_required
 @role_required('user')
 def level1_lesson2():
+    record_lesson_checkpoint(2, '/lesson2-1-latest')
     return render_template('level2(lesson 1).html')
 
 
@@ -815,6 +976,7 @@ def level1_lesson2():
 @login_required
 @role_required('user')
 def lesson2_1_latest():
+    record_lesson_checkpoint(2, '/lesson2-1-latest')
     return render_template('level2(lesson 1).html')
 
 
@@ -822,6 +984,7 @@ def lesson2_1_latest():
 @login_required
 @role_required('user')
 def level2_lesson1_alias():
+    record_lesson_checkpoint(2, '/lesson2-1-latest')
     return render_template('level2(lesson 1).html')
 
 
@@ -829,34 +992,43 @@ def level2_lesson1_alias():
 @login_required
 @role_required('user')
 def level2_lesson4_alias():
+    record_lesson_checkpoint(2, '/lesson2-4')
     return render_template('level 2(lesson 4).html')
 
 
 @app.route('/lesson3-1', methods=['GET'])
 @login_required
 @role_required('user')
+@level_required(3)
 def lesson3_1():
+    record_lesson_checkpoint(3)
     return render_template('level3(lesson1).html')
 
 
 @app.route('/lesson3-2', methods=['GET'])
 @login_required
 @role_required('user')
+@level_required(3)
 def lesson3_2():
+    record_lesson_checkpoint(3)
     return render_template('level3(lesson2).html')
 
 
 @app.route('/lesson3-3', methods=['GET'])
 @login_required
 @role_required('user')
+@level_required(3)
 def lesson3_3():
+    record_lesson_checkpoint(3)
     return render_template('level3(lesson3).html')
 
 
 @app.route('/lesson3-4', methods=['GET'])
 @login_required
 @role_required('user')
+@level_required(3)
 def lesson3_4():
+    record_lesson_checkpoint(3)
     return render_template('level3(lesson4).html')
 
 
@@ -865,7 +1037,9 @@ def lesson3_4():
 @app.route('/level3(lesson5).html.html', methods=['GET'])
 @login_required
 @role_required('user')
+@level_required(3)
 def lesson3_5():
+    record_lesson_checkpoint(3)
     return render_template('level3(lesson5).html')
 
 
@@ -874,7 +1048,9 @@ def lesson3_5():
 @app.route('/level3(lesson6).html.html', methods=['GET'])
 @login_required
 @role_required('user')
+@level_required(3)
 def lesson3_6():
+    record_lesson_checkpoint(3)
     return render_template('level3(lesson6).html')
 
 
@@ -884,7 +1060,9 @@ def lesson3_6():
 @app.route('/level4.html', methods=['GET'])
 @login_required
 @role_required('user')
+@level_required(4)
 def level4():
+    record_lesson_checkpoint(4)
     return render_template('level4(part1).html')
 
 
@@ -892,7 +1070,9 @@ def level4():
 @app.route('/level4(part2).html', methods=['GET'])
 @login_required
 @role_required('user')
+@level_required(4)
 def level4_part2():
+    record_lesson_checkpoint(4)
     return render_template('level4(part2).html')
 
 
@@ -900,7 +1080,9 @@ def level4_part2():
 @app.route('/level4(part3).html', methods=['GET'])
 @login_required
 @role_required('user')
+@level_required(4)
 def level4_part3():
+    record_lesson_checkpoint(4)
     return render_template('level4(part3).html')
 
 
@@ -909,6 +1091,7 @@ def level4_part3():
 @app.route('/precertificate.html', methods=['GET'])
 @login_required
 @role_required('user')
+@level_required(4)
 def precertificate_page():
     return render_template('precertificatepage.html')
 
@@ -954,13 +1137,35 @@ def save_game2():
     )
     save_task_progress(user_id, task_id=4, status='completed' if passed else 'in_progress', last_score=score)
 
-    if passed:
-        save_progress(user_id, 2, 'completed')
-        session['level'] = max(int(session.get('level', 1)), 2)
-
     return {
         'status': 'ok',
         'passed': passed,
+        'certificate_issued': False,
+        'certificate_no': None,
+        'certificate_url': None,
+    }
+
+
+@app.route('/api/complete-level2', methods=['POST'])
+@login_required
+@role_required('user')
+def complete_level2():
+    data = request.get_json(silent=True) or {}
+
+    try:
+        score = int(data.get('score', 0))
+    except (TypeError, ValueError):
+        score = 0
+    score = max(0, min(score, 1000))
+
+    user_id = session['user_id']
+    save_progress(user_id, 2, 'completed')
+    save_task_progress(user_id, task_id=6, status='completed', last_score=score)
+    session['level'] = get_current_level(user_id)
+
+    return {
+        'status': 'ok',
+        'level_completed': True,
         'certificate_issued': False,
         'certificate_no': None,
         'certificate_url': None,
@@ -982,7 +1187,7 @@ def complete_level1():
     user_id = session['user_id']
     save_progress(user_id, 1, 'completed')
     save_task_progress(user_id, task_id=1, status='completed', last_score=score)
-    session['level'] = max(int(session.get('level', 1)), 1)
+    session['level'] = get_current_level(user_id)
 
     return {
         'status': 'ok',
@@ -999,6 +1204,12 @@ def complete_level1():
 def complete_level3():
     data = request.get_json(silent=True) or {}
 
+    if get_current_level(session['user_id']) < 3:
+        return {
+            'status': 'error',
+            'message': 'Finish level 2 before completing level 3.',
+        }, 403
+
     try:
         score = int(data.get('score', 0))
     except (TypeError, ValueError):
@@ -1007,7 +1218,7 @@ def complete_level3():
 
     user_id = session['user_id']
     save_progress(user_id, 3, 'completed')
-    session['level'] = max(int(session.get('level', 1)), 3)
+    session['level'] = get_current_level(user_id)
 
     return {
         'status': 'ok',
@@ -1024,6 +1235,12 @@ def complete_level3():
 def complete_level4():
     data = request.get_json(silent=True) or {}
 
+    if get_current_level(session['user_id']) < 4:
+        return {
+            'status': 'error',
+            'message': 'Finish level 3 before completing level 4.',
+        }, 403
+
     try:
         score = int(data.get('score', 0))
     except (TypeError, ValueError):
@@ -1034,7 +1251,7 @@ def complete_level4():
 
     save_progress(user_id, 4, 'completed')
     save_task_progress(user_id, task_id=10, status='completed', last_score=score)
-    session['level'] = max(int(session.get('level', 1)), 4)
+    session['level'] = get_current_level(user_id)
 
     certificate = issue_certificate(
         user_id=user_id,
@@ -1055,8 +1272,26 @@ def complete_level4():
 @app.route('/certificate', methods=['GET'])
 @login_required
 @role_required('user')
+@level_required(4)
 def certificate_page():
     certificate = get_latest_certificate_for_user(session['user_id'])
+
+    if certificate is None and 4 in get_completed_level_ids(session['user_id']):
+        certificate = issue_certificate(
+            user_id=session['user_id'],
+            level_id=4,
+            issued_for=session.get('user'),
+            score_snapshot=0,
+        )
+
+    if certificate is None:
+        flash('Finish level 4 to unlock your certificate.', 'error')
+        return redirect(url_for('lessons'))
+
+    if request.args.get('download') == '1':
+        mark_certificate_downloaded(certificate['id'])
+        certificate = get_latest_certificate_for_user(session['user_id'])
+
     issued_for = session.get('user', 'Student')
     certificate_title = 'Beginner Piano Course'
 
@@ -1095,6 +1330,57 @@ def log_practice_session():
     if duration_seconds > 0:
         add_practice_session(session['user_id'], game_type, duration_seconds)
 
+    return {'status': 'ok'}
+
+
+@app.route('/api/lesson-progress', methods=['GET', 'POST'])
+@login_required
+@role_required('user')
+def lesson_progress_api():
+    if request.method == 'GET':
+        try:
+            level_id = int(request.args.get('level_id', 0))
+        except (TypeError, ValueError):
+            level_id = 0
+
+        lesson_path = _normalize_lesson_path(request.args.get('lesson_path'))
+        if level_id <= 0 or not lesson_path:
+            return {'status': 'error', 'message': 'Invalid lesson checkpoint request.'}, 400
+
+        checkpoint = get_lesson_checkpoint(session['user_id'], level_id)
+        if checkpoint is None or checkpoint.get('last_lesson_path') != lesson_path:
+            return {'status': 'ok', 'state': None}
+
+        raw_state = checkpoint.get('last_lesson_state')
+        if not raw_state:
+            return {'status': 'ok', 'state': None}
+
+        try:
+            state = json.loads(raw_state)
+        except (TypeError, ValueError):
+            state = None
+
+        return {'status': 'ok', 'state': state}
+
+    data = request.get_json(silent=True) or {}
+
+    try:
+        level_id = int(data.get('level_id', 0))
+    except (TypeError, ValueError):
+        level_id = 0
+
+    lesson_path = _normalize_lesson_path(data.get('lesson_path'))
+    state = data.get('state')
+
+    if level_id <= 0 or not lesson_path or not isinstance(state, dict):
+        return {'status': 'error', 'message': 'Invalid lesson progress payload.'}, 400
+
+    save_lesson_checkpoint(
+        session['user_id'],
+        level_id,
+        lesson_path,
+        lesson_state=json.dumps(state, separators=(',', ':')),
+    )
     return {'status': 'ok'}
 
 

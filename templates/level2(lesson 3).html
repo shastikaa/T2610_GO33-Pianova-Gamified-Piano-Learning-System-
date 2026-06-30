@@ -1503,7 +1503,7 @@
 
     document.getElementById("btnListen").addEventListener("click", streamSequenceAudio);
     document.getElementById("btnReset").addEventListener("click", () => rebootSessionState());
-    document.getElementById("topHomeBtn").addEventListener("click", () => navigateTo("/lessons"));
+    document.getElementById("topHomeBtn").addEventListener("click", () => navigateTo("/dashboard"));
     document.getElementById("topExitBtn").addEventListener("click", () => navigateTo("/"));
     document.getElementById("btnGameOverPlayAgain").addEventListener("click", event => {
       if (event.currentTarget.dataset.nextLesson === "true") {
@@ -1517,6 +1517,46 @@
     drawStaffLinesGrid();
     buildPianoKeyboardLayout();
     rebootSessionState();
+  </script>
+  <script src="/static/lesson-progress.js"></script>
+  <script>
+    window.PianovaLessonProgress.attach({
+      levelId: 2,
+      lessonPath: '/lesson2-3',
+      getState() {
+        return {
+          scoresCount,
+          currentCombo,
+          remainingLives,
+          questionIndex,
+          placementSequencePointer,
+          lessonComplete,
+          isSoundMuted,
+          gameOverVisible: gameOverScreen.classList.contains('show'),
+        };
+      },
+      applyState(state) {
+        rebootSessionState();
+        scoresCount = Math.max(0, Number(state.scoresCount || 0));
+        currentCombo = Math.max(0, Number(state.currentCombo || 0));
+        remainingLives = Math.max(0, Number(state.remainingLives || TOTAL_LIVES));
+        questionIndex = Math.max(1, Number(state.questionIndex || 1));
+        placementSequencePointer = Math.max(0, Number(state.placementSequencePointer || 0));
+        lessonComplete = !!state.lessonComplete;
+        isSoundMuted = !!state.isSoundMuted;
+        advanceToNextRound();
+        placementSequencePointer = Math.max(0, Math.min(placementSequencePointer, targetGeneratedNotes.length));
+        synchronizeNotationPanel();
+        propagateStatsToDashboard();
+        if (state.gameOverVisible) {
+          showGameOverScreen(lessonComplete);
+        }
+      },
+    });
+  </script>
+  <script src="/static/practice-tracker.js"></script>
+  <script>
+    window.PianovaPracticeTracker.attach({ gameType: 'level2_lesson3' });
   </script>
 </body>
 </html>

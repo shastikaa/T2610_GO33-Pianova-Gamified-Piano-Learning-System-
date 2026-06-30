@@ -221,6 +221,12 @@
       transition: transform 0.2s ease, opacity 0.2s ease;
     }
 
+    .home-btn {
+      background: linear-gradient(180deg, rgba(15, 20, 31, 0.94), rgba(10, 14, 23, 0.98));
+      color: #f3dfbc;
+      border-color: rgba(255, 255, 255, 0.24);
+    }
+
     .next-btn:hover {
       transform: translateY(-1px);
     }
@@ -567,6 +573,7 @@
         <p class="lesson-subtitle">Learn each note, then continue to the game</p>
       </div>
       <div class="status-wrap">
+        <button class="next-btn home-btn" id="homeBtn" type="button">HOME</button>
         <button class="next-btn" id="nextBtn" type="button">NEXT ▶</button>
       </div>
     </header>
@@ -708,6 +715,7 @@
 
   <script>
     const cards = document.querySelectorAll(".note-card");
+    const homeBtn = document.getElementById("homeBtn");
     const nextBtn = document.getElementById("nextBtn");
     const pianoKeys = document.querySelectorAll(".piano-key");
 
@@ -828,6 +836,14 @@
     nextBtn.addEventListener("click", () => {
       window.location.href = "/level1-lesson1exercise";
     });
+
+    homeBtn.addEventListener("click", () => {
+      window.location.href = "/dashboard";
+    });
+  </script>
+  <script src="/static/practice-tracker.js"></script>
+  <script>
+    window.PianovaPracticeTracker.attach({ gameType: 'level1_lesson1' });
   </script>
 </body>
 </html>

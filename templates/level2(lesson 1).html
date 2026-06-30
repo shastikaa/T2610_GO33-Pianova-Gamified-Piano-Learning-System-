@@ -1118,17 +1118,17 @@
 
         function goHome() {
             if (window.location.protocol.startsWith('http')) {
-                window.location.href = '/lessons';
+                window.location.href = '/dashboard';
             } else {
-                window.location.href = 'index.html';
+                window.location.href = '/dashboard';
             }
         }
 
         function goExit() {
             if (window.location.protocol.startsWith('http')) {
-                window.location.href = '/';
+                window.location.href = '/lessons';
             } else {
-                window.location.href = 'index.html';
+                window.location.href = '/lessons';
             }
         }
 
@@ -1185,10 +1185,9 @@
 
         document.getElementById("resetBtn")?.addEventListener("click", restartGame);
         document.getElementById("soundBtn")?.addEventListener("click", () => playTone(880));
-
         window.addEventListener("keydown", event => {
             const key = event.key.toUpperCase();
-            const found = pianoLayout.find(item => item.keyChar === key);
+            const found = pianoLayout.find(item => item.note === key);
 
             if (!found) return;
 
@@ -1255,6 +1254,34 @@
             setTimeout(fit, 80);
             setTimeout(fit, 350);
         })();
+    </script>
+    <script src="/static/lesson-progress.js"></script>
+    <script>
+        window.PianovaLessonProgress.attach({
+            levelId: 2,
+            lessonPath: '/lesson2-1-latest',
+            getState() {
+                return {
+                    currentNote,
+                    score,
+                    combo,
+                    lives,
+                    completionShown: !!document.querySelector('.completion'),
+                };
+            },
+            applyState(state) {
+                score = Math.max(0, Number(state.score || 0));
+                combo = Math.max(0, Number(state.combo || 0));
+                lives = Math.max(0, Number(state.lives || maxLives));
+                restartGame();
+                currentNote = String(state.currentNote || currentNote || '');
+                updateStats();
+                drawStaff(currentNote);
+                if (state.completionShown) {
+                    showCompletion(lives > 0);
+                }
+            },
+        });
     </script>
 </body>
 </html>

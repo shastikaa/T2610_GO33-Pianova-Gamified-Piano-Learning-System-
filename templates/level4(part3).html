@@ -59,7 +59,7 @@
       border-radius: 8px;
       padding: clamp(10px, 1.7vh, 18px) clamp(14px, 2.1vw, 30px) clamp(12px, 1.8vh, 22px);
       display: grid;
-      grid-template-rows: clamp(84px, 14vh, 116px) minmax(245px, 1fr) clamp(112px, 19vh, 130px) clamp(150px, 23vh, 188px);
+      grid-template-rows: clamp(112px, 18vh, 146px) minmax(245px, 1fr) clamp(112px, 19vh, 130px) clamp(150px, 23vh, 188px);
       gap: clamp(6px, 1vh, 10px);
       box-shadow: 0 24px 70px rgba(0,0,0,0.72), inset 0 0 36px rgba(255, 194, 46, 0.09);
       overflow: hidden;
@@ -79,12 +79,21 @@
     .top-navbar {
       display: grid;
       grid-template-columns: minmax(128px, 1fr) minmax(280px, 1.25fr) minmax(240px, 1fr);
-      align-items: center;
+      align-items: start;
       gap: 18px;
       min-height: 0;
     }
 
     .nav-left-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: clamp(6px, 1vw, 10px);
+      align-items: flex-start;
+      transform: translateY(-6px);
+    }
+
+    .nav-top-actions,
+    .nav-bottom-actions {
       display: flex;
       gap: clamp(8px, 1.2vw, 14px);
       align-items: center;
@@ -1001,8 +1010,14 @@
     
     <header class="top-navbar">
       <div class="nav-left-buttons">
-        <button class="circle-menu-btn" id="btnPause" type="button"><span>||</span>Pause</button>
-        <button class="circle-menu-btn" id="btnHelp" type="button"><span>?</span>Help</button>
+        <div class="nav-top-actions">
+          <button class="circle-menu-btn" id="btnHome" type="button"><span>⌂</span>Home</button>
+          <button class="circle-menu-btn" id="btnExit" type="button"><span>✕</span>Exit</button>
+        </div>
+        <div class="nav-bottom-actions">
+          <button class="circle-menu-btn" id="btnPause" type="button"><span>||</span>Pause</button>
+          <button class="circle-menu-btn" id="btnHelp" type="button"><span>?</span>Help</button>
+        </div>
       </div>
 
       <div class="song-title-banner">
@@ -1165,6 +1180,7 @@
     let isDemonstrationRunning = false;
     let isGamePaused = false;
     let hasShownAutoPreCertificatePopup = false;
+    let level4CompletionSaved = false;
 
     const sheetContainer = document.getElementById("sheetContainer");
     const pianoKeysBed = document.getElementById("pianoKeysBed");
@@ -1440,6 +1456,32 @@
         preCertificateOverlay.classList.add("visible");
         preCertificateOverlay.setAttribute("aria-hidden", "false");
       }
+
+      saveLevel4Completion();
+    }
+
+    async function saveLevel4Completion() {
+      if (level4CompletionSaved) {
+        return true;
+      }
+
+      level4CompletionSaved = true;
+      try {
+        const response = await fetch('/api/complete-level4', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ score: currentScoreValue || PERFECT_SCORE }),
+          keepalive: true,
+        });
+        if (!response.ok) {
+          level4CompletionSaved = false;
+          return false;
+        }
+        return true;
+      } catch (error) {
+        level4CompletionSaved = false;
+        return false;
+      }
     }
 
     function reinitializeGameState() {
@@ -1468,26 +1510,74 @@
 
     document.getElementById("btnListen").addEventListener("click", processDemonstrationPhrase);
     document.getElementById("btnRestart").addEventListener("click", reinitializeGameState);
+    document.getElementById("btnHome").addEventListener("click", () => {
+      window.location.href = "/dashboard";
+    });
+    document.getElementById("btnExit").addEventListener("click", () => {
+      const shouldExit = window.confirm("Exit this lesson and return to lessons?");
+      if (!shouldExit) {
+        return;
+      }
+      window.location.href = "/lessons";
+    });
     document.getElementById("btnPause").addEventListener("click", () => setPauseState(true));
     document.getElementById("btnResumeGame").addEventListener("click", () => setPauseState(false));
     document.getElementById("btnHelp").addEventListener("click", () => setHelpVisibility(true));
     document.getElementById("btnCloseHelp").addEventListener("click", () => setHelpVisibility(false));
-    document.getElementById("btnModalPlay").addEventListener("click", reinitializeGameState);
+    document.getElementById("btnModalPlay").addEventListener("click", () => {
+      reinitializeGameState();
+      if (lessonProgressController && typeof lessonProgressController.save === 'function') {
+        lessonProgressController.save();
+      }
+    });
     document.getElementById("btnModalHome").addEventListener("click", () => {
       preCertificateOverlay.classList.add("visible");
       preCertificateOverlay.setAttribute("aria-hidden", "false");
     });
-    document.getElementById("btnPreCertContinue").addEventListener("click", () => {
+    document.getElementById("btnPreCertContinue").addEventListener("click", async () => {
+      await saveLevel4Completion();
       window.location.href = "/precertificatepage";
     });
     document.getElementById("btnPreCertHome").addEventListener("click", () => {
-      window.location.href = "/lessons";
+      window.location.href = "/dashboard";
     });
 
     // Initial Bootstrap Layers Execution Engine
     buildScoreboardNotationView();
     buildPianoKeyboardLayout();
     synchronizeInteractiveStates();
+  </script>
+  <script src="/static/lesson-progress.js"></script>
+  <script>
+    const lessonProgressController = window.PianovaLessonProgress.attach({
+      levelId: 4,
+      getState() {
+        return {
+          currentTrackPointer,
+          currentScoreValue,
+          totalMisplayedInputs,
+          isGamePaused,
+          hasShownAutoPreCertificatePopup,
+          completionVisible: completionModal.classList.contains('visible'),
+          preCertificateVisible: preCertificateOverlay.classList.contains('visible'),
+        };
+      },
+      applyState(state) {
+        currentTrackPointer = Math.max(0, Math.min(Number(state.currentTrackPointer || 0), flattenedTrackNotes.length));
+        currentScoreValue = Math.max(0, Number(state.currentScoreValue || 0));
+        totalMisplayedInputs = Math.max(0, Number(state.totalMisplayedInputs || 0));
+        hasShownAutoPreCertificatePopup = !!state.hasShownAutoPreCertificatePopup;
+        completionModal.classList.toggle('visible', !!state.completionVisible);
+        preCertificateOverlay.classList.toggle('visible', !!state.preCertificateVisible);
+        preCertificateOverlay.setAttribute('aria-hidden', state.preCertificateVisible ? 'false' : 'true');
+        synchronizeInteractiveStates();
+        setPauseState(!!state.isGamePaused);
+      },
+    });
+  </script>
+  <script src="/static/practice-tracker.js"></script>
+  <script>
+    window.PianovaPracticeTracker.attach({ gameType: 'level4_part3' });
   </script>
 </body>
 </html>

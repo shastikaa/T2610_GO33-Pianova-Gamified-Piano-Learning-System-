@@ -1562,7 +1562,7 @@ function showEndGamePopup(isPassed) {
     homeBtnModal.innerHTML = `<span class="chip">‹</span> <span class="button-text">HOME</span>`;
     homeBtnModal.onclick = () => {
       if (autoAdvanceTimer) clearTimeout(autoAdvanceTimer);
-      window.location.href = "/lessons";
+      window.location.href = "/dashboard";
     };
 
     modalActionsContainer.appendChild(nextBtn);
@@ -1587,7 +1587,7 @@ function showEndGamePopup(isPassed) {
     const homeBtnModal = document.createElement("button");
     homeBtnModal.className = "btn-large btn-large-secondary";
     homeBtnModal.innerHTML = `<span class="chip">‹</span> <span class="button-text">HOME</span>`;
-    homeBtnModal.onclick = () => { window.location.href = "/lessons"; };
+    homeBtnModal.onclick = () => { window.location.href = "/dashboard"; };
 
     modalActionsContainer.appendChild(retryBtn);
     modalActionsContainer.appendChild(homeBtnModal);
@@ -1656,9 +1656,51 @@ pauseBtn.addEventListener("click", () => { if (isDemoRunning) stopDemo(); paused
 demoBtn.addEventListener("click", startDemo);
 resetBtn.addEventListener("click", resetGame);
 exitBtn.addEventListener("click", () => window.location.href = "/lessons");
-homeBtn.addEventListener("click", () => window.location.href = "/lessons");
+homeBtn.addEventListener("click", () => window.location.href = "/dashboard");
 
 setupGame();
+</script>
+<script src="/static/lesson-progress.js"></script>
+<script>
+window.PianovaLessonProgress.attach({
+  levelId: 3,
+  getState() {
+    return {
+      songIndex,
+      score,
+      combo,
+      maxCombo,
+      lives,
+      paused,
+      demoIndex,
+      level3CompletionSent,
+      completionResult: endGameModal.classList.contains('open') ? (lives > 0 ? 'pass' : 'fail') : null,
+    };
+  },
+  applyState(state) {
+    songIndex = Math.max(0, Math.min(Number(state.songIndex || 0), melody.length));
+    score = Math.max(0, Number(state.score || 0));
+    combo = Math.max(0, Number(state.combo || 0));
+    maxCombo = Math.max(0, Number(state.maxCombo || 0));
+    lives = Math.max(0, Number(state.lives || 5));
+    paused = !!state.paused;
+    demoIndex = Math.max(0, Number(state.demoIndex || 0));
+    level3CompletionSent = !!state.level3CompletionSent;
+    if (autoAdvanceTimer) {
+      clearTimeout(autoAdvanceTimer);
+      autoAdvanceTimer = null;
+    }
+    stopDemo();
+    render();
+    if (state.completionResult) {
+      showEndGamePopup(state.completionResult === 'pass');
+    }
+  },
+});
+</script>
+<script src="/static/practice-tracker.js"></script>
+<script>
+window.PianovaPracticeTracker.attach({ gameType: 'level3_lesson6' });
 </script>
 </body>
 </html>

@@ -247,15 +247,26 @@ function openDetail(type){
   modal.classList.add("open");
 }
 function closeDetail(){modal.classList.remove("open")}
-document.querySelector("#downloadBtn").onclick=()=>{window.location.href="/certificate?download=1"};
-document.querySelector("#modalDownload").onclick=()=>{window.location.href="/certificate?download=1"};
-document.querySelector("#printBtn").onclick=()=>{
+async function ensureCertificateReady(){
+  try{
+    await fetch("/api/complete-level4",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({score:profile.score||100}),
+      keepalive:true
+    });
+  }catch(e){}
+}
+document.querySelector("#downloadBtn").onclick=async()=>{await ensureCertificateReady();window.location.href="/certificate?download=1"};
+document.querySelector("#modalDownload").onclick=async()=>{await ensureCertificateReady();window.location.href="/certificate?download=1"};
+document.querySelector("#printBtn").onclick=async()=>{
+  await ensureCertificateReady();
   const w=window.open("/certificate?print=1","_blank");
   if(!w){showToast("Pop-up blocked. Allow pop-ups to print certificate.");return}
   showToast("Certificate print page opened.");
 };
 document.querySelector("#closeModal").onclick=closeDetail;
-document.querySelector("#homeBtn").onclick=()=>{showToast("Home selected. Progress summary refreshed.");animateNumbers()};
+document.querySelector("#homeBtn").onclick=()=>{window.location.href="/dashboard"};
 document.querySelectorAll(".req").forEach(b=>b.onclick=()=>openDetail(b.dataset.detail));
 modal.onclick=e=>{if(e.target===modal)closeDetail()};
 window.onkeydown=e=>{if(e.key==="Escape")closeDetail()};

@@ -36,6 +36,29 @@
       color: var(--ink);
     }
 
+    .cert-home-btn {
+      position: fixed;
+      top: 14px;
+      left: 14px;
+      z-index: 40;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      border-radius: 999px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 14px;
+      color: #1c1305;
+      border: 1px solid rgba(255, 227, 155, 0.72);
+      background: linear-gradient(180deg, #ffe39b, #efb324);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.35);
+    }
+
+    .cert-home-btn:hover {
+      filter: brightness(1.04);
+    }
+
     .certificate {
       position: relative;
       width: 100%;
@@ -514,6 +537,10 @@
         padding: 0;
       }
 
+      .cert-home-btn {
+        display: none;
+      }
+
       .certificate {
         box-shadow: none;
       }
@@ -521,6 +548,7 @@
   </style>
 </head>
 <body>
+  <a class="cert-home-btn" href="{{ home_href or '/dashboard' }}" aria-label="Go to dashboard">&#8962; Home</a>
   <div class="certificate">
     <div class="ornament tl">&#10086;</div>
     <div class="ornament tr">&#10086;</div>

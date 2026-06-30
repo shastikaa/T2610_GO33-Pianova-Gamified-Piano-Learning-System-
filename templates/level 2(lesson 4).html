@@ -1086,6 +1086,7 @@
     let totalCorrect = 0;
     let lives = MAX_LIVES;
     let level = 1;
+    let level2CompletionSaved = false;
     let activeNotes = [];
     let spawnIndex = 0;
     let lastSpawn = 0;
@@ -1256,7 +1257,9 @@
         homeButton.title = 'Home';
         homeButton.setAttribute('aria-label', 'Home');
         homeButton.onclick = null;
-        homeButton.addEventListener('click', startGame);
+        homeButton.addEventListener('click', () => {
+          window.location.href = '/dashboard';
+        });
       }
 
       if (exitButton) {
@@ -1724,12 +1727,29 @@
       }
     }
 
+    async function saveLevel2Completion() {
+      if (level2CompletionSaved) return;
+
+      level2CompletionSaved = true;
+      try {
+        await fetch('/api/complete-level2', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ score: score }),
+          keepalive: true
+        });
+      } catch (error) {
+        level2CompletionSaved = false;
+      }
+    }
+
     function showCompletion(won) {
       if (audioCtx) playTone(won ? 988 : 220, won ? 'sine' : 'sawtooth');
       const totalScore = totalLessonNotes() * 10;
       const finalScore = Math.min(score, totalScore);
 
       if (won) {
+        saveLevel2Completion();
         root.innerHTML = `
           <section class="completion-screen">
             <div class="basic-complete-card">
@@ -1776,11 +1796,12 @@
           </section>
         `;
 
-        document.getElementById('basicNextLessonBtn').addEventListener('click', () => {
+        document.getElementById('basicNextLessonBtn').addEventListener('click', async () => {
+          await saveLevel2Completion();
           window.location.href = '/lesson3-1';
         });
         document.getElementById('basicHomeBtn').addEventListener('click', () => {
-          window.location.href = '/lessons';
+          window.location.href = '/dashboard';
         });
         queueFitStage();
         return;
@@ -1831,6 +1852,43 @@
     });
 
     startGame();
+  </script>
+  <script src="/static/lesson-progress.js"></script>
+  <script>
+    window.PianovaLessonProgress.attach({
+      levelId: 2,
+      lessonPath: '/lesson2-4',
+      getState() {
+        return {
+          score,
+          combo,
+          totalCorrect,
+          lives,
+          level,
+          running,
+          paused,
+        };
+      },
+      applyState(state) {
+        startGame();
+        score = Math.max(0, Number(state.score || 0));
+        combo = Math.max(0, Number(state.combo || 0));
+        totalCorrect = Math.max(0, Number(state.totalCorrect || 0));
+        lives = Math.max(0, Number(state.lives || MAX_LIVES));
+        level = Math.max(1, Number(state.level || 1));
+        running = !!state.running;
+        paused = !!state.paused;
+        updateStats();
+        setFeedback(`Level ${level}: ${currentSong().name}`, true);
+        if (paused && running) {
+          togglePause();
+        }
+      },
+    });
+  </script>
+  <script src="/static/practice-tracker.js"></script>
+  <script>
+    window.PianovaPracticeTracker.attach({ gameType: 'level2_lesson4' });
   </script>
 </body>
 </html>

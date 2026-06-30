@@ -1790,7 +1790,10 @@
       <h1>🎹 LEARN THE NOTES</h1>
       <div class="gamified-badge">✨ GAMIFIED PIANO LEARNING ✨</div>
     </div>
-    <button class="quit-button" onclick="quitGame()">🚪 Quit Lesson</button>
+    <div style="display:flex; gap:10px; align-items:center;">
+      <button class="quit-button" onclick="goHome()">⌂ Home</button>
+      <button class="quit-button" onclick="quitGame()">🚪 Quit Lesson</button>
+    </div>
     <div class="top-stats">
       <div class="top-stat-card">
         <div class="top-stat-title"><span class="score-icon">🎯</span>Score</div>
@@ -2093,7 +2096,7 @@
       </div>
       <div class="basic-complete-actions">
         <a class="basic-action-primary" href="/lesson2-1-latest"><span class="basic-btn-chip">🚀</span> NEXT LEVEL <span class="basic-btn-chip">›</span></a>
-        <a class="basic-action-secondary" href="/"><span class="basic-btn-chip">‹</span> HOME</a>
+        <a class="basic-action-secondary" href="/dashboard"><span class="basic-btn-chip">‹</span> HOME</a>
       </div>
     </div>
   </div>
@@ -3230,6 +3233,61 @@
       if (resetBtn4) resetBtn4.addEventListener('click', resetDragGame4);
     }
 
+    window.PianovaGame1Bridge = {
+      getState() {
+        return {
+          currentLesson: lesson4Page?.classList.contains('active')
+            ? 4
+            : lesson3Page?.classList.contains('active')
+              ? 3
+              : lesson2Page?.classList.contains('active')
+                ? 2
+                : 1,
+          currentLives,
+          currentXP,
+          comboStreak,
+          isGameOver,
+          levelCompleted,
+          lesson2Completed,
+          lesson3Completed,
+          basicLevelCompleted,
+          lesson1Progress,
+          lesson2Progress,
+          lesson3Progress,
+          lesson4Progress,
+        };
+      },
+      applyState(state) {
+        currentLives = Math.max(0, Number(state.currentLives || MAX_LIVES));
+        currentXP = Math.max(0, Number(state.currentXP || 0));
+        comboStreak = Math.max(0, Number(state.comboStreak || 0));
+        isGameOver = !!state.isGameOver;
+        levelCompleted = !!state.levelCompleted;
+        lesson2Completed = !!state.lesson2Completed;
+        lesson3Completed = !!state.lesson3Completed;
+        basicLevelCompleted = !!state.basicLevelCompleted;
+        lesson1Progress = Math.max(0, Number(state.lesson1Progress || 0));
+        lesson2Progress = Math.max(0, Number(state.lesson2Progress || 0));
+        lesson3Progress = Math.max(0, Number(state.lesson3Progress || 0));
+        lesson4Progress = Math.max(0, Number(state.lesson4Progress || 0));
+
+        const lessonNumber = Math.max(1, Math.min(Number(state.currentLesson || 1), 4));
+        if (lessonNumber === 2) {
+          switchToLesson2();
+        } else if (lessonNumber === 3) {
+          switchToLesson3();
+        } else if (lessonNumber === 4) {
+          switchToLesson4();
+        }
+
+        updateTopHud();
+
+        if (isGameOver) {
+          openGameOverOverlay();
+        }
+      },
+    };
+
     updateTopHud();
   })();
 
@@ -3256,11 +3314,39 @@
   window.addEventListener('pagehide', sendPracticeSession);
   window.addEventListener('beforeunload', sendPracticeSession);
 
+  window.pianovaGame1ProgressController = null;
+
   function quitGame() {
-    if (confirm('Are you sure you want to quit? Your progress will not be saved.')) {
-      window.location.href = '/';
+    if (confirm('Are you sure you want to quit? Your progress will be saved.')) {
+      if (window.pianovaGame1ProgressController && typeof window.pianovaGame1ProgressController.save === 'function') {
+        window.pianovaGame1ProgressController.save();
+      }
+      window.location.href = '/lessons';
     }
   }
+
+  function goHome() {
+    window.location.href = '/dashboard';
+  }
+</script>
+<script src="/static/lesson-progress.js"></script>
+<script>
+  window.pianovaGame1ProgressController = window.PianovaLessonProgress.attach({
+    levelId: 1,
+    lessonPath: '/game',
+    getState() {
+      if (!window.PianovaGame1Bridge || typeof window.PianovaGame1Bridge.getState !== 'function') {
+        return null;
+      }
+      return window.PianovaGame1Bridge.getState();
+    },
+    applyState(state) {
+      if (!window.PianovaGame1Bridge || typeof window.PianovaGame1Bridge.applyState !== 'function') {
+        return;
+      }
+      window.PianovaGame1Bridge.applyState(state || {});
+    },
+  });
 </script>
 </body>
 </html>

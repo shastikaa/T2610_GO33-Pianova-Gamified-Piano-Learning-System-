@@ -825,8 +825,8 @@
             <div aria-hidden="true"></div>
 
             <div class="top-actions">
-                <button class="icon-btn" title="Home" onclick="window.location.href='/lessons'">&#8962;</button>
-                <button class="icon-btn" title="Exit" onclick="window.location.href='/'">&#9211;</button>
+                <button class="icon-btn" title="Home" onclick="window.location.href='/dashboard'">&#8962;</button>
+                <button class="icon-btn" title="Exit" onclick="exitLesson()">&#9211;</button>
             </div>
         </header>
 
@@ -924,6 +924,17 @@
     let targetSeq = [];
     let userSeq = [];
     let waitingForReset = false;
+    let completionWon = false;
+    const forceFreshStart = new URLSearchParams(window.location.search).has("fresh");
+    let progressController = null;
+
+    function exitLesson() {
+        if (progressController && typeof progressController.save === "function") {
+            progressController.save();
+        }
+
+        window.location.href = '/lessons';
+    }
 
     async function ensureAudioContext() {
         if (!audioCtx) {
@@ -1043,9 +1054,13 @@
     }
 
     function showCompletion(won) {
+        completionWon = !!won;
         const gameFrame = document.getElementById("game-frame");
         const icon = won ? "&#9733;" : "&#9829;";
         const title = won ? "Maestro!" : "Try Again";
+        const playAgainHref = window.location.protocol.startsWith('http')
+            ? '/lesson2-2?fresh=1'
+            : 'level 2(lesson 2).html?fresh=1';
 
         gameFrame.innerHTML = `
             <section class="completion">
@@ -1054,7 +1069,7 @@
                     <h2>${title}</h2>
                     <p>Final score: <strong>${score} / 100</strong></p>
                     <div class="completion-actions">
-                        ${won ? `<button class="completion-btn" onclick="window.location.href='${window.location.protocol.startsWith('http') ? '/lesson2-3' : 'level2(lesson 3).html'}'">Next Lesson</button>` : `<button class="completion-btn" onclick="location.reload()">Play Again</button>`}
+                        ${won ? `<button class="completion-btn" onclick="window.location.href='${window.location.protocol.startsWith('http') ? '/lesson2-3' : 'level2(lesson 3).html'}'">Next Lesson</button>` : `<button class="completion-btn" onclick="window.location.href='${playAgainHref}'">Play Again</button>`}
                     </div>
                 </div>
             </section>
@@ -1130,6 +1145,52 @@
         setTimeout(fit, 80);
         setTimeout(fit, 350);
     })();
+</script>
+<script src="/static/lesson-progress.js"></script>
+<script>
+progressController = window.PianovaLessonProgress.attach({
+    levelId: 2,
+    lessonPath: '/lesson2-2',
+    getState() {
+        return {
+            score,
+            streak,
+            lives,
+            targetSeq,
+            userSeq,
+            waitingForReset,
+            completionWon,
+            completionShown: !!document.querySelector('.completion'),
+        };
+    },
+    applyState(state) {
+        if (forceFreshStart) {
+            waitingForReset = false;
+            completionWon = false;
+            history.replaceState({}, '', window.location.pathname);
+            return;
+        }
+
+        score = Math.max(0, Number(state.score || 0));
+        streak = Math.max(0, Number(state.streak || 0));
+        lives = Math.max(0, Number(state.lives ?? 5));
+        targetSeq = Array.isArray(state.targetSeq) ? state.targetSeq.slice() : [];
+        userSeq = Array.isArray(state.userSeq) ? state.userSeq.slice() : [];
+        waitingForReset = !!state.waitingForReset;
+        completionWon = !!state.completionWon;
+        updateUI();
+        if (state.completionShown) {
+            const won = (typeof state.completionWon === 'boolean')
+                ? state.completionWon
+                : (score >= 100 && lives > 0);
+            showCompletion(won);
+        }
+    },
+});
+</script>
+<script src="/static/practice-tracker.js"></script>
+<script>
+window.PianovaPracticeTracker.attach({ gameType: 'level2_lesson2' });
 </script>
 </body>
 </html>

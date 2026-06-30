@@ -1033,9 +1033,9 @@
 
         .test-lock-main {
             display: grid;
-            grid-template-columns: 280px 1fr;
-            gap: 32px;
-            align-items: center;
+            grid-template-columns: 1fr;
+            gap: 0;
+            align-items: start;
         }
 
         /* ── Lock art panel ── */
@@ -1376,6 +1376,7 @@
 
 <script>
     const serverCompletedLevels = JSON.parse('{{ completed_levels|default([], true)|tojson|safe }}');
+    const serverResumeHrefs = JSON.parse('{{ level_resume_hrefs|default({}, true)|tojson|safe }}');
 
     // ----- LESSON DATA MATCHING YOUR VISUAL STRUCTURE -----
     const lessonsData = [
@@ -1450,7 +1451,7 @@
             songsPreview: ["🎹 Für Elise (original)", "🎹 Moonlight Sonata excerpt", "🎹 Jazz blues"],
             chordHint: "7th chords · improvisation tools",
             lockShowcase: {
-                title: "Level Locked 🔒",
+                title: "",
                 intro: "Complete \"Advanced\" to unlock this level and earn your certificate. 🎓",
                 objectiveLine: "Finish the previous level to gain access and certification:",
                 objectives: [
@@ -1481,10 +1482,12 @@
     }
 
     function gameUrlForLesson(lessonId) {
+        const resumeHref = serverResumeHrefs[String(lessonId)] || serverResumeHrefs[lessonId];
+        if (resumeHref) return resumeHref;
         if (lessonId === 1) return '/game1';
         if (lessonId === 2) return '/lesson2-1-latest';
         if (lessonId === 4) return '/level4';
-        return '/game2';
+        return '/lesson3-1';
     }
 
     // Initialize global state: either from storage or fresh default
@@ -1611,13 +1614,7 @@
             const headerDiv = document.createElement('div');
             headerDiv.className = 'lesson-header';
 
-            const lessonPlayHref = lessonMeta.id === 1
-                ? '/game1'
-                : lessonMeta.id === 2
-                    ? '/lesson2-1-latest'
-                    : lessonMeta.id === 3
-                        ? '/lesson3-1'
-                        : '/level4';
+            const lessonPlayHref = gameUrlForLesson(lessonMeta.id);
 
             headerDiv.style.cursor = isLocked ? 'not-allowed' : 'pointer';
             headerDiv.title = isLocked
@@ -1640,7 +1637,7 @@
             
             const titleSpan = document.createElement('div');
             titleSpan.className = 'lesson-title';
-            titleSpan.innerHTML = `${lessonMeta.name} ${(isLocked || isTestLessonCard) ? '<span class="lock-icon">🔒</span>' : (isCompleted ? '<span style="font-size:1.3rem;">🏆</span>' : '🎹')}`;
+            titleSpan.innerHTML = `${lessonMeta.name} ${(isCompleted ? '<span style="font-size:1.3rem;">🏆</span>' : '🎹')}`;
             
             infoDiv.appendChild(badgeSpan);
             infoDiv.appendChild(titleSpan);
@@ -1657,12 +1654,6 @@
                 statusChip.innerHTML = `${statusIcon} ${statusText}`;
                 rightActions.appendChild(statusChip);
 
-                if (isTestLessonCard && isLocked) {
-                    const secondLockChip = document.createElement('div');
-                    secondLockChip.className = 'status-chip locked-badge';
-                    secondLockChip.innerHTML = '🔒 Locked';
-                    rightActions.appendChild(secondLockChip);
-                }
             }
             
             // action button logic
@@ -1678,7 +1669,13 @@
                 // Play again link
                 const playAgainBtn = document.createElement('a');
                 playAgainBtn.className = 'btn-action btn-primary';
-                playAgainBtn.href = lessonPlayHref;
+                playAgainBtn.href = lessonMeta.id === 1
+                    ? '/level1-lesson1'
+                    : lessonMeta.id === 3
+                        ? '/lesson3-1'
+                        : lessonMeta.id === 4
+                            ? '/level4-part1'
+                        : lessonPlayHref;
                 playAgainBtn.innerHTML = '🎮 Play Again';
                 playAgainBtn.style.textDecoration = 'none';
                 rightActions.appendChild(playAgainBtn);
@@ -1695,7 +1692,7 @@
                 lockedBtn.className = 'btn-action btn-secondary';
                 lockedBtn.disabled = true;
                 lockedBtn.style.cursor = 'not-allowed';
-                lockedBtn.innerHTML = `🔒 Locked`;
+                lockedBtn.innerHTML = ``;
                 rightActions.appendChild(lockedBtn);
             }
             
@@ -1721,54 +1718,8 @@
                 lockWrap.className = 'test-lock-showcase';
                 lockWrap.innerHTML = `
                     <div class="test-lock-main">
-                        <div class="lock-art">
-                            <div class="lock-rings"><span></span><span></span><span></span></div>
-                            <i class="lock-float-note ln1">♫</i>
-                            <i class="lock-float-note ln2">♪</i>
-                            <svg class="lock-svg" viewBox="0 0 140 172" xmlns="http://www.w3.org/2000/svg">
-                                <defs>
-                                    <linearGradient id="lgBody" x1="15%" y1="0%" x2="85%" y2="100%">
-                                        <stop offset="0%"  stop-color="#ffe27a"/>
-                                        <stop offset="38%" stop-color="#e8a41a"/>
-                                        <stop offset="100%" stop-color="#7a4d04"/>
-                                    </linearGradient>
-                                    <linearGradient id="lgShackle" x1="0%" y1="0%" x2="100%" y2="100%">
-                                        <stop offset="0%"  stop-color="#ffe899"/>
-                                        <stop offset="55%" stop-color="#cb8c0c"/>
-                                        <stop offset="100%" stop-color="#6b4203"/>
-                                    </linearGradient>
-                                    <radialGradient id="lgHL" cx="38%" cy="26%" r="52%">
-                                        <stop offset="0%"  stop-color="#fff5cc" stop-opacity="0.82"/>
-                                        <stop offset="100%" stop-color="#c8820a" stop-opacity="0"/>
-                                    </radialGradient>
-                                    <linearGradient id="lgSide" x1="0%" y1="0%" x2="100%" y2="0%">
-                                        <stop offset="0%"  stop-color="rgba(0,0,0,0.28)"/>
-                                        <stop offset="50%" stop-color="rgba(0,0,0,0)"/>
-                                        <stop offset="100%" stop-color="rgba(0,0,0,0.22)"/>
-                                    </linearGradient>
-                                </defs>
-                                <!-- Shackle -->
-                                <path d="M38 86 L38 52 C38 16 102 16 102 52 L102 86"
-                                      fill="none" stroke="url(#lgShackle)"
-                                      stroke-width="19" stroke-linecap="round"/>
-                                <!-- Body shadow -->
-                                <rect x="12" y="84" width="116" height="82" rx="17" fill="rgba(0,0,0,0.45)"/>
-                                <!-- Body main -->
-                                <rect x="10" y="80" width="120" height="82" rx="17" fill="url(#lgBody)"/>
-                                <!-- Highlight overlay -->
-                                <rect x="10" y="80" width="120" height="44" rx="17" fill="url(#lgHL)"/>
-                                <!-- Side shadow -->
-                                <rect x="10" y="80" width="120" height="82" rx="17" fill="url(#lgSide)"/>
-                                <!-- Keyhole bg circle -->
-                                <circle cx="70" cy="112" r="15" fill="#4e3202"/>
-                                <!-- Keyhole inner -->
-                                <circle cx="70" cy="112" r="10.5" fill="#1e1000"/>
-                                <!-- Keyhole slot -->
-                                <rect x="65.5" y="120" width="9" height="18" rx="4.5" fill="#1e1000"/>
-                            </svg>
-                        </div>
                         <div class="lock-copy">
-                            <h3>${lockData.title}</h3>
+                            ${lockData.title ? `<h3>${lockData.title}</h3>` : ''}
                             <p>${lockData.intro.replace('Advanced', '<span class="gold">Advanced</span>').replace('certificate', '<span class="gold">certificate</span>')}</p>
                             <div class="lock-task-box">
                                 <div class="lock-task-title">⭐ ${lockData.objectiveLine}</div>

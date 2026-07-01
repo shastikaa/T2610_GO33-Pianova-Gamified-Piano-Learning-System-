@@ -1,3 +1,4 @@
+import os
 import sqlite3
 from datetime import date, timedelta
 from pathlib import Path
@@ -11,6 +12,9 @@ PROGRESS_STATUSES = ('not_started', 'in_progress', 'completed')
 
 def _database_path(app=None):
     active_app = app or current_app
+    configured_path = os.getenv('PIANOVA_DB_PATH', '').strip()
+    if configured_path:
+        return Path(configured_path)
     return Path(active_app.root_path) / "pianova.db"
 
 

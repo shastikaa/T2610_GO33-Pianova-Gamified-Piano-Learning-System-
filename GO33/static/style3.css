@@ -1,0 +1,106 @@
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    color: white;
+    background: radial-gradient(circle at top, #1a1a1a, #000);
+}
+
+/* Container */
+.container {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 20px;
+    border-radius: 20px;
+    border: 1px solid gold;
+    background: rgba(0,0,0,0.8);
+    box-shadow: 0 0 40px rgba(255,215,0,0.2);
+}
+
+/* Header */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    color: gold;
+    font-size: 28px;
+}
+
+.progress {
+    font-size: 16px;
+}
+
+/* Title */
+.title {
+    text-align: center;
+    margin-top: 10px;
+    color: gold;
+}
+
+.question {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+/* Canvas */
+canvas {
+    display: block;
+    margin: 0 auto;
+    background: transparent;
+}
+
+/* Piano */
+.piano {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    position: relative;
+}
+
+.key {
+    width: 50px;
+    height: 180px;
+    background: white;
+    border: 1px solid #333;
+    margin: 1px;
+    position: relative;
+    z-index: 1;
+    cursor: pointer;
+}
+
+.key:active {
+    background: gold;
+}
+
+/* Black keys */
+.black {
+    width: 30px;
+    height: 110px;
+    background: black;
+    position: absolute;
+    top: 0;
+    z-index: 2;
+}
+
+/* Buttons */
+.answers {
+    text-align: center;
+    margin-top: 20px;
+}
+
+button {
+    background: black;
+    color: gold;
+    border: 1px solid gold;
+    padding: 10px 20px;
+    margin: 5px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: gold;
+    color: black;
+}

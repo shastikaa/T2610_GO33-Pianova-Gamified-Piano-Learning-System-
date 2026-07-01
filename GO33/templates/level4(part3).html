@@ -1,0 +1,1575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>At Last - Music App</title>
+  <style>
+    :root {
+      --bg: #030303;
+      --panel: #0c0a08;
+      --panel-soft: #15110b;
+      --gold: #ffc22e;
+      --gold-deep: #b87911;
+      --gold-soft: #ffe39a;
+      --line: #181512;
+      --paper: #f2f0ed;
+      --paper-dim: #d8d2c8;
+      --green: #84d64a;
+      --blue: #36a9ff;
+      --red: #ff5c2f;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html {
+      width: 100%;
+      height: 100%;
+      background: var(--bg);
+    }
+
+    body {
+      background:
+        radial-gradient(circle at 50% 0%, rgba(255, 194, 46, 0.18), transparent 28%),
+        linear-gradient(180deg, #070604 0%, #030303 100%);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: #ffffff;
+      width: 100%;
+      min-height: 100dvh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    .game-viewport {
+      position: relative;
+      width: min(1280px, 100vw);
+      height: min(720px, 100dvh);
+      background:
+        linear-gradient(180deg, rgba(255, 194, 46, 0.08), transparent 18%),
+        #080706;
+      border: 3px solid #1f1708;
+      border-radius: 8px;
+      padding: clamp(10px, 1.7vh, 18px) clamp(14px, 2.1vw, 30px) clamp(12px, 1.8vh, 22px);
+      display: grid;
+      grid-template-rows: clamp(112px, 18vh, 146px) minmax(245px, 1fr) clamp(112px, 19vh, 130px) clamp(150px, 23vh, 188px);
+      gap: clamp(6px, 1vh, 10px);
+      box-shadow: 0 24px 70px rgba(0,0,0,0.72), inset 0 0 36px rgba(255, 194, 46, 0.09);
+      overflow: hidden;
+    }
+
+    .game-viewport::after {
+      content: "";
+      position: absolute;
+      left: clamp(14px, 2.1vw, 30px);
+      right: clamp(14px, 2.1vw, 30px);
+      bottom: clamp(7px, 1vh, 12px);
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255, 194, 46, 0.55), transparent);
+      pointer-events: none;
+    }
+
+    .top-navbar {
+      display: grid;
+      grid-template-columns: minmax(128px, 1fr) minmax(280px, 1.25fr) minmax(240px, 1fr);
+      align-items: start;
+      gap: 18px;
+      min-height: 0;
+    }
+
+    .nav-left-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: clamp(6px, 1vw, 10px);
+      align-items: flex-start;
+      transform: translateY(-6px);
+    }
+
+    .nav-top-actions,
+    .nav-bottom-actions {
+      display: flex;
+      gap: clamp(8px, 1.2vw, 14px);
+      align-items: center;
+    }
+
+    .circle-menu-btn {
+      min-width: clamp(88px, 8.2vw, 112px);
+      height: clamp(42px, 5.1vh, 54px);
+      padding: 0 clamp(10px, 1.2vw, 14px);
+      border-radius: 999px;
+      background:
+        linear-gradient(180deg, rgba(255, 225, 116, 0.12), rgba(255, 194, 46, 0.02)),
+        rgba(9, 7, 5, 0.92);
+      border: 1px solid rgba(255, 194, 46, 0.58);
+      color: #fff8e6;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      font: inherit;
+      font-size: clamp(0.78rem, 1vw, 0.96rem);
+      font-weight: 900;
+      line-height: 1;
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.12),
+        inset 0 0 18px rgba(255, 194, 46, 0.07),
+        0 6px 16px rgba(0, 0, 0, 0.38);
+      transition: transform 0.14s ease, border-color 0.14s ease, box-shadow 0.14s ease, background 0.14s ease;
+    }
+
+    .circle-menu-btn span {
+      width: clamp(26px, 2.7vw, 34px);
+      height: clamp(26px, 2.7vw, 34px);
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: linear-gradient(180deg, #ffe174 0%, var(--gold) 58%, #d68b0d 100%);
+      color: #130d04;
+      font-size: clamp(1rem, 1.45vw, 1.35rem);
+      line-height: 1;
+      font-weight: 900;
+      box-shadow: 0 0 14px rgba(255, 194, 46, 0.28);
+    }
+
+    .circle-menu-btn:hover,
+    .modal-btn:hover,
+    .hud-btn:hover {
+      transform: translateY(-1px);
+      border-color: rgba(255, 225, 116, 0.9);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.16),
+        0 10px 20px rgba(0, 0, 0, 0.42),
+        0 0 18px rgba(255, 194, 46, 0.18);
+    }
+
+    .circle-menu-btn:active,
+    .modal-btn:active,
+    .hud-btn:active {
+      transform: translateY(1px);
+      filter: brightness(0.96);
+    }
+
+    .circle-menu-btn:focus-visible,
+    .modal-btn:focus-visible,
+    .hud-btn:focus-visible {
+      outline: 3px solid rgba(255, 225, 116, 0.72);
+      outline-offset: 3px;
+    }
+
+    .song-title-banner {
+      text-align: center;
+      align-self: center;
+    }
+
+    .song-title-banner::before,
+    .song-title-banner::after {
+      content: "♪";
+      color: var(--gold);
+      font-size: clamp(1.8rem, 3vw, 2.55rem);
+      margin: 0 18px;
+      text-shadow: 0 0 18px rgba(255, 194, 46, 0.8);
+    }
+
+    .song-title-banner h1 {
+      display: inline-block;
+      font-size: clamp(2.05rem, 4.2vw, 3.45rem);
+      font-weight: 900;
+      letter-spacing: 0.04em;
+      color: #fff8e6;
+      line-height: 0.9;
+      text-shadow: 0 0 18px rgba(255, 194, 46, 0.24);
+    }
+
+    .song-title-banner p {
+      font-size: clamp(0.96rem, 1.5vw, 1.2rem);
+      color: #f4e6bf;
+      margin-top: 8px;
+      font-weight: 600;
+    }
+
+    .nav-right-metrics {
+      display: flex;
+      align-items: flex-start;
+      justify-content: flex-end;
+      gap: clamp(14px, 2vw, 24px);
+      align-self: start;
+      transform: translateY(clamp(-12px, -1.3vh, -7px));
+    }
+
+    .progress-pill-container {
+      background: transparent;
+      border-radius: 0;
+      padding: 0;
+      display: grid;
+      grid-template-columns: auto auto;
+      align-items: center;
+      justify-content: center;
+      column-gap: 10px;
+      row-gap: 7px;
+      width: clamp(165px, 17vw, 220px);
+      padding-top: clamp(16px, 2.5vh, 24px);
+    }
+
+    .progress-bar-track {
+      width: clamp(132px, 13.8vw, 172px);
+      height: clamp(22px, 3.2vh, 28px);
+      background: #17130c;
+      border-radius: 999px;
+      overflow: hidden;
+      border: 3px solid rgba(255, 255, 255, 0.22);
+      box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.78);
+    }
+
+    .progress-bar-fill {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(180deg, #a3e756 0%, var(--green) 100%);
+      border-radius: 999px;
+      transition: width 0.2s ease;
+    }
+
+    .progress-counter-text {
+      color: #fff;
+      font-size: clamp(0.8rem, 1.25vw, 1.02rem);
+      font-weight: 900;
+    }
+
+    .progress-label {
+      grid-column: 1 / -1;
+      text-align: center;
+      color: #f8e9bf;
+      font-size: clamp(0.8rem, 1.2vw, 1rem);
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .score-display-box {
+      width: clamp(64px, 6.4vw, 80px);
+      height: clamp(64px, 6.4vw, 80px);
+      display: grid;
+      place-items: center;
+      text-align: center;
+      border-radius: 50%;
+      border: 2px solid rgba(255, 194, 46, 0.48);
+      background: rgba(9, 7, 5, 0.86);
+      box-shadow: inset 0 0 16px rgba(255, 194, 46, 0.08);
+      transform: translateY(clamp(2px, 0.5vh, 5px));
+    }
+
+    .score-display-box .lbl {
+      font-size: clamp(0.74rem, 1vw, 0.92rem);
+      color: #f8e9bf;
+      text-transform: none;
+      letter-spacing: 0;
+      line-height: 1;
+    }
+
+    .score-display-box .lbl::before {
+      content: "🏆";
+      display: block;
+      color: var(--gold);
+      font-size: clamp(1.2rem, 2vw, 1.65rem);
+      margin-bottom: 3px;
+    }
+
+    .score-display-box .val {
+      font-size: clamp(1.25rem, 2vw, 1.65rem);
+      font-weight: 900;
+      color: #fff;
+      line-height: 1;
+    }
+
+    .sheet-music-container {
+      background-color: var(--paper);
+      border-radius: 10px;
+      padding: clamp(8px, 1.3vh, 14px) clamp(24px, 3vw, 46px) clamp(10px, 1.3vh, 14px) clamp(54px, 6vw, 70px);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: clamp(12px, 1.8vh, 18px);
+      box-shadow: inset 0 4px 12px rgba(0,0,0,0.18), 0 0 0 2px rgba(255, 194, 46, 0.12);
+      position: relative;
+      min-height: 0;
+    }
+
+    .sheet-row {
+      position: relative;
+      height: min(58px, 100%);
+      width: 100%;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .row-number-badge {
+      position: absolute;
+      left: calc(-1 * clamp(42px, 5vw, 56px));
+      top: 50%;
+      transform: translateY(-50%);
+      width: clamp(32px, 3vw, 40px);
+      height: clamp(32px, 3vw, 40px);
+      background: #14110b;
+      border: 1px solid rgba(255, 194, 46, 0.42);
+      border-radius: 8px;
+      color: #fff;
+      font-size: clamp(0.92rem, 1.25vw, 1.12rem);
+      font-weight: 900;
+      display: grid;
+      place-items: center;
+      box-shadow: 0 0 12px rgba(255, 194, 46, 0.1);
+    }
+
+    .staff-line {
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 1.5px;
+      background-color: #171411;
+    }
+
+    .treble-clef-icon {
+      position: absolute;
+      left: 1%;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: clamp(3.05rem, 5.8vh, 4.35rem);
+      color: #221e1a;
+      line-height: 1;
+      pointer-events: none;
+    }
+
+    .laser-scan-line {
+      position: absolute;
+      top: -4px;
+      bottom: -4px;
+      width: clamp(22px, 2.5vw, 30px);
+      background: linear-gradient(90deg, transparent, rgba(255, 194, 46, 0.38), transparent);
+      border-left: 2px solid rgba(255, 194, 46, 0.78);
+      transform: translateX(-50%);
+      pointer-events: none;
+      z-index: 5;
+      display: none;
+      filter: drop-shadow(0 0 9px rgba(255, 194, 46, 0.9));
+    }
+
+    .note-element {
+      position: absolute;
+      width: clamp(20px, 2.1vw, 26px);
+      height: clamp(20px, 2.1vw, 26px);
+      transform: translate(-50%, -50%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .note-oval-head {
+      width: clamp(13px, 1.4vw, 17px);
+      height: clamp(9px, 0.95vw, 12px);
+      background-color: #221e1a;
+      border-radius: 50%;
+      transform: rotate(-20deg);
+      position: relative;
+    }
+
+    .note-stem-line {
+      position: absolute;
+      width: 2px;
+      height: clamp(28px, 4.1vh, 36px);
+      background-color: #221e1a;
+      left: 60%;
+      bottom: 45%;
+    }
+
+    .note-element.stem-down .note-stem-line {
+      bottom: auto;
+      top: 45%;
+      left: 8%;
+    }
+
+    .note-element.ledger-line::after {
+      content: "";
+      position: absolute;
+      width: clamp(24px, 2.5vw, 31px);
+      height: 2px;
+      background-color: #221e1a;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .note-alpha-text {
+      position: absolute;
+      bottom: clamp(-19px, -2.2vh, -14px);
+      font-size: clamp(0.78rem, 1vw, 0.96rem);
+      font-weight: bold;
+      color: #5a3a06;
+    }
+
+    .note-element.completed { opacity: 0.35; }
+    .note-element.active-target .note-oval-head {
+      background-color: var(--gold);
+      box-shadow: 0 0 12px #ffea86;
+    }
+    .note-element.active-target .note-stem-line { background-color: var(--gold); }
+
+    .piano-keyboard-panel {
+      background: #050403;
+      border-radius: 6px;
+      padding: 4px;
+      position: relative;
+      min-height: 0;
+      border-top: 3px solid rgba(255, 194, 46, 0.42);
+      box-shadow: 0 -6px 18px rgba(255, 194, 46, 0.08);
+    }
+
+    .piano-keys-bed {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      background: #070604;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .white-key {
+      flex: 1;
+      background: linear-gradient(180deg, #ffffff 0%, #f3f0eb 68%, #d9d3ca 100%);
+      border-right: 2px solid #14110b;
+      position: relative;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      padding-bottom: clamp(10px, 1.7vh, 16px);
+      box-shadow: inset 0 -12px 14px rgba(0, 0, 0, 0.11);
+    }
+    .white-key:last-child { border-right: none; }
+
+    .black-key {
+      position: absolute;
+      width: calc((100% / 15) * 0.62);
+      height: 62%;
+      background: linear-gradient(180deg, #25211c 0%, #050403 100%);
+      border-radius: 0 0 4px 4px;
+      z-index: 10;
+      transform: translateX(-50%);
+      cursor: pointer;
+      border: 1px solid #33302b;
+      box-shadow: 0 5px 0 #000, 0 9px 12px rgba(0,0,0,0.55);
+    }
+
+    .key-txt-label {
+      font-size: clamp(0.9rem, 1.25vw, 1.08rem);
+      font-weight: bold;
+      color: #1a1a1a;
+      pointer-events: none;
+    }
+    .middle-c-marker {
+      font-size: clamp(0.9rem, 1.25vw, 1.08rem);
+      font-weight: 800;
+      color: #000;
+      border: 2px solid #000;
+      width: clamp(22px, 2.1vw, 28px);
+      height: clamp(22px, 2.1vw, 28px);
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+    }
+
+    .white-key.pressed {
+      background: linear-gradient(180deg, #ffea9f 0%, #ffbe3c 100%);
+      box-shadow: inset 0 0 22px rgba(255, 150, 0, 0.55);
+    }
+    .black-key.pressed {
+      background: linear-gradient(180deg, #ffb629 0%, #c17b00 100%);
+    }
+
+    .hud-controls-row {
+      display: none;
+      grid-template-columns: minmax(220px, 1fr) minmax(320px, 1.3fr) minmax(210px, 1fr);
+      align-items: center;
+      gap: clamp(14px, 2vw, 28px);
+      min-height: 0;
+    }
+
+    .hud-btn {
+      background: linear-gradient(180deg, #ffe174 0%, var(--gold) 48%, #d68b0d 100%);
+      border: none;
+      border-radius: 9px;
+      color: #1a1205;
+      font-size: clamp(0.98rem, 1.45vw, 1.18rem);
+      font-weight: 900;
+      height: clamp(44px, 6.2vh, 58px);
+      cursor: pointer;
+      box-shadow: 0 7px 16px rgba(224, 155, 18, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    }
+
+    .hud-btn.alt-style {
+      background: linear-gradient(180deg, #2a2113 0%, #100d08 100%);
+      color: var(--gold-soft);
+      border: 1px solid rgba(255, 194, 46, 0.42);
+      box-shadow: inset 0 0 16px rgba(255, 194, 46, 0.06);
+    }
+
+    .hud-center-status {
+      text-align: center;
+      font-size: clamp(1rem, 1.45vw, 1.24rem);
+      font-weight: bold;
+      color: var(--gold-soft);
+    }
+
+    .completion-panel {
+      display: grid;
+      grid-template-columns: minmax(245px, 0.95fr) minmax(345px, 1.35fr) minmax(490px, 1.85fr);
+      align-items: center;
+      gap: clamp(18px, 2.3vw, 34px);
+      min-height: 0;
+      padding: clamp(10px, 1.5vh, 16px) clamp(18px, 2.4vw, 28px);
+      border: 1px solid rgba(255, 194, 46, 0.38);
+      border-radius: 8px;
+      background:
+        radial-gradient(circle at 42% 8%, rgba(255, 194, 46, 0.17), transparent 24%),
+        linear-gradient(180deg, rgba(12, 10, 6, 0.98), rgba(1, 1, 1, 0.98));
+      box-shadow:
+        inset 0 1px 0 rgba(255, 239, 179, 0.12),
+        inset 0 0 32px rgba(255, 194, 46, 0.06),
+        0 -10px 24px rgba(0, 0, 0, 0.5);
+    }
+
+    .complete-card,
+    .stats-summary-box {
+      height: 100%;
+      min-height: 0;
+      background:
+        linear-gradient(180deg, rgba(16, 13, 7, 0.95), rgba(3, 3, 3, 0.95));
+      border: 1px solid rgba(255, 194, 46, 0.34);
+      border-radius: 8px;
+      box-shadow: inset 0 0 18px rgba(255, 194, 46, 0.05), 0 8px 18px rgba(0, 0, 0, 0.34);
+    }
+
+    .complete-card {
+      display: grid;
+      grid-template-columns: clamp(56px, 5.4vw, 72px) 1fr;
+      align-items: center;
+      gap: clamp(12px, 1.5vw, 18px);
+      padding: clamp(12px, 1.7vw, 20px);
+    }
+
+    .complete-icon {
+      width: clamp(54px, 5.8vw, 70px);
+      height: clamp(54px, 5.8vw, 70px);
+      display: grid;
+      place-items: center;
+      border: 2px solid var(--gold);
+      border-radius: 50%;
+      color: var(--gold);
+      font-size: clamp(2rem, 3.5vw, 2.8rem);
+      line-height: 1;
+      box-shadow: 0 0 18px rgba(255, 194, 46, 0.22), inset 0 0 16px rgba(255, 194, 46, 0.08);
+    }
+
+    .complete-card h2 {
+      color: var(--gold-soft);
+      font-size: clamp(1.08rem, 1.7vw, 1.45rem);
+      margin-bottom: 6px;
+    }
+
+    .complete-card p {
+      color: #fff8e7;
+      font-size: clamp(0.88rem, 1.18vw, 1.06rem);
+      font-weight: 600;
+      line-height: 1.35;
+    }
+
+    .performance-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      min-width: 0;
+      position: relative;
+    }
+
+    .star-rating-row {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: clamp(12px, 1.7vw, 20px);
+      margin-bottom: clamp(8px, 1.2vh, 12px);
+      position: relative;
+    }
+
+    .star-rating-row::before,
+    .star-rating-row::after {
+      content: "*";
+      color: var(--gold);
+      font-size: clamp(1.25rem, 2vw, 1.8rem);
+      text-shadow: 0 0 14px rgba(255, 194, 46, 0.85);
+    }
+
+    .star-svg {
+      width: clamp(74px, 7.6vw, 102px);
+      height: clamp(74px, 7.6vw, 102px);
+      fill: #211705;
+      stroke: rgba(255, 224, 122, 0.78);
+      stroke-width: 0.9px;
+    }
+
+    .star-svg.earned {
+      fill: var(--gold);
+      filter: drop-shadow(0 0 10px rgba(255, 194, 46, 0.92)) drop-shadow(0 0 20px rgba(255, 135, 18, 0.42));
+    }
+
+    .performance-ribbon {
+      position: relative;
+      min-width: min(350px, 100%);
+      padding: clamp(9px, 1.4vh, 12px) clamp(22px, 3vw, 38px);
+      color: #1a1205;
+      background: linear-gradient(180deg, #ffe174 0%, var(--gold) 55%, #c98611 100%);
+      border: 1px solid rgba(255, 232, 151, 0.72);
+      border-radius: 4px;
+      text-align: center;
+      font-size: clamp(1.05rem, 1.75vw, 1.42rem);
+      font-weight: 900;
+      box-shadow: 0 0 18px rgba(255, 194, 46, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.42);
+      z-index: 1;
+    }
+
+    .performance-ribbon::before,
+    .performance-ribbon::after {
+      content: "";
+      position: absolute;
+      top: 9px;
+      width: 42px;
+      height: calc(100% + 6px);
+      background: linear-gradient(180deg, #b87911, #5d3907);
+      z-index: -1;
+    }
+
+    .performance-ribbon::before {
+      left: -34px;
+      clip-path: polygon(0 50%, 100% 0, 100% 100%);
+    }
+
+    .performance-ribbon::after {
+      right: -34px;
+      clip-path: polygon(0 0, 100% 50%, 0 100%);
+    }
+
+    .stats-summary-box {
+      display: grid;
+      grid-template-columns: minmax(250px, 1fr) minmax(155px, 0.58fr);
+      align-items: center;
+      gap: clamp(16px, 1.8vw, 24px);
+      padding: clamp(10px, 1.4vh, 16px);
+      position: relative;
+      background: transparent;
+      border: 0;
+      box-shadow: none;
+    }
+
+    .stats-list {
+      display: grid;
+      gap: clamp(8px, 1.25vh, 12px);
+      min-width: 0;
+      height: 100%;
+      padding: clamp(10px, 1.4vh, 14px) clamp(12px, 1.5vw, 18px);
+      background:
+        linear-gradient(180deg, rgba(16, 13, 7, 0.95), rgba(3, 3, 3, 0.96));
+      border: 1px solid rgba(255, 194, 46, 0.34);
+      border-radius: 8px;
+      box-shadow: inset 0 0 18px rgba(255, 194, 46, 0.05), 0 8px 18px rgba(0, 0, 0, 0.34);
+    }
+
+    .stat-line-item {
+      display: grid;
+      grid-template-columns: 32px minmax(120px, 1fr) minmax(74px, auto);
+      align-items: center;
+      gap: 12px;
+      min-height: 0;
+      font-size: clamp(0.88rem, 1.08vw, 1.04rem);
+      color: #fff8e7;
+    }
+
+    .stat-icon {
+      width: 28px;
+      height: 28px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      font-weight: 900;
+      border: 2px solid currentColor;
+      font-size: 0;
+    }
+
+    .stat-icon::before {
+      font-size: 1.05rem;
+      line-height: 1;
+    }
+
+    .stat-icon.ok { color: #82dc4c; }
+    .stat-icon.aim { color: var(--blue); }
+    .stat-icon.fire { color: var(--red); border: 0; }
+    .stat-icon.ok::before { content: "\2713"; }
+    .stat-icon.aim::before { content: "\25ce"; }
+    .stat-icon.fire::before { content: "\25b2"; font-size: 1.55rem; }
+
+    .stat-line-item .label { color: #f4e6bf; }
+    .stat-line-item .val {
+      min-width: 74px;
+      text-align: right;
+      font-weight: 900;
+      color: #fff;
+      font-size: clamp(0.98rem, 1.28vw, 1.16rem);
+    }
+
+    .action-stack {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: clamp(8px, 1.1vh, 12px);
+      justify-self: end;
+      padding-left: 0;
+      border-left: 0;
+    }
+
+    .modal-actions-grid {
+      display: contents;
+    }
+
+    .action-stack.modal-actions-grid {
+      display: grid;
+    }
+
+    .modal-btn {
+      min-width: 0;
+      height: clamp(38px, 5.2vh, 50px);
+      border-radius: 8px;
+      border: 1px solid transparent;
+      padding: 0 clamp(10px, 1.1vw, 14px);
+      font-size: clamp(0.82rem, 1.05vw, 0.98rem);
+      font-weight: 900;
+      cursor: pointer;
+      font-family: inherit;
+      letter-spacing: 0;
+      line-height: 1.05;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      transition: transform 0.14s ease, box-shadow 0.14s ease, border-color 0.14s ease, filter 0.14s ease;
+    }
+
+    .modal-btn::before {
+      font-size: 1.14em;
+      line-height: 1;
+    }
+
+    #btnModalPlay::before { content: "\21bb"; }
+    #btnModalHome::before { content: "\2302"; }
+    #btnResumeGame::before { content: "\25b6"; }
+    #btnCloseHelp::before { content: "\2713"; }
+
+    .modal-btn.primary {
+      background: linear-gradient(180deg, #ffe174 0%, var(--gold) 48%, #d68b0d 100%);
+      color: #1a1205;
+      border-color: rgba(255, 234, 158, 0.72);
+      box-shadow: 0 8px 18px rgba(224, 155, 18, 0.34), inset 0 1px 0 rgba(255, 255, 255, 0.56);
+    }
+
+    .modal-btn.secondary {
+      background:
+        linear-gradient(180deg, rgba(255, 225, 116, 0.1), transparent 48%),
+        linear-gradient(180deg, #2a2113 0%, #100d08 100%);
+      color: var(--gold-soft);
+      border: 1px solid rgba(255, 194, 46, 0.42);
+      box-shadow: inset 0 0 16px rgba(255, 194, 46, 0.07), 0 6px 14px rgba(0, 0, 0, 0.32);
+    }
+
+    .game-overlay-panel {
+      position: absolute;
+      inset: 0;
+      z-index: 40;
+      display: none;
+      place-items: center;
+      padding: clamp(20px, 4vw, 48px);
+      background: rgba(0, 0, 0, 0.68);
+    }
+
+    .game-overlay-panel.visible {
+      display: grid;
+    }
+
+    .game-overlay-card {
+      width: min(430px, 100%);
+      display: grid;
+      gap: 14px;
+      padding: clamp(18px, 2.5vw, 28px);
+      border-radius: 10px;
+      border: 1px solid rgba(255, 194, 46, 0.46);
+      background:
+        radial-gradient(circle at 50% 0%, rgba(255, 194, 46, 0.18), transparent 32%),
+        linear-gradient(180deg, rgba(16, 13, 7, 0.98), rgba(3, 3, 3, 0.98));
+      box-shadow: 0 18px 42px rgba(0, 0, 0, 0.62), inset 0 0 22px rgba(255, 194, 46, 0.06);
+      text-align: center;
+    }
+
+    .game-overlay-card h2 {
+      color: var(--gold-soft);
+      font-size: clamp(1.35rem, 2vw, 1.8rem);
+      line-height: 1;
+    }
+
+    .game-overlay-card p {
+      color: #fff8e7;
+      font-size: clamp(0.92rem, 1.15vw, 1.05rem);
+      font-weight: 650;
+      line-height: 1.45;
+    }
+
+    .game-overlay-card .modal-btn {
+      width: min(220px, 100%);
+      justify-self: center;
+    }
+
+    @media (max-width: 1180px) {
+      .completion-panel {
+        grid-template-columns: minmax(210px, 0.8fr) minmax(270px, 1fr) minmax(390px, 1.45fr);
+        gap: 12px;
+      }
+
+      .stats-summary-box {
+        grid-template-columns: minmax(220px, 1fr) minmax(140px, 0.55fr);
+      }
+    }
+
+    @media (max-width: 880px) {
+      .game-viewport {
+        grid-template-rows: auto minmax(210px, 1fr) 104px minmax(150px, auto);
+      }
+
+      .top-navbar {
+        grid-template-columns: auto 1fr auto;
+        gap: 10px;
+      }
+
+      .circle-menu-btn {
+        min-width: 46px;
+        width: 46px;
+        height: 46px;
+        padding: 0;
+        font-size: 0;
+      }
+
+      .circle-menu-btn span {
+        width: 32px;
+        height: 32px;
+        font-size: 1.18rem;
+      }
+
+      .song-title-banner::before,
+      .song-title-banner::after {
+        display: none;
+      }
+
+      .nav-right-metrics {
+        gap: 10px;
+        transform: translateY(-6px);
+      }
+
+      .progress-pill-container {
+        width: 124px;
+        column-gap: 6px;
+        row-gap: 5px;
+        padding-top: 10px;
+      }
+
+      .progress-bar-track {
+        width: 94px;
+        height: 20px;
+      }
+
+      .score-display-box {
+        width: 52px;
+        height: 52px;
+        transform: translateY(2px);
+      }
+
+      .sheet-music-container {
+        padding-left: 48px;
+        padding-right: 18px;
+      }
+
+      .completion-panel {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+
+      .performance-wrap {
+        grid-column: 1 / -1;
+        grid-row: 1;
+      }
+
+      .complete-card,
+      .stats-summary-box {
+        height: auto;
+      }
+
+      .stats-summary-box {
+        grid-template-columns: 1fr;
+      }
+
+      .action-stack {
+        width: 100%;
+        grid-template-columns: repeat(3, 1fr);
+        padding-left: 0;
+        border-left: 0;
+      }
+    }
+
+    @media (max-height: 620px) {
+      .game-viewport {
+        grid-template-rows: 74px minmax(190px, 1fr) 96px 132px;
+        padding-top: 8px;
+        padding-bottom: 8px;
+      }
+
+      .sheet-music-container {
+        gap: 3px;
+      }
+
+      .treble-clef-icon {
+        font-size: 3rem;
+      }
+
+      .star-svg {
+        width: 56px;
+        height: 56px;
+      }
+
+      .complete-card p {
+        display: none;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .game-viewport {
+        height: 100dvh;
+        border-radius: 0;
+        grid-template-rows: auto minmax(230px, 1fr) 96px auto;
+      }
+
+      .nav-left-buttons {
+        gap: 6px;
+      }
+
+      .progress-label {
+        display: none;
+      }
+
+      .completion-panel {
+        grid-template-columns: 1fr;
+      }
+
+      .complete-card {
+        display: none;
+      }
+
+      .stats-summary-box {
+        grid-template-columns: 1fr;
+      }
+
+      .action-stack {
+        width: 100%;
+        grid-template-columns: repeat(3, 1fr);
+        padding-left: 0;
+        border-left: 0;
+      }
+
+      .modal-btn {
+        min-width: 0;
+        font-size: 0.82rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="game-viewport">
+    
+    <header class="top-navbar">
+      <div class="nav-left-buttons">
+        <div class="nav-top-actions">
+          <button class="circle-menu-btn" id="btnHome" type="button"><span>⌂</span>Home</button>
+          <button class="circle-menu-btn" id="btnExit" type="button"><span>✕</span>Exit</button>
+        </div>
+        <div class="nav-bottom-actions">
+          <button class="circle-menu-btn" id="btnPause" type="button"><span>||</span>Pause</button>
+          <button class="circle-menu-btn" id="btnHelp" type="button"><span>?</span>Help</button>
+        </div>
+      </div>
+
+      <div class="song-title-banner">
+        <h1>AT LAST</h1>
+        <p>Play the notes to complete the song</p>
+      </div>
+
+      <div class="nav-right-metrics">
+        <div class="progress-pill-container">
+          <div class="progress-bar-track">
+            <div class="progress-bar-fill" id="progressBar"></div>
+          </div>
+          <span class="progress-counter-text" id="progressTxt">0/10</span>
+          <span class="progress-label">Progress</span>
+        </div>
+        <div class="score-display-box">
+          <div class="lbl">Score</div>
+          <div class="val" id="scoreValue">0</div>
+        </div>
+      </div>
+    </header>
+
+    <main class="sheet-music-container" id="sheetContainer">
+      </main>
+
+    <section class="piano-keyboard-panel">
+      <div class="piano-keys-bed" id="pianoKeysBed">
+        </div>
+    </section>
+
+    <footer class="hud-controls-row">
+      <button class="hud-btn" id="btnListen">Hear Phrase</button>
+      <div class="hud-center-status" id="hudStatus">Sequence ready</div>
+      <button class="hud-btn alt-style" id="btnRestart">Restart</button>
+    </footer>
+
+    <section class="completion-panel" id="completionModal">
+      <div class="complete-card">
+        <div class="complete-icon">&#9835;</div>
+        <div>
+          <h2 id="modalTitle">Song Complete!</h2>
+          <p id="modalDesc">Great job! You played the song perfectly.</p>
+        </div>
+      </div>
+
+      <div class="performance-wrap">
+        <div class="star-rating-row">
+          <svg class="star-svg" id="star1" viewBox="0 0 24 24"><path d="M12 .587l3.668 7.431 8.2 1.192-5.934 5.787 1.4 8.168L12 18.896l-7.334 3.857 1.4-8.168L.132 9.21l8.2-1.192z"/></svg>
+          <svg class="star-svg" id="star2" viewBox="0 0 24 24"><path d="M12 .587l3.668 7.431 8.2 1.192-5.934 5.787 1.4 8.168L12 18.896l-7.334 3.857 1.4-8.168L.132 9.21l8.2-1.192z"/></svg>
+          <svg class="star-svg" id="star3" viewBox="0 0 24 24"><path d="M12 .587l3.668 7.431 8.2 1.192-5.934 5.787 1.4 8.168L12 18.896l-7.334 3.857 1.4-8.168L.132 9.21l8.2-1.192z"/></svg>
+        </div>
+        <div class="performance-ribbon">Excellent Performance!</div>
+      </div>
+
+      <div class="stats-summary-box">
+        <div class="stats-list">
+          <div class="stat-line-item">
+            <span class="stat-icon ok">✓</span>
+            <span class="label">Notes Played</span>
+            <span class="val" id="modalStatNotes">42 / 42</span>
+          </div>
+          <div class="stat-line-item">
+            <span class="stat-icon aim">◎</span>
+            <span class="label">Accuracy</span>
+            <span class="val" id="modalStatAccuracy">100%</span>
+          </div>
+          <div class="stat-line-item">
+            <span class="stat-icon fire">▲</span>
+            <span class="label">Max Combo</span>
+            <span class="val" id="modalStatCombo">42</span>
+          </div>
+        </div>
+
+        <div class="action-stack modal-actions-grid">
+          <button class="modal-btn primary" id="btnModalPlay">Play Again</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="game-overlay-panel" id="pauseOverlay" aria-hidden="true">
+      <div class="game-overlay-card">
+        <h2>Paused</h2>
+        <p>Your song is paused. Press resume when you are ready to continue.</p>
+        <button class="modal-btn primary" id="btnResumeGame" type="button">Resume</button>
+      </div>
+    </section>
+
+    <section class="game-overlay-panel" id="helpOverlay" aria-hidden="true">
+      <div class="game-overlay-card">
+        <h2>Help</h2>
+        <p>Follow the highlighted note on the staff, then press the matching piano key. Use Hear Phrase if you want to listen to the next phrase before playing.</p>
+        <button class="modal-btn primary" id="btnCloseHelp" type="button">Got It</button>
+      </div>
+    </section>
+
+    <section class="game-overlay-panel" id="preCertificateOverlay" aria-hidden="true">
+      <div class="game-overlay-card">
+        <h2>Level 4 Completed</h2>
+        <p>You completed Part 3. Do you want to continue to the certificate page?</p>
+        <button class="modal-btn primary" id="btnPreCertContinue" type="button">Continue to Certificate</button>
+        <button class="modal-btn secondary" id="btnPreCertHome" type="button">Go Home</button>
+      </div>
+    </section>
+
+  </div>
+
+  <script>
+    let audioContext = null;
+    const DISPLAY_PROGRESS_TOTAL = 10;
+    const DISPLAY_NOTE_TOTAL = 42;
+    const PERFECT_SCORE = 980;
+
+    // Strict 15 white keys layout configuration map matching reference design
+    const whiteKeysConfig = [
+      { id: "F3", label: "" }, { id: "G3", label: "" }, { id: "A3", label: "" }, { id: "B3", label: "" },
+      { id: "C4", label: "C", isMiddleC: true }, { id: "D4", label: "" }, { id: "E4", label: "" },
+      { id: "F4", label: "" }, { id: "G4", label: "" }, { id: "A4", label: "" }, { id: "B4", label: "" },
+      { id: "C5", label: "" }, { id: "D5", label: "" }, { id: "E5", label: "" }, { id: "F5", label: "" }
+    ];
+
+    const blackKeysConfig = [
+      { id: "F#3", afterWhiteIndex: 0 }, { id: "G#3", afterWhiteIndex: 1 }, { id: "A#3", afterWhiteIndex: 2 },
+      { id: "C#4", afterWhiteIndex: 4 }, { id: "D#4", afterWhiteIndex: 5 },
+      { id: "F#4", afterWhiteIndex: 7 }, { id: "G#4", afterWhiteIndex: 8 }, { id: "A#4", afterWhiteIndex: 9 },
+      { id: "C#5", afterWhiteIndex: 11 }, { id: "D#5", afterWhiteIndex: 12 }
+    ];
+
+    const toneFrequencies = {
+      "F3": 174.61, "F#3": 185.00, "G3": 196.00, "G#3": 207.65, "A3": 220.00, "A#3": 233.08, "B3": 246.94,
+      "C4": 261.63, "C#4": 277.18, "D4": 293.66, "D#4": 311.13, "E4": 329.63, "F4": 349.23, "F#4": 369.99,
+      "G4": 392.00, "G#4": 415.30, "A4": 440.00, "A#4": 466.16, "B4": 493.88, "C5": 523.25, "C#5": 554.37,
+      "D5": 587.33, "D#5": 622.25, "E5": 659.25, "F5": 698.46
+    };
+
+    // Explicit standard musical alignment heights mapping percentage parameters
+    const verticalStaffMap = {
+      "F5": 2, "E5": 12, "D5": 22, "C5": 32, "B4": 42, "A4": 52, "G4": 62, "F4": 72, "E4": 82, "D4": 92, "C4": 102
+    };
+
+    // The exact notation data arrangement mapping matching "AT LAST"
+    const songNoteSheetData = [
+      ["C4", "C4", "D4", "E4", "E4", "D4", "C4", "G4", "G4", "A4", "G4", "E4"],
+      ["F4", "F4", "E4", "D4", "D4", "C4", "G4", "A4", "G4", "E4", "C4"],
+      ["C4", "D4", "E4", "G4", "G4", "E4", "A4", "A4", "G4", "E4", "D4"],
+      ["F4", "E4", "D4", "C4", "G4", "E4", "C4"]
+    ];
+
+    let flattenedTrackNotes = [];
+    songNoteSheetData.forEach((row, rowIdx) => {
+      row.forEach((noteId, noteIdx) => {
+        flattenedTrackNotes.push({ note: noteId, row: rowIdx, col: noteIdx });
+      });
+    });
+
+    let currentTrackPointer = 0;
+    let currentScoreValue = 0;
+    let maximumComboStreak = 0;
+    let totalMisplayedInputs = 0;
+    let isDemonstrationRunning = false;
+    let isGamePaused = false;
+    let hasShownAutoPreCertificatePopup = false;
+    let level4CompletionSaved = false;
+
+    const sheetContainer = document.getElementById("sheetContainer");
+    const pianoKeysBed = document.getElementById("pianoKeysBed");
+    const progressBar = document.getElementById("progressBar");
+    const progressTxt = document.getElementById("progressTxt");
+    const scoreValue = document.getElementById("scoreValue");
+    const hudStatus = document.getElementById("hudStatus");
+    const completionModal = document.getElementById("completionModal");
+    const pauseOverlay = document.getElementById("pauseOverlay");
+    const helpOverlay = document.getElementById("helpOverlay");
+    const preCertificateOverlay = document.getElementById("preCertificateOverlay");
+
+    function setupAudioContext() {
+      if (!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioContext.state === "suspended") audioContext.resume();
+    }
+
+    function soundSynthesizerEngine(frequency) {
+      setupAudioContext();
+      if (!frequency) return;
+      const osc = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(frequency, audioContext.currentTime);
+      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.5);
+      
+      osc.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      osc.start();
+      osc.stop(audioContext.currentTime + 0.5);
+    }
+
+    function buildScoreboardNotationView() {
+      sheetContainer.innerHTML = "";
+      
+      songNoteSheetData.forEach((row, rowIdx) => {
+        const staffRowDiv = document.createElement("div");
+        staffRowDiv.className = "sheet-row";
+        staffRowDiv.id = `sheet-row-${rowIdx}`;
+
+        const rowBadge = document.createElement("div");
+        rowBadge.className = "row-number-badge";
+        rowBadge.textContent = rowIdx + 1;
+        staffRowDiv.appendChild(rowBadge);
+
+        const clefSymbol = document.createElement("div");
+        clefSymbol.className = "treble-clef-icon";
+        clefSymbol.innerHTML = "&#119070;";
+        staffRowDiv.appendChild(clefSymbol);
+
+        // Render standard line vectors
+        for (let i = 0; i < 5; i++) {
+          const line = document.createElement("div");
+          line.className = "staff-line";
+          line.style.top = `${i * 20}%`;
+          staffRowDiv.appendChild(line);
+        }
+
+        const laserBeam = document.createElement("div");
+        laserBeam.className = "laser-scan-line";
+        laserBeam.id = `laser-beam-${rowIdx}`;
+        staffRowDiv.appendChild(laserBeam);
+
+        // Note spacing metrics positioning layout
+        const stepWidthX = 84 / (row.length);
+        row.forEach((noteId, noteIdx) => {
+          const noteNode = document.createElement("div");
+          noteNode.className = "note-element";
+          noteNode.id = `note-node-${rowIdx}-${noteIdx}`;
+          
+          const xCoordinateOffset = 14 + (noteIdx * stepWidthX);
+          noteNode.style.left = `${xCoordinateOffset}%`;
+          noteNode.style.top = `${verticalStaffMap[noteId]}%`;
+
+          if (noteId === "C4") noteNode.classList.add("ledger-line");
+          if (["C5", "B4", "A4"].includes(noteId)) noteNode.classList.add("stem-down");
+
+          noteNode.innerHTML = `
+            <div class="note-oval-head"></div>
+            <div class="note-stem-line"></div>
+          `;
+          staffRowDiv.appendChild(noteNode);
+        });
+
+        sheetContainer.appendChild(staffRowDiv);
+      });
+    }
+
+    function buildPianoKeyboardLayout() {
+      pianoKeysBed.innerHTML = "";
+
+      whiteKeysConfig.forEach(wKey => {
+        const keyEl = document.createElement("div");
+        keyEl.className = "white-key";
+        keyEl.dataset.note = wKey.id;
+        
+        if (wKey.isMiddleC) {
+          keyEl.innerHTML = `<span class="middle-c-marker">${wKey.label}</span>`;
+        } else {
+          keyEl.innerHTML = `<span class="key-txt-label">${wKey.label}</span>`;
+        }
+        pianoKeysBed.appendChild(keyEl);
+      });
+
+      blackKeysConfig.forEach(bKey => {
+        const keyEl = document.createElement("div");
+        keyEl.className = "black-key";
+        keyEl.dataset.note = bKey.id;
+        keyEl.style.left = `${((bKey.afterWhiteIndex + 1) / whiteKeysConfig.length) * 100}%`;
+        pianoKeysBed.appendChild(keyEl);
+      });
+
+      // Bind actions events
+      pianoKeysBed.querySelectorAll("[data-note]").forEach(element => {
+        element.addEventListener("mousedown", () => evaluateInteractiveHit(element.dataset.note));
+      });
+    }
+
+    function evaluateInteractiveHit(inputNoteId) {
+      if (isGamePaused) return;
+      if (isDemonstrationRunning || currentTrackPointer >= flattenedTrackNotes.length) return;
+
+      const targetObject = flattenedTrackNotes[currentTrackPointer];
+      const targetBaseKey = targetObject.note.replace(/\d/, "");
+      const inputBaseKey = inputNoteId.replace(/\d/, "");
+
+      const activeDOMKey = pianoKeysBed.querySelector(`[data-note="${inputNoteId}"]`);
+      activeDOMKey.classList.add("pressed");
+      setTimeout(() => activeDOMKey.classList.remove("pressed"), 150);
+
+      soundSynthesizerEngine(toneFrequencies[inputNoteId]);
+
+      if (inputBaseKey === targetBaseKey) {
+        currentTrackPointer++;
+        synchronizeInteractiveStates();
+
+        if (currentTrackPointer >= flattenedTrackNotes.length) {
+          triggerCompletionScreen();
+        }
+      } else {
+        totalMisplayedInputs++;
+        hudStatus.textContent = "Oops! Wrong note.";
+        hudStatus.style.color = "#ff5c2f";
+        setTimeout(() => {
+          if(!isDemonstrationRunning) {
+            hudStatus.textContent = "Sequence ready";
+            hudStatus.style.color = "#ffe39a";
+          }
+        }, 1000);
+      }
+    }
+
+    function synchronizeInteractiveStates() {
+      const ratioFill = (currentTrackPointer / flattenedTrackNotes.length) * 100;
+      const displayProgressCount = Math.min(DISPLAY_PROGRESS_TOTAL, Math.round((ratioFill / 100) * DISPLAY_PROGRESS_TOTAL));
+      const displayScoreCount = Math.round((currentTrackPointer / flattenedTrackNotes.length) * PERFECT_SCORE);
+
+      currentScoreValue = displayScoreCount;
+      scoreValue.textContent = displayScoreCount;
+      progressTxt.textContent = `${displayProgressCount}/${DISPLAY_PROGRESS_TOTAL}`;
+      progressBar.style.width = `${ratioFill}%`;
+
+      const displayNotesPlayed = Math.min(DISPLAY_NOTE_TOTAL, Math.round((currentTrackPointer / flattenedTrackNotes.length) * DISPLAY_NOTE_TOTAL));
+      const computedScoreAccuracy = Math.round(((flattenedTrackNotes.length - totalMisplayedInputs) / flattenedTrackNotes.length) * 100);
+      const strictAccuracy = Math.max(0, computedScoreAccuracy);
+      document.getElementById("modalStatNotes").textContent = `${displayNotesPlayed} / ${DISPLAY_NOTE_TOTAL}`;
+      document.getElementById("modalStatAccuracy").textContent = `${strictAccuracy}%`;
+      document.getElementById("modalStatCombo").textContent = displayNotesPlayed;
+
+      // Redraw highlighted note states
+      flattenedTrackNotes.forEach((obj, idx) => {
+        const el = document.getElementById(`note-node-${obj.row}-${obj.col}`);
+        if (!el) return;
+        el.classList.remove("active-target", "completed");
+        
+        if (idx < currentTrackPointer) el.classList.add("completed");
+        else if (idx === currentTrackPointer) el.classList.add("active-target");
+      });
+
+      // Synchronize laser track scanning elements
+      document.querySelectorAll(".laser-scan-line").forEach(ls => ls.style.display = "none");
+      
+      const currentTargetObj = flattenedTrackNotes[currentTrackPointer];
+      if (currentTargetObj) {
+        const currentTargetNode = document.getElementById(`note-node-${currentTargetObj.row}-${currentTargetObj.col}`);
+        const currentTargetLaser = document.getElementById(`laser-beam-${currentTargetObj.row}`);
+        if (currentTargetNode && currentTargetLaser) {
+          currentTargetLaser.style.display = "block";
+          currentTargetLaser.style.left = currentTargetNode.style.left;
+        }
+      }
+    }
+
+    async function processDemonstrationPhrase() {
+      if (isGamePaused) return;
+      if (isDemonstrationRunning) return;
+      isDemonstrationRunning = true;
+      document.getElementById("btnListen").disabled = true;
+      hudStatus.textContent = "Playing phrase demonstration...";
+      hudStatus.style.color = "#ffc22e";
+
+      const originalPointer = currentTrackPointer;
+      const playbackBoundary = Math.min(originalPointer + 6, flattenedTrackNotes.length);
+
+      for (let i = originalPointer; i < playbackBoundary; i++) {
+        while (isGamePaused) {
+          await new Promise(resolve => setTimeout(resolve, 120));
+        }
+
+        currentTrackPointer = i;
+        synchronizeInteractiveStates();
+        
+        const noteId = flattenedTrackNotes[i].note;
+        soundSynthesizerEngine(toneFrequencies[noteId]);
+        
+        // Dynamic simulated key press flash highlight visual effects
+        const matchingKeyNode = pianoKeysBed.querySelector(`[data-note="${noteId}"]`);
+        if (matchingKeyNode) {
+          matchingKeyNode.classList.add("pressed");
+          setTimeout(() => matchingKeyNode.classList.remove("pressed"), 300);
+        }
+
+        await new Promise(resolve => setTimeout(resolve, 500));
+      }
+
+      currentTrackPointer = originalPointer;
+      synchronizeInteractiveStates();
+      hudStatus.textContent = "Your turn!";
+      hudStatus.style.color = "#fff8e6";
+      document.getElementById("btnListen").disabled = false;
+      isDemonstrationRunning = false;
+    }
+
+    function setPauseState(shouldPause) {
+      isGamePaused = shouldPause;
+      pauseOverlay.classList.toggle("visible", shouldPause);
+      pauseOverlay.setAttribute("aria-hidden", shouldPause ? "false" : "true");
+      document.getElementById("btnPause").disabled = shouldPause;
+      document.getElementById("btnListen").disabled = shouldPause || isDemonstrationRunning;
+      hudStatus.textContent = shouldPause ? "Paused" : "Sequence ready";
+      hudStatus.style.color = shouldPause ? "#ffc22e" : "#ffe39a";
+    }
+
+    function setHelpVisibility(shouldShow) {
+      helpOverlay.classList.toggle("visible", shouldShow);
+      helpOverlay.setAttribute("aria-hidden", shouldShow ? "false" : "true");
+    }
+
+    function triggerCompletionScreen() {
+      const computedScoreAccuracy = Math.round(((flattenedTrackNotes.length - totalMisplayedInputs) / flattenedTrackNotes.length) * 100);
+      const strictAccuracy = Math.max(0, computedScoreAccuracy);
+      
+      currentScoreValue = PERFECT_SCORE;
+      scoreValue.textContent = PERFECT_SCORE;
+      progressTxt.textContent = `${DISPLAY_PROGRESS_TOTAL}/${DISPLAY_PROGRESS_TOTAL}`;
+      progressBar.style.width = "100%";
+      document.getElementById("modalStatNotes").textContent = `${DISPLAY_NOTE_TOTAL} / ${DISPLAY_NOTE_TOTAL}`;
+      document.getElementById("modalStatAccuracy").textContent = `${strictAccuracy}%`;
+      document.getElementById("modalStatCombo").textContent = DISPLAY_NOTE_TOTAL;
+
+      document.querySelectorAll(".star-svg").forEach(st => st.classList.remove("earned"));
+      if (strictAccuracy >= 50) document.getElementById("star1").classList.add("earned");
+      if (strictAccuracy >= 85) document.getElementById("star2").classList.add("earned");
+      if (strictAccuracy >= 98) document.getElementById("star3").classList.add("earned");
+
+      completionModal.classList.add("visible");
+
+      // Auto-show final popup immediately after finishing "At Last".
+      if (!hasShownAutoPreCertificatePopup) {
+        hasShownAutoPreCertificatePopup = true;
+        preCertificateOverlay.classList.add("visible");
+        preCertificateOverlay.setAttribute("aria-hidden", "false");
+      }
+
+      saveLevel4Completion();
+    }
+
+    async function saveLevel4Completion() {
+      if (level4CompletionSaved) {
+        return true;
+      }
+
+      level4CompletionSaved = true;
+      try {
+        const response = await fetch('/api/complete-level4', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ score: currentScoreValue || PERFECT_SCORE }),
+          keepalive: true,
+        });
+        if (!response.ok) {
+          level4CompletionSaved = false;
+          return false;
+        }
+        return true;
+      } catch (error) {
+        level4CompletionSaved = false;
+        return false;
+      }
+    }
+
+    function reinitializeGameState() {
+      currentTrackPointer = 0;
+      currentScoreValue = 0;
+      totalMisplayedInputs = 0;
+      isDemonstrationRunning = false;
+      isGamePaused = false;
+      hasShownAutoPreCertificatePopup = false;
+      completionModal.classList.remove("visible");
+      pauseOverlay.classList.remove("visible");
+      pauseOverlay.setAttribute("aria-hidden", "true");
+      helpOverlay.classList.remove("visible");
+      helpOverlay.setAttribute("aria-hidden", "true");
+      preCertificateOverlay.classList.remove("visible");
+      preCertificateOverlay.setAttribute("aria-hidden", "true");
+      hudStatus.textContent = "Sequence ready";
+      hudStatus.style.color = "#ffe39a";
+      document.getElementById("btnPause").disabled = false;
+      document.getElementById("btnListen").disabled = false;
+      document.querySelectorAll(".star-svg").forEach(st => st.classList.remove("earned"));
+
+      buildScoreboardNotationView();
+      synchronizeInteractiveStates();
+    }
+
+    document.getElementById("btnListen").addEventListener("click", processDemonstrationPhrase);
+    document.getElementById("btnRestart").addEventListener("click", reinitializeGameState);
+    document.getElementById("btnHome").addEventListener("click", () => {
+      window.location.href = "/dashboard";
+    });
+    document.getElementById("btnExit").addEventListener("click", () => {
+      const shouldExit = window.confirm("Exit this lesson and return to lessons?");
+      if (!shouldExit) {
+        return;
+      }
+      window.location.href = "/lessons";
+    });
+    document.getElementById("btnPause").addEventListener("click", () => setPauseState(true));
+    document.getElementById("btnResumeGame").addEventListener("click", () => setPauseState(false));
+    document.getElementById("btnHelp").addEventListener("click", () => setHelpVisibility(true));
+    document.getElementById("btnCloseHelp").addEventListener("click", () => setHelpVisibility(false));
+    document.getElementById("btnModalPlay").addEventListener("click", () => {
+      window.location.href = "/lesson2-1-latest";
+    });
+    document.getElementById("btnPreCertContinue").addEventListener("click", async () => {
+      await saveLevel4Completion();
+      window.location.href = "/precertificatepage";
+    });
+    document.getElementById("btnPreCertHome").addEventListener("click", () => {
+      window.location.href = "/dashboard";
+    });
+
+    // Initial Bootstrap Layers Execution Engine
+    buildScoreboardNotationView();
+    buildPianoKeyboardLayout();
+    synchronizeInteractiveStates();
+  </script>
+  <script src="/static/lesson-progress.js"></script>
+  <script>
+    const lessonProgressController = window.PianovaLessonProgress.attach({
+      levelId: 4,
+      getState() {
+        return {
+          currentTrackPointer,
+          currentScoreValue,
+          totalMisplayedInputs,
+          isGamePaused,
+          hasShownAutoPreCertificatePopup,
+          completionVisible: completionModal.classList.contains('visible'),
+          preCertificateVisible: preCertificateOverlay.classList.contains('visible'),
+        };
+      },
+      applyState(state) {
+        currentTrackPointer = Math.max(0, Math.min(Number(state.currentTrackPointer || 0), flattenedTrackNotes.length));
+        currentScoreValue = Math.max(0, Number(state.currentScoreValue || 0));
+        totalMisplayedInputs = Math.max(0, Number(state.totalMisplayedInputs || 0));
+        hasShownAutoPreCertificatePopup = !!state.hasShownAutoPreCertificatePopup;
+        completionModal.classList.toggle('visible', !!state.completionVisible);
+        preCertificateOverlay.classList.toggle('visible', !!state.preCertificateVisible);
+        preCertificateOverlay.setAttribute('aria-hidden', state.preCertificateVisible ? 'false' : 'true');
+        synchronizeInteractiveStates();
+        setPauseState(!!state.isGamePaused);
+      },
+    });
+  </script>
+  <script src="/static/practice-tracker.js"></script>
+  <script>
+    window.PianovaPracticeTracker.attach({ gameType: 'level4_part3' });
+  </script>
+</body>
+</html>

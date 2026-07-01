@@ -1,0 +1,1287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Pianova Pro</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg: #020303;
+            --panel: rgba(6, 8, 11, 0.86);
+            --gold: #f1bd57;
+            --gold-soft: #ffe29a;
+            --text: #fff7e8;
+            --muted: #cdbb9d;
+            --red: #ff5368;
+            --green: #9be06e;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            min-height: 100dvh;
+            font-family: Inter, sans-serif;
+            color: var(--text);
+            background:
+                radial-gradient(circle at 8% 28%, rgba(242, 174, 56, 0.18), transparent 26%),
+                radial-gradient(circle at 96% 46%, rgba(242, 174, 56, 0.23), transparent 25%),
+                radial-gradient(circle at 50% 105%, rgba(130, 69, 21, 0.4), transparent 26%),
+                #020303;
+        }
+
+        .music-bg {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            overflow: hidden;
+            color: rgba(241, 189, 87, 0.25);
+            font-family: "Playfair Display", serif;
+            z-index: 0;
+        }
+
+        .music-bg span {
+            position: absolute;
+            font-size: clamp(2rem, 6vw, 6rem);
+            filter: drop-shadow(0 0 16px rgba(241, 189, 87, 0.5));
+            animation: floatNote 8s ease-in-out infinite;
+        }
+
+        .music-bg span:nth-child(1) { left: 2%; top: 34%; animation-delay: 0s; }
+        .music-bg span:nth-child(2) { right: 2%; top: 30%; animation-delay: 1.2s; }
+        .music-bg span:nth-child(3) { left: 4%; bottom: 12%; animation-delay: 2.2s; font-size: 2.6rem; }
+        .music-bg span:nth-child(4) { right: 5%; bottom: 15%; animation-delay: 3s; font-size: 3.4rem; }
+
+        @keyframes floatNote {
+            0%, 100% { transform: translateY(0); opacity: 0.25; }
+            50% { transform: translateY(-18px); opacity: 0.52; }
+        }
+
+        .stage {
+            width: min(1500px, calc(100% - 32px));
+            min-height: calc(100vh - 28px);
+            margin: 0 auto;
+            padding: 0 0 14px;
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            overflow: hidden;
+            transform-origin: top center;
+        }
+
+        .topbar {
+            display: grid;
+            grid-template-columns: minmax(280px, auto) 1fr auto;
+            align-items: center;
+            gap: 32px;
+            height: 64px;
+            padding: 0 24px;
+            border-radius: 28px;
+            background:
+                radial-gradient(circle at 7% 50%, rgba(241, 189, 87, 0.3), transparent 24%),
+                radial-gradient(circle at 92% 50%, rgba(241, 189, 87, 0.24), transparent 24%),
+                linear-gradient(180deg, rgba(24, 22, 12, 0.98), rgba(4, 5, 5, 0.98));
+            border: 1px solid rgba(241, 189, 87, 0.28);
+            box-shadow: 0 18px 44px rgba(0, 0, 0, 0.38), inset 0 0 30px rgba(255, 226, 154, 0.06);
+            flex-shrink: 0;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            min-width: 220px;
+        }
+
+        .brand-mark {
+            width: 50px;
+            height: 50px;
+            display: grid;
+            place-items: center;
+            border-radius: 16px;
+            background: linear-gradient(145deg, #11161b, #050606);
+            border: 1px solid rgba(241, 189, 87, 0.78);
+            box-shadow: 0 0 24px rgba(241, 189, 87, 0.24), inset 0 0 22px rgba(255, 226, 154, 0.09);
+            font-size: 1.65rem;
+            color: var(--text);
+        }
+
+        .brand-title {
+            font-family: "Playfair Display", serif;
+            font-size: 2.25rem;
+            line-height: 0.82;
+            color: var(--gold-soft);
+            text-shadow: 0 0 18px rgba(241, 189, 87, 0.45);
+        }
+
+        .brand-sub {
+            margin-top: 4px;
+            color: var(--muted);
+            font-size: 0.9rem;
+            font-weight: 800;
+        }
+
+        .nav {
+            justify-self: center;
+            display: flex;
+            gap: 8px;
+            padding: 7px;
+            border-radius: 18px;
+            background: rgba(5, 7, 10, 0.58);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .nav-spacer {
+            min-height: 1px;
+        }
+
+        .nav-btn,
+        .icon-btn,
+        .difficulty,
+        .primary-btn,
+        .ghost-btn {
+            border: 1px solid transparent;
+            color: var(--text);
+            background: transparent;
+            font: inherit;
+            cursor: pointer;
+        }
+
+        .nav-btn {
+            padding: clamp(8px, 1.3vh, 13px) clamp(10px, 1.5vw, 18px);
+            border-radius: 15px;
+            color: #ede8dd;
+            font-weight: 700;
+            white-space: nowrap;
+            font-size: clamp(0.75rem, 1.4vw, 1rem);
+        }
+
+        .nav-btn.active {
+            color: var(--gold-soft);
+            background: linear-gradient(145deg, rgba(241, 189, 87, 0.18), rgba(255, 255, 255, 0.03));
+            box-shadow: inset 0 0 18px rgba(241, 189, 87, 0.09);
+        }
+
+        .top-actions {
+            display: flex;
+            gap: 14px;
+            justify-content: flex-end;
+        }
+
+        .icon-btn {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            border-color: rgba(241, 189, 87, 0.82);
+            color: var(--gold-soft);
+            background: rgba(5, 6, 8, 0.62);
+            box-shadow: 0 0 18px rgba(241, 189, 87, 0.16);
+            font-size: 1.2rem;
+        }
+
+        .scoreboard {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            border-radius: 24px;
+            background: linear-gradient(145deg, rgba(12, 14, 19, 0.94), rgba(3, 4, 5, 0.92));
+            border: 1px solid rgba(255, 255, 255, 0.09);
+            box-shadow: 0 18px 40px rgba(0, 0, 0, 0.36), inset 0 0 34px rgba(255, 255, 255, 0.03);
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .score-item {
+            min-height: clamp(68px, 10vh, 104px);
+            padding: clamp(10px, 1.8vh, 22px) clamp(12px, 2vw, 28px);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            border-right: 1px solid rgba(255, 255, 255, 0.09);
+            min-width: 0;
+        }
+
+        .score-item:last-child { border-right: 0; }
+
+        .badge {
+            width: clamp(42px, 5vw, 58px);
+            height: clamp(42px, 5vw, 58px);
+            display: grid;
+            place-items: center;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 226, 154, 0.23), rgba(10, 11, 14, 0.9) 68%);
+            border: 1px solid rgba(241, 189, 87, 0.65);
+            box-shadow: 0 0 22px rgba(241, 189, 87, 0.18), inset 0 0 14px rgba(255, 226, 154, 0.08);
+            font-size: clamp(1.2rem, 2.2vw, 1.75rem);
+            flex-shrink: 0;
+        }
+
+        .score-label {
+            color: #f7ebd7;
+            font-size: clamp(0.75rem, 1.4vw, 1rem);
+            margin-bottom: 3px;
+        }
+
+        .score-number {
+            color: var(--gold-soft);
+            font-family: "Playfair Display", serif;
+            font-size: clamp(1.35rem, 3vw, 2rem);
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        .combo-text {
+            color: var(--gold);
+            font-size: clamp(0.7rem, 1.3vw, 1rem);
+            font-weight: 800;
+            margin-left: 4px;
+        }
+
+        .hearts {
+            display: flex;
+            gap: 6px;
+            font-size: clamp(1.1rem, 2.4vw, 1.65rem);
+            line-height: 1;
+            text-shadow: 0 0 13px rgba(255, 83, 104, 0.55);
+            white-space: nowrap;
+        }
+
+        .heart { color: var(--red); }
+        .heart.lost { color: #383b3f; text-shadow: none; }
+
+        .level-progress {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        .progress-track {
+            width: clamp(80px, 12vw, 116px);
+            height: 10px;
+            border-radius: 99px;
+            background: #181b20;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            border-radius: inherit;
+            background: linear-gradient(90deg, #ffce55, #fff0ad);
+            box-shadow: 0 0 12px rgba(255, 206, 85, 0.8);
+            transition: width 0.25s ease;
+        }
+
+        .game-shell {
+            flex: 1;
+            min-height: 0;
+            border-radius: clamp(24px, 3vw, 38px);
+            padding: clamp(18px, 2.5vh, 28px) clamp(14px, 4vw, 42px);
+            background: linear-gradient(180deg, rgba(9, 12, 15, 0.94), rgba(3, 4, 5, 0.96));
+            border: 1px solid rgba(241, 189, 87, 0.62);
+            box-shadow:
+                0 0 0 1px rgba(255, 226, 154, 0.12),
+                0 0 34px rgba(241, 189, 87, 0.24),
+                inset 0 0 46px rgba(255, 226, 154, 0.05);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .level-ribbon {
+            position: absolute;
+            top: -2px;
+            left: 50%;
+            transform: translateX(-50%);
+            min-width: 190px;
+            height: 46px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #f6e6c5;
+            background: linear-gradient(180deg, #080b0e, #0d0f13);
+            border: 1px solid rgba(241, 189, 87, 0.7);
+            border-top: 0;
+            clip-path: polygon(0 0, 100% 0, 82% 100%, 18% 100%);
+            font-weight: 800;
+            letter-spacing: 0.03em;
+        }
+
+        .challenge-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: clamp(10px, 1.6vh, 20px);
+            padding-top: 12px;
+            flex-shrink: 0;
+        }
+
+        .challenge-title {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .mini-mark {
+            width: clamp(44px, 5vw, 56px);
+            height: clamp(44px, 5vw, 56px);
+            display: grid;
+            place-items: center;
+            border-radius: 14px;
+            background: #10141a;
+            border: 1px solid rgba(255, 255, 255, 0.13);
+            box-shadow: inset 0 0 18px rgba(255, 255, 255, 0.04);
+            font-size: 1.6rem;
+        }
+
+        .challenge-title h1 {
+            font-family: "Playfair Display", serif;
+            color: var(--gold-soft);
+            font-size: clamp(1.45rem, 3vw, 2.1rem);
+            line-height: 1;
+        }
+
+        .challenge-title p {
+            color: #f4ecdf;
+            font-size: clamp(0.85rem, 1.5vw, 1.08rem);
+            margin-top: 5px;
+        }
+
+        .difficulty {
+            padding: clamp(10px, 1.5vh, 17px) clamp(14px, 2vw, 22px);
+            border-radius: 15px;
+            border-color: rgba(241, 189, 87, 0.38);
+            color: var(--gold-soft);
+            background: rgba(9, 11, 14, 0.82);
+            box-shadow: inset 0 0 18px rgba(255, 226, 154, 0.05);
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .feedback-line {
+            height: 30px;
+            text-align: center;
+            font-size: clamp(1rem, 2vw, 1.35rem);
+            font-weight: 800;
+            color: var(--gold-soft);
+            margin-bottom: 6px;
+            flex-shrink: 0;
+        }
+
+        .feedback-line.bad { color: var(--red); text-shadow: 0 0 14px rgba(255, 83, 104, 0.42); }
+        .feedback-line.good { color: var(--green); text-shadow: 0 0 14px rgba(155, 224, 110, 0.35); }
+
+        .staff-card {
+            height: clamp(150px, 24vh, 200px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: clamp(14px, 2.5vh, 26px);
+            margin-bottom: clamp(12px, 2vh, 22px);
+            border-radius: 22px;
+            background:
+                linear-gradient(rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0.02)),
+                #111318;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: inset 0 0 36px rgba(255, 255, 255, 0.05), 0 20px 40px rgba(0, 0, 0, 0.35);
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        #staff {
+            width: min(760px, 100%);
+            height: 100%;
+            display: block;
+            border-radius: 14px;
+            background: #f2e8d6;
+            box-shadow: inset 0 0 14px rgba(0,0,0,0.24);
+        }
+
+        .piano-wrap {
+            padding: clamp(10px, 1.8vh, 14px);
+            border-radius: 24px;
+            background: #080a0d;
+            border: 1px solid rgba(255, 255, 255, 0.11);
+            box-shadow: inset 0 0 24px rgba(255, 255, 255, 0.04);
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .piano {
+            --white-w: 12.5%;
+            --white-h: clamp(150px, 26vh, 240px);
+            --black-w: 8.8%;
+            --black-h: clamp(92px, 16vh, 138px);
+            width: 100%;
+            height: var(--white-h);
+            display: grid;
+            grid-template-columns: repeat(8, var(--white-w));
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .white-key,
+        .black-key {
+            font: inherit;
+            cursor: pointer;
+            border: 0;
+            position: relative;
+        }
+
+        .white-key {
+            height: var(--white-h);
+            background: linear-gradient(180deg, #fff8ed, #ead8bd);
+            border-right: 2px solid rgba(36, 24, 12, 0.42);
+            box-shadow: inset 0 -12px 18px rgba(117, 75, 35, 0.16);
+            transition: transform 0.08s ease, filter 0.08s ease, box-shadow 0.08s ease;
+        }
+
+        .white-key:first-child { border-radius: 14px 0 0 14px; }
+        .white-key:nth-of-type(8) { border-radius: 0 14px 14px 0; border-right: 0; }
+
+        .white-key.active,
+        .white-key:active {
+            transform: translateY(6px);
+            filter: brightness(1.08);
+            box-shadow: inset 0 0 22px rgba(241, 189, 87, 0.28);
+        }
+
+        .white-key.correct {
+            box-shadow: inset 0 0 32px rgba(155, 224, 110, 0.75), 0 0 24px rgba(155, 224, 110, 0.38);
+        }
+
+        .white-key.wrong {
+            box-shadow: inset 0 0 32px rgba(255, 83, 104, 0.8), 0 0 24px rgba(255, 83, 104, 0.55);
+        }
+
+        .black-key {
+            position: absolute;
+            top: 0;
+            z-index: 3;
+            width: var(--black-w);
+            height: var(--black-h);
+            border-radius: 0 0 9px 9px;
+            color: var(--gold-soft);
+            background: linear-gradient(180deg, #1d2025, #030405 72%);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: 0 6px 0 #000, 0 12px 22px rgba(0, 0, 0, 0.6);
+            transition: transform 0.08s ease, filter 0.08s ease, box-shadow 0.08s ease;
+        }
+
+        .black-key.active,
+        .black-key:active {
+            transform: translateY(5px);
+            filter: brightness(1.18);
+            box-shadow: 0 2px 0 #000, 0 8px 16px rgba(0, 0, 0, 0.55);
+        }
+
+        .black-key.correct {
+            border-color: rgba(155, 224, 110, 0.9);
+            box-shadow: 0 2px 0 #000, 0 0 22px rgba(155, 224, 110, 0.72), inset 0 0 24px rgba(155, 224, 110, 0.22);
+        }
+
+        .black-key.wrong {
+            border-color: rgba(255, 83, 104, 0.9);
+            box-shadow: 0 2px 0 #000, 0 0 22px rgba(255, 83, 104, 0.92), inset 0 0 24px rgba(255, 83, 104, 0.24);
+        }
+
+        .key-label {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: clamp(14px, 3vh, 28px);
+            text-align: center;
+            font-size: clamp(1rem, 2vw, 1.45rem);
+            font-weight: 800;
+            color: #080808;
+        }
+
+        .black-key .key-label {
+            top: clamp(42px, 8vh, 70px);
+            bottom: auto;
+            color: var(--gold-soft);
+            font-size: clamp(0.8rem, 1.5vw, 1.05rem);
+        }
+
+        .instruction {
+            text-align: center;
+            color: #f4bd72;
+            font-size: clamp(0.85rem, 1.4vw, 1rem);
+            margin: clamp(7px, 1.2vh, 13px) 0 0;
+            flex-shrink: 0;
+        }
+
+        .completion {
+            flex: 1;
+            display: grid;
+            place-items: center;
+            text-align: center;
+        }
+
+        .completion h2 {
+            font-family: "Playfair Display", serif;
+            color: var(--gold-soft);
+            font-size: clamp(2.2rem, 7vw, 4rem);
+            margin-bottom: 12px;
+        }
+
+        .home-actions {
+            display: flex;
+            justify-content: center;
+            gap: 18px;
+            flex-wrap: wrap;
+        }
+
+        .primary-btn,
+        .ghost-btn {
+            border: 1px solid rgba(241, 189, 87, 0.75);
+            border-radius: 18px;
+            padding: 14px 26px;
+            font-weight: 800;
+        }
+
+        .primary-btn {
+            color: #130d05;
+            background: linear-gradient(135deg, #fff0ad, #f1bd57 55%, #b87a2a);
+            box-shadow: 0 0 28px rgba(241, 189, 87, 0.24);
+        }
+
+        .ghost-btn {
+            color: var(--gold-soft);
+            background: rgba(6, 8, 11, 0.82);
+        }
+
+        .shake {
+            animation: shake 0.3s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            75% { transform: translateX(8px); }
+        }
+
+        @media (max-width: 900px) {
+            .topbar {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+
+            .brand,
+            .top-actions {
+                justify-content: center;
+            }
+
+            .nav {
+                width: 100%;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            .nav-spacer {
+                display: none;
+            }
+
+            .scoreboard {
+                grid-template-columns: repeat(4, 1fr);
+            }
+
+            .score-item {
+                padding: 9px;
+                gap: 8px;
+            }
+
+            .badge {
+                display: none;
+            }
+        }
+
+        @media (max-width: 620px) {
+            .stage {
+                width: calc(100% - 10px);
+                padding: 5px 0;
+                gap: 6px;
+            }
+
+            .brand {
+                min-width: 0;
+            }
+
+            .nav-btn {
+                padding: 6px 8px;
+            }
+
+            .scoreboard {
+                border-radius: 16px;
+            }
+
+            .score-item {
+                min-height: 52px;
+                justify-content: center;
+                text-align: center;
+            }
+
+            .combo-text {
+                display: none;
+            }
+
+            .game-shell {
+                padding: 16px 8px 10px;
+            }
+
+            .level-ribbon {
+                height: 34px;
+                min-width: 150px;
+                font-size: 0.8rem;
+            }
+
+            .challenge-header {
+                padding-top: 18px;
+                margin-bottom: 6px;
+            }
+
+            .mini-mark,
+            .difficulty {
+                display: none;
+            }
+
+            .staff-card {
+                height: 112px;
+                margin-bottom: 8px;
+            }
+
+            .piano {
+                --white-h: clamp(105px, 22vh, 155px);
+                --black-h: clamp(62px, 12vh, 86px);
+            }
+
+            .instruction {
+                display: none;
+            }
+        }
+        .brand-mark,
+        .brand-title,
+        .brand-sub,
+        .top-actions .icon-btn {
+            font-size: 0;
+        }
+
+        .brand-mark::before {
+            content: "\1D11E";
+            font-size: 1.65rem;
+        }
+
+        .brand-title::before {
+            content: "Pianova\266A";
+            font-size: 2.25rem;
+        }
+
+        .brand-sub::before {
+            content: "Play \2022  Learn \2022  Master";
+            font-size: 0.9rem;
+        }
+
+        .top-actions .icon-btn::before {
+            font-size: 1.15rem;
+        }
+
+        .top-actions .icon-btn:first-child::before {
+            content: "\2302";
+        }
+
+        .top-actions .icon-btn:last-child::before {
+            content: "\23FB";
+        }
+    </style>
+</head>
+
+<body>
+    <div class="music-bg" aria-hidden="true">
+        <span>𝄞</span>
+        <span>♫</span>
+        <span>♪</span>
+        <span>♬</span>
+    </div>
+
+    <main class="stage">
+        <header class="topbar">
+            <div class="brand">
+                <div class="brand-mark">▥</div>
+                <div>
+                    <div class="brand-title">Pianova♪</div>
+                    <div class="brand-sub">Play • Learn • Master</div>
+                </div>
+            </div>
+
+            <div class="nav-spacer" aria-hidden="true"></div>
+
+            <div class="top-actions">
+                <button class="icon-btn" id="homeBtn" title="Home" onclick="goHome()">⌂</button>
+                <button class="icon-btn" id="exitBtn" title="Exit" onclick="goExit()">⏻</button>
+            </div>
+        </header>
+
+        <section class="scoreboard">
+            <div class="score-item">
+                <div class="badge">★</div>
+                <div>
+                    <div class="score-label">Score</div>
+                    <div class="score-number" id="scoreValue">0</div>
+                </div>
+            </div>
+
+            <div class="score-item">
+                <div class="badge">♨</div>
+                <div>
+                    <div class="score-label">Combo</div>
+                    <div>
+                        <span class="score-number" id="comboValue">0</span>
+                        <span class="combo-text" id="comboText">Keep going!</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="score-item">
+                <div class="badge" style="border-color: rgba(255,83,104,.55);">♥</div>
+                <div>
+                    <div class="score-label">Lives</div>
+                    <div class="hearts" id="livesValue"></div>
+                </div>
+            </div>
+
+            <div class="score-item">
+                <div>
+                    <div class="score-label">Level 1</div>
+                    <div class="level-progress">
+                        <div class="progress-track">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                        <strong id="progressText">0%</strong>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="game-shell" id="game-container">
+            <div class="level-ribbon">LESSON 1</div>
+
+            <div class="challenge-header">
+                <div class="challenge-title">
+                    <div class="mini-mark">▥</div>
+                    <div>
+                        <h1>Pianova</h1>
+                        <p>Identify the note</p>
+                    </div>
+                </div>
+
+                <button class="difficulty">♫ LESSON 1 ˅</button>
+            </div>
+
+            <div class="feedback-line" id="instruction">Click the matching piano key</div>
+
+            <div class="staff-card">
+                <canvas id="staff" width="600" height="180"></canvas>
+            </div>
+
+            <div class="piano-wrap">
+                <div class="piano" id="piano"></div>
+            </div>
+
+            <p class="instruction">Click the piano key that matches the staff</p>
+        </section>
+    </main>
+
+    <script>
+        let audioCtx = null;
+
+        function getAudioCtx() {
+            if (!audioCtx) {
+                const AudioClass = window.AudioContext || window.webkitAudioContext;
+                if (!AudioClass) return null;
+                audioCtx = new AudioClass();
+            }
+
+            if (audioCtx.state === "suspended") {
+                audioCtx.resume();
+            }
+
+            return audioCtx;
+        }
+
+        const frequencies = {
+            "C": 261.63,
+            "C#": 277.18,
+            "D": 293.66,
+            "D#": 311.13,
+            "E": 329.63,
+            "F": 349.23,
+            "F#": 369.99,
+            "G": 392.00,
+            "G#": 415.30,
+            "A": 440.00,
+            "A#": 466.16,
+            "B": 493.88,
+            "C2": 523.25
+        };
+
+        const pianoLayout = [
+            { note: "C", color: "white", label: "C", keyChar: "A" },
+            { note: "C#", color: "black", label: "C#", after: 1, keyChar: "W" },
+            { note: "D", color: "white", label: "D", keyChar: "S" },
+            { note: "D#", color: "black", label: "D#", after: 2, keyChar: "E" },
+            { note: "E", color: "white", label: "E", keyChar: "D" },
+            { note: "F", color: "white", label: "F", keyChar: "F" },
+            { note: "F#", color: "black", label: "F#", after: 4, keyChar: "T" },
+            { note: "G", color: "white", label: "G", keyChar: "G" },
+            { note: "G#", color: "black", label: "G#", after: 5, keyChar: "Y" },
+            { note: "A", color: "white", label: "A", keyChar: "H" },
+            { note: "A#", color: "black", label: "A#", after: 6, keyChar: "U" },
+            { note: "B", color: "white", label: "B", keyChar: "J" },
+            { note: "C2", color: "white", label: "C", keyChar: "K" }
+        ];
+
+        const staffPos = {
+            "C": 138,
+            "C#": 138,
+            "D": 130,
+            "D#": 130,
+            "E": 122,
+            "F": 114,
+            "F#": 114,
+            "G": 106,
+            "G#": 106,
+            "A": 98,
+            "A#": 98,
+            "B": 90,
+            "C2": 82
+        };
+
+        let currentNote = "";
+        let score = 0;
+        let combo = 0;
+        let lives = 5;
+
+        const maxLives = 5;
+        const maxScore = 100;
+
+        function playNote(note) {
+            const ctx = getAudioCtx();
+            if (!ctx || !frequencies[note]) return;
+
+            const now = ctx.currentTime;
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+
+            osc.type = "triangle";
+            osc.frequency.setValueAtTime(frequencies[note], now);
+
+            gain.gain.setValueAtTime(0.26, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.72);
+
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+
+            osc.start(now);
+            osc.stop(now + 0.72);
+        }
+
+        function playTone(freq, type = "sine") {
+            const ctx = getAudioCtx();
+            if (!ctx) return;
+
+            const now = ctx.currentTime;
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+
+            osc.type = type;
+            osc.frequency.setValueAtTime(freq, now);
+
+            gain.gain.setValueAtTime(0.18, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.24);
+
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+
+            osc.start(now);
+            osc.stop(now + 0.24);
+        }
+
+        function renderHearts() {
+            return Array.from({ length: maxLives }, (_, index) => {
+                return `<span class="heart${index >= lives ? " lost" : ""}">${index < lives ? "♥" : "♡"}</span>`;
+            }).join("");
+        }
+
+        function updateStats() {
+            const percent = Math.min(100, Math.round((score / maxScore) * 100));
+
+            document.getElementById("scoreValue").textContent = score;
+            document.getElementById("comboValue").textContent = combo;
+            document.getElementById("comboText").textContent = combo >= 5 ? "Perfect!" : "Keep going!";
+            document.getElementById("livesValue").innerHTML = renderHearts();
+            document.getElementById("progressFill").style.width = percent + "%";
+            document.getElementById("progressText").textContent = percent + "%";
+        }
+
+        function setFeedback(text, type) {
+            const feedback = document.getElementById("instruction");
+            feedback.textContent = text;
+            feedback.className = "feedback-line";
+
+            if (type) {
+                feedback.classList.add(type);
+            }
+        }
+
+        function drawStaff(note) {
+            const canvas = document.getElementById("staff");
+            const ctx = canvas.getContext("2d");
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            ctx.strokeStyle = "#333";
+            ctx.lineWidth = 2;
+
+            for (let i = 0; i < 5; i++) {
+                const y = 60 + i * 16;
+
+                ctx.beginPath();
+                ctx.moveTo(50, y);
+                ctx.lineTo(550, y);
+                ctx.stroke();
+            }
+
+            ctx.font = "70px serif";
+            ctx.fillStyle = "#333";
+            ctx.fillText("𝄞", 60, 130);
+
+            const y = staffPos[note];
+
+            if (note.includes("#")) {
+                ctx.font = "26px serif";
+                ctx.fillText("♯", 270, y + 9);
+            }
+
+            if (note === "C" || note === "C#") {
+                ctx.beginPath();
+                ctx.moveTo(280, 138);
+                ctx.lineTo(320, 138);
+                ctx.stroke();
+            }
+
+            ctx.fillStyle = "#111";
+            ctx.beginPath();
+            ctx.ellipse(300, y, 10, 7, -0.35, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.strokeStyle = "#111";
+            ctx.lineWidth = 2;
+
+            ctx.beginPath();
+            ctx.moveTo(309, y);
+            ctx.lineTo(309, y - 45);
+            ctx.stroke();
+        }
+
+        function newQuestion() {
+            const keys = Object.keys(staffPos);
+            currentNote = keys[Math.floor(Math.random() * keys.length)];
+
+            setFeedback("Click the matching piano key");
+            drawStaff(currentNote);
+        }
+
+        function flashKey(note, state) {
+            const key = document.querySelector(`[data-note="${note}"]`);
+            if (!key) return;
+
+            key.classList.add("active", state);
+
+            setTimeout(() => {
+                key.classList.remove("active", state);
+            }, 360);
+        }
+
+        function handleInput(note) {
+            playNote(note);
+
+            if (note === currentNote) {
+                score += 10;
+                combo++;
+
+                flashKey(note, "correct");
+                setFeedback("Correct! That was " + currentNote, "good");
+                playTone(1046.5);
+                updateStats();
+
+                if (score >= maxScore) {
+                    saveGameResult(score, true);
+                    showCompletion(true);
+                    return;
+                }
+
+                setTimeout(newQuestion, 600);
+                return;
+            }
+
+            lives--;
+            combo = 0;
+
+            flashKey(note, "wrong");
+            setFeedback("Wrong! That was " + currentNote, "bad");
+            playTone(180, "sawtooth");
+            updateStats();
+
+            document.getElementById("game-container").classList.add("shake");
+
+            setTimeout(() => {
+                document.getElementById("game-container").classList.remove("shake");
+
+                if (lives <= 0) {
+                    saveGameResult(score, false);
+                    showCompletion(false);
+                    return;
+                }
+
+                newQuestion();
+            }, 800);
+        }
+
+        function renderPiano() {
+            const piano = document.getElementById("piano");
+            piano.innerHTML = "";
+
+            const whiteNotes = pianoLayout.filter(item => item.color === "white");
+            const blackNotes = pianoLayout.filter(item => item.color === "black");
+
+            whiteNotes.forEach(item => {
+                const key = document.createElement("button");
+                key.type = "button";
+                key.className = "white-key";
+                key.dataset.note = item.note;
+                key.innerHTML = `<span class="key-label">${item.label}</span>`;
+                key.addEventListener("click", () => handleInput(item.note));
+                piano.appendChild(key);
+            });
+
+            blackNotes.forEach(item => {
+                const key = document.createElement("button");
+                key.type = "button";
+                key.className = "black-key";
+                key.dataset.note = item.note;
+                key.style.left = `calc((var(--white-w) * ${item.after}) - (var(--black-w) / 2))`;
+                key.innerHTML = `<span class="key-label">${item.label}</span>`;
+                key.addEventListener("click", () => handleInput(item.note));
+                piano.appendChild(key);
+            });
+        }
+
+        function showCompletion(won) {
+            const game = document.getElementById("game-container");
+
+            game.innerHTML = `
+                <section class="completion">
+                    <div>
+                        <div class="badge" style="margin: 0 auto 22px; width: 86px; height: 86px; font-size: 2.5rem;">${won ? "★" : "♥"}</div>
+                        <h2>${won ? "Maestro!" : "Try Again"}</h2>
+                        <p style="color: var(--muted); margin-bottom: 26px;">Final score: <strong style="color: var(--gold-soft);">${score} / ${maxScore}</strong></p>
+                        <div class="home-actions">
+                            ${won ? `<button class="primary-btn" onclick="window.location.href='${window.location.protocol.startsWith('http') ? '/lesson2-2' : 'level 2(lesson 2).html'}'">Next Lesson</button>` : `<button class="primary-btn" onclick="restartGame()">Play Again</button>`}
+                        </div>
+                    </div>
+                </section>
+            `;
+        }
+
+        function goHome() {
+            if (window.location.protocol.startsWith('http')) {
+                window.location.href = '/dashboard';
+            } else {
+                window.location.href = '/dashboard';
+            }
+        }
+
+        function goExit() {
+            if (window.location.protocol.startsWith('http')) {
+                window.location.href = '/lessons';
+            } else {
+                window.location.href = '/lessons';
+            }
+        }
+
+        function restartGame() {
+            score = 0;
+            combo = 0;
+            lives = maxLives;
+
+            const game = document.getElementById("game-container");
+
+            game.innerHTML = `
+                <div class="level-ribbon">LESSON 1</div>
+
+                <div class="challenge-header">
+                    <div class="challenge-title">
+                        <div class="mini-mark">▥</div>
+                        <div>
+                            <h1>Pianova</h1>
+                            <p>Identify the note</p>
+                        </div>
+                    </div>
+
+                    <button class="difficulty">♫ LESSON 1 ˅</button>
+                </div>
+
+                <div class="feedback-line" id="instruction">Click the matching piano key</div>
+
+                <div class="staff-card">
+                    <canvas id="staff" width="600" height="180"></canvas>
+                </div>
+
+                <div class="piano-wrap">
+                    <div class="piano" id="piano"></div>
+                </div>
+
+                <p class="instruction">Click the piano key that matches the staff</p>
+            `;
+
+            renderPiano();
+            updateStats();
+            newQuestion();
+        }
+
+        function saveGameResult(finalScore, passed) {
+            fetch("/api/save-game2", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    score: finalScore,
+                    passed: passed
+                })
+            }).catch(() => {});
+        }
+
+        document.getElementById("resetBtn")?.addEventListener("click", restartGame);
+        document.getElementById("soundBtn")?.addEventListener("click", () => playTone(880));
+        window.addEventListener("keydown", event => {
+            const key = event.key.toUpperCase();
+            const found = pianoLayout.find(item => item.note === key);
+
+            if (!found) return;
+
+            event.preventDefault();
+            handleInput(found.note);
+        });
+
+        const practiceSessionStartedAt = Date.now();
+        let practiceSessionSent = false;
+
+        function sendPracticeSession() {
+            if (practiceSessionSent) return;
+
+            practiceSessionSent = true;
+
+            const durationSeconds = Math.max(1, Math.round((Date.now() - practiceSessionStartedAt) / 1000));
+            const payload = JSON.stringify({
+                game_type: "game2",
+                duration_seconds: durationSeconds
+            });
+
+            if (navigator.sendBeacon) {
+                navigator.sendBeacon("/api/log-practice-session", new Blob([payload], {
+                    type: "application/json"
+                }));
+                return;
+            }
+
+            fetch("/api/log-practice-session", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: payload,
+                keepalive: true
+            }).catch(() => {});
+        }
+
+        window.addEventListener("pagehide", sendPracticeSession);
+        window.addEventListener("beforeunload", sendPracticeSession);
+
+        renderPiano();
+        updateStats();
+        newQuestion();
+
+        (function () {
+            const stage = document.querySelector(".stage");
+            if (!stage) return;
+
+            function fit() {
+                stage.style.transform = "none";
+                const viewportH = window.innerHeight || document.documentElement.clientHeight;
+                const height = stage.getBoundingClientRect().height || stage.offsetHeight;
+                if (!height) return;
+
+                let scale = 1;
+                if (height > viewportH) {
+                    scale = viewportH / height;
+                    scale = Math.max(0.5, scale);
+                }
+
+                stage.style.transform = "scale(" + Math.min(1, scale) + ")";
+            }
+
+            window.addEventListener("resize", fit);
+            setTimeout(fit, 80);
+            setTimeout(fit, 350);
+        })();
+    </script>
+    <script src="/static/lesson-progress.js"></script>
+    <script>
+        window.PianovaLessonProgress.attach({
+            levelId: 2,
+            lessonPath: '/lesson2-1-latest',
+            getState() {
+                return {
+                    currentNote,
+                    score,
+                    combo,
+                    lives,
+                    completionShown: !!document.querySelector('.completion'),
+                };
+            },
+            applyState(state) {
+                score = Math.max(0, Number(state.score || 0));
+                combo = Math.max(0, Number(state.combo || 0));
+                lives = Math.max(0, Number(state.lives || maxLives));
+                restartGame();
+                currentNote = String(state.currentNote || currentNote || '');
+                updateStats();
+                drawStaff(currentNote);
+                if (state.completionShown) {
+                    showCompletion(lives > 0);
+                }
+            },
+        });
+    </script>
+</body>
+</html>

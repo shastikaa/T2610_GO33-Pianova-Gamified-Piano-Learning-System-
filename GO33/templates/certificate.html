@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pianova Certificate</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;800&family=Great+Vibes&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #050607;
+      --panel: #090a0f;
+      --panel-soft: #10121a;
+      --gold: #efb324;
+      --gold-bright: #ffe39b;
+      --gold-dark: #8d6215;
+      --ink: #f3e2bd;
+      --line: rgba(239, 179, 36, 0.7);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 14px;
+      background:
+        radial-gradient(circle at 8% 12%, rgba(239, 179, 36, 0.1), transparent 18%),
+        radial-gradient(circle at 92% 88%, rgba(239, 179, 36, 0.08), transparent 20%),
+        var(--bg);
+      font-family: "Poppins", sans-serif;
+      color: var(--ink);
+    }
+
+    .cert-home-btn {
+      position: fixed;
+      top: 14px;
+      left: 14px;
+      z-index: 40;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      border-radius: 999px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 14px;
+      color: #1c1305;
+      border: 1px solid rgba(255, 227, 155, 0.72);
+      background: linear-gradient(180deg, #ffe39b, #efb324);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.35);
+    }
+
+    .cert-home-btn:hover {
+      filter: brightness(1.04);
+    }
+
+    .certificate {
+      position: relative;
+      width: 100%;
+      max-width: 1280px;
+      aspect-ratio: 16 / 9;
+      border-radius: 22px;
+      background:
+        radial-gradient(circle at 50% 52%, rgba(239, 179, 36, 0.1), transparent 42%),
+        radial-gradient(circle at 80% 18%, rgba(239, 179, 36, 0.08), transparent 26%),
+        radial-gradient(circle at 20% 88%, rgba(239, 179, 36, 0.07), transparent 24%),
+        linear-gradient(160deg, var(--panel), #06070b 60%, var(--panel-soft));
+      border: 2px solid var(--line);
+      box-shadow: 0 24px 44px rgba(0, 0, 0, 0.55);
+      overflow: hidden;
+    }
+
+    .certificate::before {
+      content: "";
+      position: absolute;
+      inset: 10px 12px;
+      border: 1px solid rgba(239, 179, 36, 0.55);
+      border-radius: 16px;
+      pointer-events: none;
+      z-index: 20;
+    }
+
+    .certificate::after {
+      content: "\2726";
+      position: absolute;
+      top: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: rgba(239, 179, 36, 0.7);
+      font-size: clamp(16px, 1.7vw, 24px);
+      pointer-events: none;
+      z-index: 22;
+      text-shadow: 0 0 10px rgba(239, 179, 36, 0.35);
+    }
+
+    .ornament {
+      position: absolute;
+      color: rgba(239, 179, 36, 0.72);
+      font-family: "Cinzel", serif;
+      font-size: clamp(20px, 2.2vw, 34px);
+      line-height: 1;
+      z-index: 21;
+    }
+
+    .ornament.tl { top: 10px; left: 16px; transform: rotate(-5deg); }
+    .ornament.tr { top: 10px; right: 16px; transform: scaleX(-1) rotate(-5deg); }
+    .ornament.bl { bottom: 10px; left: 16px; transform: rotate(175deg); }
+    .ornament.br { bottom: 10px; right: 16px; transform: scaleX(-1) rotate(175deg); }
+
+    .staff-swirl {
+      position: absolute;
+      width: 38%;
+      height: 26%;
+      top: 4%;
+      opacity: 0.28;
+      z-index: 3;
+      border-top: 2px solid rgba(239, 179, 36, 0.4);
+      border-radius: 0 0 40% 40%;
+    }
+
+    .staff-swirl.left { left: -7%; transform: rotate(-6deg); }
+    .staff-swirl.right { right: -7%; transform: scaleX(-1) rotate(-6deg); }
+
+    .staff-swirl::before,
+    .staff-swirl::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      border-top: 1px solid rgba(239, 179, 36, 0.35);
+      border-radius: 0 0 40% 40%;
+    }
+
+    .staff-swirl::before { top: 20%; }
+    .staff-swirl::after { top: 40%; }
+
+    .top-notes {
+      position: absolute;
+      top: 8.8%;
+      font-size: clamp(22px, 2.4vw, 36px);
+      letter-spacing: 4px;
+      color: rgba(239, 179, 36, 0.92);
+      text-shadow: 0 0 12px rgba(239, 179, 36, 0.42);
+      z-index: 6;
+    }
+
+    .top-notes.left { left: 3.4%; transform: rotate(-10deg); }
+    .top-notes.right { right: 3.4%; transform: rotate(10deg); }
+
+    .brand-wrap {
+      position: absolute;
+      inset: 4.8% 0 auto;
+      text-align: center;
+      z-index: 7;
+    }
+
+    .logo {
+      margin: 0;
+      font-family: "Great Vibes", cursive;
+      font-size: clamp(72px, 10.4vw, 150px);
+      font-weight: 400;
+      line-height: 0.88;
+      color: var(--gold);
+      text-shadow:
+        0 0 8px rgba(239, 179, 36, 0.45),
+        0 0 18px rgba(239, 179, 36, 0.25);
+    }
+
+    .subtitle {
+      margin-top: -4px;
+      font-family: "Cinzel", serif;
+      font-size: clamp(20px, 2.1vw, 36px);
+      letter-spacing: 0.6px;
+      font-weight: 600;
+      color: #efd6a0;
+      text-shadow: 0 0 10px rgba(239, 179, 36, 0.2);
+    }
+
+    .keyboard-wrap {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 30%;
+      height: 17%;
+      z-index: 8;
+      border-top: 2px solid var(--line);
+      border-bottom: 2px solid var(--line);
+      background:
+        linear-gradient(180deg, rgba(22, 24, 32, 0.95), rgba(8, 9, 13, 0.86));
+      box-shadow:
+        inset 0 10px 14px rgba(0, 0, 0, 0.38),
+        inset 0 -8px 10px rgba(0, 0, 0, 0.42);
+      overflow: hidden;
+    }
+
+    .keyboard {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 6%;
+      height: 90%;
+      border-radius: 0;
+      background: linear-gradient(180deg, #ffffff 0%, #f1f1f1 68%, #d2d2d2 100%);
+      border-top: 1px solid rgba(255, 255, 255, 0.7);
+      border-bottom: 2px solid rgba(62, 62, 62, 0.95);
+    }
+
+    .keyboard::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(90deg, transparent 0 48px, rgba(108, 108, 108, 0.9) 48px 49px);
+      z-index: 1;
+    }
+
+    .keyboard::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      height: 56%;
+      background:
+        repeating-linear-gradient(90deg, transparent 0 48px, #151515 48px 66px, transparent 66px 240px),
+        repeating-linear-gradient(90deg, transparent 0 82px, #151515 82px 100px, transparent 100px 240px),
+        repeating-linear-gradient(90deg, transparent 0 146px, #151515 146px 164px, transparent 164px 240px),
+        repeating-linear-gradient(90deg, transparent 0 178px, #151515 178px 196px, transparent 196px 240px),
+        repeating-linear-gradient(90deg, transparent 0 210px, #151515 210px 228px, transparent 228px 240px),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0));
+      border-bottom: 1px solid rgba(0, 0, 0, 0.52);
+      box-shadow: 0 6px 7px rgba(0, 0, 0, 0.34);
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .content {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 49%;
+      z-index: 10;
+      text-align: center;
+      padding: 0 clamp(18px, 5vw, 84px);
+    }
+
+    .title {
+      margin: 0;
+      font-family: "Cinzel", serif;
+      font-size: clamp(22px, 3.6vw, 52px);
+      line-height: 1.02;
+      letter-spacing: 1.1px;
+      color: var(--gold-bright);
+      text-shadow:
+        0 0 10px rgba(239, 179, 36, 0.23),
+        0 4px 10px rgba(0, 0, 0, 0.45);
+    }
+
+    .title-ornament {
+      margin: 8px auto 0;
+      width: min(520px, 56%);
+      color: rgba(239, 179, 36, 0.92);
+      font-family: "Cinzel", serif;
+      font-size: clamp(18px, 2vw, 30px);
+      line-height: 1;
+      letter-spacing: 1px;
+      text-shadow: 0 0 8px rgba(239, 179, 36, 0.24);
+    }
+
+    .statement {
+      width: min(760px, 92%);
+      margin: 4px auto 0;
+      padding: 4px 0 0;
+    }
+
+    .statement-divider {
+      width: 100%;
+      height: 1px;
+      margin: 2px auto 6px;
+      background: linear-gradient(90deg, transparent, rgba(239, 179, 36, 0.65), transparent);
+    }
+
+    .cert-line {
+      margin: 0;
+      font-family: "Poppins", sans-serif;
+      font-size: clamp(12px, 1.1vw, 16px);
+      font-weight: 500;
+      color: #f1dfb3;
+      letter-spacing: 0.2px;
+    }
+
+    .recipient-name {
+      margin: 3px auto 6px;
+      font-family: "Cinzel", serif;
+      font-size: clamp(15px, 1.55vw, 23px);
+      font-weight: 700;
+      color: var(--gold-bright);
+      letter-spacing: 0.3px;
+      line-height: 1.1;
+      max-width: 78%;
+      white-space: normal;
+      overflow-wrap: anywhere;
+      text-shadow: 0 0 8px rgba(239, 179, 36, 0.2);
+    }
+
+    .completion-line {
+      margin: 0;
+      font-family: "Poppins", sans-serif;
+      font-size: clamp(12px, 1.1vw, 16px);
+      font-weight: 500;
+      color: #f1dfb3;
+      letter-spacing: 0.2px;
+    }
+
+    .course-name {
+      margin: 1px auto;
+      font-family: "Cinzel", serif;
+      font-size: clamp(16px, 1.8vw, 26px);
+      font-weight: 700;
+      color: #f5d992;
+      max-width: 80%;
+      line-height: 1.15;
+      white-space: normal;
+      overflow-wrap: anywhere;
+      text-shadow: 0 0 8px rgba(239, 179, 36, 0.22);
+    }
+
+    .mastery-line {
+      margin: 0;
+      font-family: "Poppins", sans-serif;
+      font-size: clamp(12px, 1.1vw, 16px);
+      font-weight: 500;
+      color: #f1dfb3;
+      letter-spacing: 0.2px;
+    }
+
+    .flow {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 29%;
+      z-index: 4;
+      pointer-events: none;
+    }
+
+    .flow::before,
+    .flow::after {
+      content: "";
+      position: absolute;
+      left: -4%;
+      right: -4%;
+      border-top: 2px solid rgba(239, 179, 36, 0.38);
+      border-radius: 50%;
+    }
+
+    .flow::before { bottom: 44%; height: 56%; transform: rotate(-5deg); }
+    .flow::after { bottom: 18%; height: 62%; transform: rotate(5deg); }
+
+    .footer {
+      position: absolute;
+      left: 6%;
+      right: 6%;
+      bottom: 7%;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: end;
+      gap: clamp(12px, 2.2vw, 34px);
+      z-index: 14;
+    }
+
+    .signature {
+      color: #f5e0b1;
+      text-align: center;
+    }
+
+    .signature.left {
+      transform: translateX(-48px);
+    }
+
+    .signature.right {
+      text-align: right;
+      transform: translateX(38px);
+    }
+
+    .signature.right .role,
+    .signature.right .role-ornament {
+      text-align: center;
+    }
+
+    .signature .sign {
+      font-family: "Great Vibes", cursive;
+      font-size: clamp(24px, 2.7vw, 42px);
+      line-height: 1;
+      margin-bottom: 5px;
+      text-shadow: 0 0 10px rgba(239, 179, 36, 0.18);
+      border-bottom: 1px solid rgba(239, 179, 36, 0.72);
+      padding-bottom: 3px;
+    }
+
+    .signature .role {
+      font-family: "Cinzel", serif;
+      font-size: clamp(14px, 1.25vw, 22px);
+      color: #e7c87f;
+      letter-spacing: 0.5px;
+    }
+
+    .role-ornament {
+      margin-top: 3px;
+      color: rgba(239, 179, 36, 0.76);
+      font-size: clamp(14px, 1.1vw, 19px);
+      line-height: 1;
+    }
+
+    .seal-wrap {
+      position: relative;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding-inline: clamp(18px, 2.8vw, 30px);
+      transform: translateY(30px);
+    }
+
+    .laurel {
+      position: absolute;
+      bottom: 12px;
+      font-size: clamp(34px, 4.2vw, 58px);
+      color: rgba(239, 179, 36, 0.92);
+      line-height: 1;
+      text-shadow: 0 0 10px rgba(239, 179, 36, 0.28);
+    }
+
+    .laurel.left { left: 0; transform: scaleX(-1); }
+    .laurel.right { right: 0; }
+
+    .seal {
+      position: relative;
+      width: clamp(54px, 5.2vw, 76px);
+      height: clamp(54px, 5.2vw, 76px);
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 30% 24%, #fff2bf, #f3c65f 52%, #ad731e 78%, #7d500f);
+      border: 2px solid rgba(247, 223, 161, 0.7);
+      color: #4a2e09;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 12px 18px rgba(0, 0, 0, 0.35);
+      z-index: 15;
+    }
+
+    .seal span {
+      width: 74%;
+      height: 74%;
+      border: 2px solid rgba(100, 66, 20, 0.7);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      font-family: "Cinzel", serif;
+      font-size: clamp(6px, 0.62vw, 8px);
+      font-weight: 700;
+      line-height: 1.06;
+      letter-spacing: 0.6px;
+    }
+
+    .seal::before,
+    .seal::after {
+      content: "";
+      position: absolute;
+      width: clamp(9px, 1.1vw, 13px);
+      height: clamp(14px, 1.7vw, 20px);
+      bottom: -17%;
+      background: linear-gradient(180deg, #efc15a, #8d5c15);
+      clip-path: polygon(0 0, 100% 0, 50% 100%);
+    }
+
+    .seal::before { left: 30%; transform: rotate(4deg); }
+    .seal::after { right: 30%; transform: rotate(-4deg); }
+
+    @media (max-width: 980px) {
+      .keyboard-wrap { top: 31%; }
+      .content { top: 50%; }
+      .footer { bottom: 6%; }
+    }
+
+    @media (max-width: 720px) {
+      body { padding: 8px; }
+      .certificate { width: calc(100vw - 16px); border-radius: 14px; }
+      .keyboard-wrap { top: 29%; height: 19%; }
+      .content { top: 49%; }
+      .footer {
+        left: 4.5%;
+        right: 4.5%;
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+      .seal-wrap { order: 1; }
+      .signature.left {
+        order: 2;
+        transform: none;
+      }
+      .signature.right {
+        order: 3;
+        text-align: center;
+        transform: none;
+      }
+      .laurel { font-size: clamp(58px, 12vw, 78px); }
+    }
+
+    @media (max-width: 520px) {
+      .top-notes { display: none; }
+      .subtitle { font-size: clamp(14px, 3.5vw, 18px); }
+      .title { font-size: clamp(32px, 9vw, 44px); }
+      .content { top: 51%; }
+      .statement { margin-top: 4px; }
+      .cert-line,
+      .completion-line,
+      .mastery-line { font-size: clamp(10px, 2.8vw, 12px); }
+      .recipient-name { font-size: clamp(13px, 4.1vw, 19px); }
+      .course-name { font-size: clamp(15px, 5vw, 22px); }
+      .signature .sign { font-size: clamp(28px, 8vw, 36px); }
+      .signature .role { font-size: clamp(11px, 3.5vw, 14px); }
+      .seal { width: 88px; height: 88px; }
+      .seal span { font-size: 10px; }
+      .laurel { font-size: 56px; bottom: 14px; }
+    }
+
+    @media print {
+      body {
+        background: white;
+        padding: 0;
+      }
+
+      .cert-home-btn {
+        display: none;
+      }
+
+      .certificate {
+        box-shadow: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a class="cert-home-btn" href="{{ home_href or '/dashboard' }}" aria-label="Go to dashboard">&#8962; Home</a>
+  <div class="certificate">
+    <div class="ornament tl">&#10086;</div>
+    <div class="ornament tr">&#10086;</div>
+    <div class="ornament bl">&#10086;</div>
+    <div class="ornament br">&#10086;</div>
+
+    <div class="staff-swirl left"></div>
+    <div class="staff-swirl right"></div>
+
+    <div class="top-notes left">&#9835; &#9833; &#9834;</div>
+    <div class="top-notes right">&#9833; &#9834; &#9835; &#9833;</div>
+
+    <div class="brand-wrap">
+      <h1 class="logo">Pianova</h1>
+      <div class="subtitle">Gentle Piano Learning System</div>
+    </div>
+
+    <div class="keyboard-wrap">
+      <div class="keyboard"></div>
+    </div>
+
+    <div class="content">
+      <h1 class="title">BEGINNER PIANO CERTIFICATE</h1>
+      <div class="title-ornament">&#10086; &#10022; &#10086;</div>
+      <div class="statement">
+        <div class="statement-divider"></div>
+        <p class="cert-line">This is to certify that</p>
+        <p class="recipient-name">{{ issued_for }}</p>
+        <div class="statement-divider"></div>
+        <p class="completion-line">has successfully completed the</p>
+        <p class="course-name">{{ certificate_title }}</p>
+        <p class="mastery-line">and achieved all Levels of Mastery.</p>
+      </div>
+    </div>
+
+    <div class="flow"></div>
+
+    <div class="footer">
+      <div class="signature left">
+        <div class="sign">Liana Ameerah Binti Rosli</div>
+        <div class="role">Course Instructor</div>
+        <div class="role-ornament">&#10086;</div>
+      </div>
+
+      <div class="seal-wrap">
+        <div class="laurel left">&#10087;</div>
+        <div class="seal">
+          <span>CERTIFIED<br />PIANO</span>
+        </div>
+        <div class="laurel right">&#10087;</div>
+      </div>
+
+      <div class="signature right">
+        <div class="sign">Pianova Development Team</div>
+        <div class="role">Program Director</div>
+        <div class="role-ornament">&#10086;</div>
+      </div>
+    </div>
+  </div>
+</body>
+<script>
+  function triggerDownload(fileUrl, fileName) {
+    const link = document.createElement('a');
+    link.href = fileUrl;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  }
+
+  function downloadRenderedCertificate() {
+    const certificateNode = document.querySelector('.certificate');
+    if (!certificateNode) return;
+
+    const rect = certificateNode.getBoundingClientRect();
+    const width = Math.max(1, Math.round(rect.width));
+    const height = Math.max(1, Math.round(rect.height));
+    const styleTag = document.querySelector('style');
+    const embeddedStyles = styleTag ? styleTag.textContent : '';
+    const clonedCertificate = certificateNode.cloneNode(true);
+    const safeCertificateMarkup = clonedCertificate.outerHTML.replace(/<br\s*>/gi, '<br/>');
+
+    const svgMarkup = `<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
+  <foreignObject x="0" y="0" width="100%" height="100%">
+    <div xmlns="http://www.w3.org/1999/xhtml">
+      <style>${embeddedStyles}</style>
+      ${safeCertificateMarkup}
+    </div>
+  </foreignObject>
+</svg>`;
+
+    const svgBlob = new Blob([svgMarkup], { type: 'image/svg+xml;charset=utf-8' });
+    const svgUrl = URL.createObjectURL(svgBlob);
+    const image = new Image();
+
+    image.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      const context = canvas.getContext('2d');
+      if (context) {
+        try {
+          context.drawImage(image, 0, 0);
+          const pngUrl = canvas.toDataURL('image/png');
+          triggerDownload(pngUrl, 'pianova-certificate.png');
+        } catch (error) {
+          // Fallback when canvas export is blocked by browser security.
+          triggerDownload(svgUrl, 'pianova-certificate.svg');
+        }
+      }
+      setTimeout(() => URL.revokeObjectURL(svgUrl), 1500);
+    };
+
+    image.onerror = () => {
+      // Fallback when image rendering fails.
+      triggerDownload(svgUrl, 'pianova-certificate.svg');
+      setTimeout(() => URL.revokeObjectURL(svgUrl), 1500);
+    };
+
+    image.src = svgUrl;
+  }
+
+  // Auto-open print dialog when opened via /certificate?print=1
+  const searchParams = new URLSearchParams(window.location.search);
+  if (searchParams.get('download') === '1') {
+    window.addEventListener('load', () => {
+      setTimeout(downloadRenderedCertificate, 300);
+    });
+  }
+  if (searchParams.get('print') === '1') {
+    window.addEventListener('load', () => {
+      setTimeout(() => window.print(), 250);
+    });
+  }
+</script>
+</html>

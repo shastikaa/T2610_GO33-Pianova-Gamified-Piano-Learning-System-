@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pianova | Lesson 1 Exercise</title>
+
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&display=swap");
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      background: linear-gradient(145deg, #1e2a3a 0%, #0f1a24 100%);
+      color: #ffe7bf;
+      font-family: "Manrope", "Segoe UI", Arial, sans-serif;
+      padding: 0.7rem;
+      overflow: hidden;
+    }
+
+    .exercise-shell {
+      max-width: 1840px;
+      margin: 0 auto;
+      height: calc(100vh - 1.4rem);
+      border: 1px solid rgba(255, 205, 126, 0.44);
+      border-radius: 2rem;
+      background:
+        radial-gradient(circle at 12% -25%, rgba(255, 194, 88, 0.22), transparent 42%),
+        radial-gradient(circle at 94% 110%, rgba(61, 138, 215, 0.18), transparent 44%),
+        linear-gradient(180deg, rgba(10, 16, 26, 0.98), rgba(8, 12, 20, 0.95));
+      box-shadow:
+        0 16px 34px rgba(0, 0, 0, 0.4),
+        0 0 0 1px rgba(255, 255, 255, 0.02) inset,
+        inset 0 1px 0 rgba(255, 255, 255, 0.07);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .exercise-header {
+      background:
+        radial-gradient(circle at 9% 50%, rgba(255, 176, 74, 0.2), transparent 36%),
+        linear-gradient(120deg, #332128 0%, #1f2d45 68%, #1a3550 100%);
+      border-bottom: 2px solid rgba(255, 207, 120, 0.74);
+      padding: 0.65rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .exercise-title {
+      font-size: clamp(1.25rem, 2vw, 1.9rem);
+      font-weight: 800;
+      color: #ffcb74;
+      letter-spacing: 0.6px;
+    }
+
+    .exercise-subtitle {
+      font-size: clamp(0.9rem, 1.2vw, 1.1rem);
+      color: #fbe0b1;
+      opacity: 0.95;
+    }
+
+    .header-status {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+    }
+
+    .chip {
+      border: 1px solid rgba(255, 219, 141, 0.42);
+      border-radius: 999px;
+      background: rgba(6, 11, 18, 0.94);
+      color: #ffdd99;
+      font-size: clamp(0.75rem, 1.05vw, 1rem);
+      font-weight: 800;
+      padding: 0.28rem 0.75rem;
+    }
+
+    .lives {
+      color: #ff7697;
+      letter-spacing: 2px;
+      font-size: clamp(0.8rem, 1.05vw, 1rem);
+      font-weight: 800;
+      font-family: "Segoe UI Symbol", "Arial Unicode MS", sans-serif;
+    }
+
+    .content {
+      padding: 0.5rem 0.8rem 0;
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .question-row {
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+
+    .question {
+      text-align: center;
+    }
+
+    .question small {
+      display: block;
+      color: #ffc84a;
+      font-size: clamp(0.8rem, 1.05vw, 1rem);
+      font-weight: 800;
+      margin-bottom: 0.08rem;
+      letter-spacing: 1px;
+    }
+
+    .question h2 {
+      font-size: clamp(1.35rem, 3.3vw, 2.75rem);
+      font-weight: 800;
+      color: #fff8e7;
+    }
+
+    .question h2 span {
+      color: #ffc84a;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0.55rem;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .card {
+      min-height: 0;
+      border: 1px solid rgba(255, 188, 74, 0.68);
+      border-radius: 0.9rem;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(0, 0, 0, 0.1)), #070b11;
+      padding: 0.5rem;
+      text-align: center;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+
+    .card:hover,
+    .card.selected {
+      transform: translateY(-2px);
+      border-color: #ffd75d;
+      box-shadow:
+        0 0 20px rgba(255, 210, 76, 0.45),
+        inset 0 0 18px rgba(255, 210, 76, 0.08);
+    }
+
+    .card.correct {
+      border-color: #50ff8a;
+      box-shadow: 0 0 18px rgba(80, 255, 138, 0.65);
+    }
+
+    .card.wrong {
+      border-color: #ff5d5d;
+      box-shadow: 0 0 18px rgba(255, 93, 93, 0.6);
+    }
+
+    .card h3 {
+      color: #ffc84a;
+      font-size: clamp(1rem, 2.3vw, 2rem);
+      font-weight: 800;
+      margin-bottom: 0.15rem;
+    }
+
+    .line {
+      width: 72%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, #b97828, transparent);
+      margin: 0.3rem auto;
+      position: relative;
+    }
+
+    .line::after {
+      content: "";
+      width: 8px;
+      height: 8px;
+      background: #ffc84a;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%) rotate(45deg);
+    }
+
+    .symbol {
+      height: clamp(64px, 13vh, 112px);
+      display: grid;
+      place-items: center;
+      font-size: clamp(54px, 8.2vh, 98px);
+      color: #f5f5f5;
+      line-height: 1;
+      margin-top: clamp(10px, 1.8vh, 18px);
+    }
+
+    .semibreve {
+      font-size: clamp(52px, 7.7vh, 88px);
+      transform: scaleX(1.45);
+    }
+
+    .beat {
+      margin-top: auto;
+      border: 1px solid #b97828;
+      border-radius: 999px;
+      color: #ffc84a;
+      padding: 0.22rem 0.8rem;
+      font-size: clamp(0.95rem, 1.7vw, 1.5rem);
+      font-weight: 800;
+    }
+
+    .feedback {
+      margin-top: 0.45rem;
+      border: 1px solid rgba(255, 188, 74, 0.5);
+      border-radius: 0.9rem;
+      min-height: clamp(42px, 6vh, 56px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.38rem 0.65rem;
+      color: #ffd48a;
+      font-size: clamp(0.9rem, 1.5vw, 1.3rem);
+      font-weight: 700;
+      background: rgba(255, 200, 70, 0.04);
+      text-align: center;
+    }
+
+    .ornament {
+      position: relative;
+      margin-top: 0.35rem;
+      height: clamp(44px, 11vh, 92px);
+      border-bottom: 1px solid rgba(255, 188, 74, 0.18);
+      overflow: hidden;
+    }
+
+    .ornament svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .note-spark {
+      fill: #ffca62;
+      opacity: 0.95;
+    }
+
+    .actions {
+      padding: 0.45rem 0 0.55rem;
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .action-btn {
+      min-width: 220px;
+      border-radius: 0.8rem;
+      border: 1px solid rgba(255, 188, 74, 0.58);
+      background: rgba(9, 15, 25, 0.94);
+      color: #ffc55d;
+      font-size: clamp(0.95rem, 1.8vw, 1.3rem);
+      font-weight: 800;
+      padding: 0.46rem 0.95rem;
+      cursor: pointer;
+      transition: transform 0.2s ease, filter 0.2s ease;
+    }
+
+    .action-btn.primary {
+      background: #e5ae4a;
+      color: #1f1408;
+      border-color: #f0be64;
+    }
+
+    .action-btn:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.06);
+    }
+
+    .action-btn:disabled {
+      cursor: not-allowed;
+      opacity: 0.55;
+      filter: grayscale(0.25);
+      transform: none;
+    }
+
+    .piano-bar {
+      height: clamp(46px, 9vh, 72px);
+      border-top: 1px solid rgba(255, 188, 74, 0.42);
+      background: linear-gradient(180deg, #141d28 0%, #0f151f 55%, #090d14 100%);
+      padding: 3px 8px 5px;
+      display: flex;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .piano-key {
+      background: linear-gradient(180deg, #fdfdfd 0%, #ececec 72%, #d7d7d7 100%);
+      border: 1px solid #7d7d7d;
+      border-top: none;
+      border-radius: 0 0 5px 5px;
+      flex: 1;
+      min-width: 0;
+      box-shadow: inset 0 -8px 12px rgba(0, 0, 0, 0.12);
+    }
+
+    .piano-black-key {
+      position: absolute;
+      top: 3px;
+      width: clamp(8px, 1.5vw, 14px);
+      height: 58%;
+      background: linear-gradient(180deg, #2f343b 0%, #0f1217 65%, #05070a 100%);
+      border: 1px solid #05070a;
+      border-radius: 0 0 4px 4px;
+      transform: translateX(-50%);
+      z-index: 3;
+      box-shadow:
+        inset 0 -4px 5px rgba(0, 0, 0, 0.55),
+        inset 0 2px 2px rgba(255, 255, 255, 0.12),
+        0 2px 3px rgba(0, 0, 0, 0.35);
+    }
+
+    .game-over-modal {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(2, 6, 12, 0.78);
+      z-index: 999;
+      padding: 1rem;
+    }
+
+    .game-over-modal.open {
+      display: flex;
+    }
+
+    .game-over-card {
+      width: min(560px, 92vw);
+      border-radius: 2.2rem;
+      border: 1px solid rgba(255, 195, 77, 0.78);
+      background:
+        radial-gradient(circle at 50% 0%, rgba(255, 197, 77, 0.1), transparent 55%),
+        linear-gradient(180deg, #060d17 0%, #02060d 100%);
+      box-shadow:
+        0 0 42px rgba(255, 195, 77, 0.28),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+      padding: clamp(1.8rem, 4vw, 2.8rem) clamp(1.2rem, 4vw, 2.4rem);
+      text-align: center;
+    }
+
+    .game-over-title {
+      color: #f8cf59;
+      font-size: clamp(2rem, 5.4vw, 3.2rem);
+      font-weight: 800;
+      letter-spacing: 0.4px;
+      margin-bottom: 0.75rem;
+    }
+
+    .game-over-points {
+      color: #f7e5be;
+      font-size: clamp(1.15rem, 2.6vw, 2rem);
+      margin-bottom: 1.6rem;
+    }
+
+    .game-over-actions {
+      display: flex;
+      justify-content: center;
+      gap: 0.9rem;
+      flex-wrap: wrap;
+    }
+
+    .game-over-btn {
+      min-width: 170px;
+      border: 1px solid rgba(255, 188, 74, 0.62);
+      border-radius: 999px;
+      padding: 0.72rem 1.25rem;
+      font-size: 1.05rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform 0.2s ease, filter 0.2s ease;
+    }
+
+    .game-over-btn.primary {
+      background: linear-gradient(180deg, #f6cf66 0%, #eab94a 100%);
+      color: #1e1407;
+      border-color: #f5ca63;
+    }
+
+    .game-over-btn.secondary {
+      background: rgba(7, 12, 20, 0.94);
+      color: #ffd793;
+    }
+
+    .game-over-btn:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.05);
+    }
+
+    @media (max-width: 1100px) {
+      .cards {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 640px) {
+      .exercise-title {
+        font-size: 1.5rem;
+      }
+
+      .exercise-subtitle {
+        font-size: 0.9rem;
+      }
+
+      .chip {
+        font-size: 0.82rem;
+      }
+
+      .cards {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .card {
+        min-height: 0;
+      }
+
+      .action-btn {
+        width: 100%;
+        min-width: 0;
+      }
+
+      .piano-bar {
+        height: 50px;
+      }
+
+      .piano-black-key {
+        width: 7px;
+      }
+    }
+
+    @media (max-height: 760px) {
+      .exercise-header {
+        padding: 0.5rem 0.85rem;
+      }
+
+      .content {
+        padding: 0.38rem 0.7rem 0;
+      }
+
+      .question-row {
+        margin-bottom: 0.35rem;
+      }
+
+      .feedback {
+        margin-top: 0.3rem;
+      }
+
+      .ornament {
+        height: 44px;
+      }
+
+      .actions {
+        padding: 0.3rem 0 0.4rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="exercise-shell">
+    <header class="exercise-header">
+      <div>
+        <div class="exercise-title">🎯 EXERCISE</div>
+        <div class="exercise-subtitle">Same Pianova style with cleaner cards</div>
+      </div>
+      <div class="header-status">
+        <div class="chip">Score: <span id="score">0</span></div>
+        <div class="chip">Combo: <span id="combo">x0</span></div>
+        <div class="chip">Streak: <span id="streak">0</span></div>
+        <div class="chip">Lives: <span class="lives" id="lives">♥♥♥♥♥</span></div>
+      </div>
+    </header>
+
+    <section class="content">
+      <section class="question-row">
+        <div class="question">
+          <small>QUESTION</small>
+          <h2 id="questionText">Which note has <span>2</span> beats?</h2>
+        </div>
+      </section>
+
+      <section class="cards">
+        <article class="card" data-note="Semibreve">
+          <h3>SEMIBREVE</h3>
+          <div class="line"></div>
+          <div class="symbol semibreve">○</div>
+        </article>
+
+        <article class="card" data-note="Minim">
+          <h3>MINIM</h3>
+          <div class="line"></div>
+          <div class="symbol">𝅗𝅥</div>
+        </article>
+
+        <article class="card" data-note="Crotchet">
+          <h3>CROTCHET</h3>
+          <div class="line"></div>
+          <div class="symbol">♩</div>
+        </article>
+
+        <article class="card" data-note="Quaver">
+          <h3>QUAVER</h3>
+          <div class="line"></div>
+          <div class="symbol">♪</div>
+        </article>
+      </section>
+
+      <section class="feedback" id="feedback">Choose the correct note.</section>
+
+      <section class="ornament" aria-hidden="true">
+        <svg viewBox="0 0 1200 120" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="waveGlow" x1="0" x2="1" y1="0" y2="0">
+              <stop offset="0%" stop-color="#ffb845" stop-opacity="0" />
+              <stop offset="50%" stop-color="#ffbe56" stop-opacity="0.9" />
+              <stop offset="100%" stop-color="#ffb845" stop-opacity="0" />
+            </linearGradient>
+          </defs>
+          <path d="M0 80 C120 35, 220 120, 350 80 S580 40, 720 78 S960 122, 1200 74" fill="none" stroke="url(#waveGlow)" stroke-width="2" />
+          <path d="M0 88 C120 43, 220 128, 350 88 S580 48, 720 86 S960 130, 1200 82" fill="none" stroke="url(#waveGlow)" stroke-width="1.6" opacity="0.7" />
+          <text x="40" y="72" class="note-spark">♪</text>
+          <text x="440" y="86" class="note-spark">♪</text>
+          <text x="560" y="80" class="note-spark">♪</text>
+          <text x="1040" y="70" class="note-spark">♪</text>
+        </svg>
+      </section>
+
+      <section class="actions">
+        <button class="action-btn primary" id="backBtn" disabled>→ NEXT LESSON</button>
+        <button class="action-btn" id="homeBtn">⌂ HOME</button>
+        <button class="action-btn" id="quitBtn">✕ QUIT LESSON</button>
+      </section>
+    </section>
+
+    <section class="piano-bar" aria-hidden="true" id="pianoBar"></section>
+  </main>
+
+  <div class="game-over-modal" id="gameOverModal" role="dialog" aria-modal="true" aria-labelledby="gameOverTitle">
+    <div class="game-over-card">
+      <h2 class="game-over-title" id="gameOverTitle">Game Over</h2>
+      <p class="game-over-points">Total Points: <span id="gameOverPoints">0</span></p>
+      <div class="game-over-actions">
+        <button class="game-over-btn primary" id="modalTryAgainBtn">Try Again</button>
+        <button class="game-over-btn secondary" id="modalHomeBtn">Home</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const notes = [
+      {
+        name: "Semibreve",
+        beats: "4",
+        question: "Which note has <span>4</span> beats?",
+        answerText: "Semibreve has 4 beats."
+      },
+      {
+        name: "Minim",
+        beats: "2",
+        question: "Which note has <span>2</span> beats?",
+        answerText: "Minim has 2 beats."
+      },
+      {
+        name: "Crotchet",
+        beats: "1",
+        question: "Which note has <span>1</span> beat?",
+        answerText: "Crotchet has 1 beat."
+      },
+      {
+        name: "Quaver",
+        beats: "1/2",
+        question: "Which note has <span>1/2</span> beat?",
+        answerText: "Quaver has 1/2 beat."
+      }
+    ];
+
+    const cards = document.querySelectorAll(".card");
+    const questionText = document.getElementById("questionText");
+    const feedback = document.getElementById("feedback");
+    const scoreText = document.getElementById("score");
+    const comboText = document.getElementById("combo");
+    const streakText = document.getElementById("streak");
+    const livesText = document.getElementById("lives");
+    const backBtn = document.getElementById("backBtn");
+    const homeBtn = document.getElementById("homeBtn");
+    const quitBtn = document.getElementById("quitBtn");
+    const pianoBar = document.getElementById("pianoBar");
+    const gameOverModal = document.getElementById("gameOverModal");
+    const gameOverPoints = document.getElementById("gameOverPoints");
+    const modalTryAgainBtn = document.getElementById("modalTryAgainBtn");
+    const modalHomeBtn = document.getElementById("modalHomeBtn");
+
+    const questionFlow = ["1", "2", "4", "1/2"];
+    const orderedQuestions = questionFlow
+      .map((beats) => notes.find((note) => note.beats === beats))
+      .filter(Boolean);
+
+    let currentQuestion = orderedQuestions[0];
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let combo = 0;
+    let streak = 0;
+    const MAX_LIVES = 5;
+    let lives = MAX_LIVES;
+
+    function renderPianoBar() {
+      const totalWhiteKeys = 40;
+      const blackKeyOffsets = [0, 1, 3, 4, 5];
+      pianoBar.innerHTML = "";
+
+      for (let i = 0; i < totalWhiteKeys; i += 1) {
+        const key = document.createElement("div");
+        key.className = "piano-key";
+        pianoBar.appendChild(key);
+      }
+
+      for (let i = 0; i < totalWhiteKeys - 1; i += 1) {
+        if (blackKeyOffsets.includes(i % 7)) {
+          const blackKey = document.createElement("div");
+          blackKey.className = "piano-black-key";
+          blackKey.style.left = `${((i + 1) / totalWhiteKeys) * 100}%`;
+          pianoBar.appendChild(blackKey);
+        }
+      }
+    }
+
+    function playSound(correct) {
+      const audio = new AudioContext();
+      const oscillator = audio.createOscillator();
+      const gain = audio.createGain();
+
+      oscillator.type = "sine";
+      oscillator.frequency.value = correct ? 660 : 180;
+
+      gain.gain.setValueAtTime(0.8, audio.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audio.currentTime + 0.35);
+
+      oscillator.connect(gain);
+      gain.connect(audio.destination);
+
+      oscillator.start();
+      oscillator.stop(audio.currentTime + 0.35);
+    }
+
+    function renderStats() {
+      scoreText.textContent = String(score);
+      comboText.textContent = `x${combo}`;
+      streakText.textContent = String(streak);
+      if (livesText) {
+        livesText.textContent = "♥".repeat(lives) + "♡".repeat(MAX_LIVES - lives);
+      }
+    }
+
+    function disableGame(completed = false, outOfLives = false) {
+      cards.forEach((card) => {
+        card.style.pointerEvents = "none";
+      });
+
+      if (completed) {
+        questionText.innerHTML = "Exercise completed";
+        feedback.textContent = "Great job. You answered all 4 questions.";
+        backBtn.disabled = false;
+        return;
+      }
+
+      questionText.innerHTML = "Exercise ended";
+      feedback.textContent = outOfLives
+        ? "No lives left. Return and restart the exercise."
+        : "Return and restart the exercise.";
+    }
+
+    function openGameOverModal() {
+      if (!gameOverModal || !gameOverPoints) return;
+      gameOverPoints.textContent = String(score);
+      gameOverModal.classList.add("open");
+    }
+
+    function closeGameOverModal() {
+      if (!gameOverModal) return;
+      gameOverModal.classList.remove("open");
+    }
+
+    function restartGame() {
+      currentQuestionIndex = 0;
+      score = 0;
+      combo = 0;
+      streak = 0;
+      lives = MAX_LIVES;
+      backBtn.disabled = true;
+      closeGameOverModal();
+      renderStats();
+      enableGame();
+      newQuestion();
+    }
+
+    function enableGame() {
+      cards.forEach((card) => {
+        card.style.pointerEvents = "auto";
+      });
+    }
+
+    function newQuestion() {
+      enableGame();
+      cards.forEach((card) => {
+        card.classList.remove("selected", "correct", "wrong");
+      });
+
+      if (currentQuestionIndex >= orderedQuestions.length) {
+        disableGame(true);
+        return;
+      }
+
+      currentQuestion = orderedQuestions[currentQuestionIndex];
+      questionText.innerHTML = currentQuestion.question;
+      feedback.textContent = `Question ${currentQuestionIndex + 1} of ${orderedQuestions.length}. Choose the correct note.`;
+    }
+
+    cards.forEach((card) => {
+      card.addEventListener("click", () => {
+        const selectedNote = card.dataset.note;
+        const isCorrect = selectedNote === currentQuestion.name;
+
+        cards.forEach((item) => item.classList.remove("selected"));
+        card.classList.add("selected");
+
+        playSound(isCorrect);
+
+        if (isCorrect) {
+          card.classList.add("correct");
+          combo += 1;
+          streak += 1;
+          score += 10;
+          renderStats();
+          feedback.textContent = `Correct. ${currentQuestion.answerText}`;
+
+          currentQuestionIndex += 1;
+          setTimeout(newQuestion, 900);
+        } else {
+          card.classList.add("wrong");
+          combo = 0;
+          streak = 0;
+          lives = Math.max(0, lives - 1);
+          renderStats();
+
+          if (lives <= 0) {
+            disableGame(false, true);
+            openGameOverModal();
+            return;
+          }
+
+          feedback.textContent = `Wrong answer. ${lives} lives left. Find the note with ${currentQuestion.beats} beat(s).`;
+        }
+      });
+    });
+
+    if (modalTryAgainBtn) {
+      modalTryAgainBtn.addEventListener("click", restartGame);
+    }
+
+    if (modalHomeBtn) {
+      modalHomeBtn.addEventListener("click", () => {
+        window.location.href = "/dashboard";
+      });
+    }
+
+    backBtn.addEventListener("click", () => {
+      window.location.href = "/level1-notes";
+    });
+
+    homeBtn.addEventListener("click", () => {
+      window.location.href = "/dashboard";
+    });
+
+    quitBtn.addEventListener("click", () => {
+      const shouldQuit = window.confirm("Quit this lesson and return to dashboard?");
+      if (!shouldQuit) {
+        return;
+      }
+      window.location.href = "/dashboard";
+    });
+
+    renderPianoBar();
+    renderStats();
+    newQuestion();
+  </script>
+  <script src="/static/lesson-progress.js"></script>
+  <script>
+    window.PianovaLessonProgress.attach({
+      levelId: 1,
+      lessonPath: '/level1-lesson1exercise',
+      getState() {
+        return {
+          currentQuestionIndex,
+          score,
+          combo,
+          streak,
+          lives,
+          modalOpen: gameOverModal.classList.contains('open'),
+        };
+      },
+      applyState(state) {
+        currentQuestionIndex = Math.max(0, Math.min(Number(state.currentQuestionIndex || 0), orderedQuestions.length - 1));
+        currentQuestion = orderedQuestions[currentQuestionIndex];
+        score = Math.max(0, Number(state.score || 0));
+        combo = Math.max(0, Number(state.combo || 0));
+        streak = Math.max(0, Number(state.streak || 0));
+        lives = Math.max(0, Number(state.lives || MAX_LIVES));
+        renderStats();
+        newQuestion();
+        if (state.modalOpen) {
+          disableGame(false, true);
+          openGameOverModal();
+        }
+      },
+    });
+  </script>
+  <script src="/static/practice-tracker.js"></script>
+  <script>
+    window.PianovaPracticeTracker.attach({ gameType: 'level1_exercise' });
+  </script>
+</body>
+</html>

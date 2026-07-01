@@ -1,0 +1,1473 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Twinkle Piano Quest - Black & Gold Edition</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  height: 100vh;
+  font-family: Arial, Helvetica, sans-serif;
+  color: #fefefe;
+  background:
+    radial-gradient(circle at 20% 10%, rgba(212, 175, 55, 0.15), transparent 30%),
+    radial-gradient(circle at 80% 0%, rgba(255, 223, 0, 0.1), transparent 28%),
+    linear-gradient(180deg, #0d0d0d, #050505);
+  overflow: hidden;
+}
+
+.app {
+  width: min(1200px, 100%);
+  height: 100vh;
+  margin: 0 auto;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  justify-content: space-between;
+}
+
+.topbar,
+.stage,
+.panel,
+.info-card {
+  border: 1px solid rgba(212, 175, 55, 0.45);
+  background: linear-gradient(180deg, rgba(20, 20, 20, 0.95), rgba(10, 10, 10, 0.95));
+  box-shadow:
+    0 0 15px rgba(212, 175, 55, 0.1),
+    inset 0 0 15px rgba(212, 175, 55, 0.05);
+  border-radius: 10px;
+}
+
+/* Close-fitting Topbar Flexbox Layout */
+.topbar {
+  height: 54px;
+  display: flex;
+  align-items: center;
+  padding: 4px 12px;
+  gap: 16px;
+}
+
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.topbar-center {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: 8px;
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: auto;
+}
+
+.brand-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.logo-icon {
+  width: 24px;
+  height: 24px;
+  fill: #ffd700;
+  filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.5));
+}
+
+.logo-text {
+  font-size: 20px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  background: linear-gradient(135deg, #ffffff 30%, #ffd700 70%, #b59410 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+}
+
+.icon-btn,
+.level,
+.score-box,
+.lives,
+.home-top {
+  border: 1px solid rgba(212, 175, 55, 0.6);
+  background: linear-gradient(180deg, rgba(30, 30, 30, 0.85), rgba(15, 15, 15, 0.95));
+  box-shadow: 0 0 10px rgba(212, 175, 55, 0.15);
+  border-radius: 6px;
+}
+
+.icon-btn,
+.home-top {
+  width: 38px;
+  height: 38px;
+  color: #d4af37;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.level {
+  padding: 8px 14px;
+  font-weight: 900;
+  font-size: 13px;
+  color: #ffd700;
+  text-shadow: 0 0 5px rgba(212, 175, 55, 0.5);
+  white-space: nowrap;
+}
+
+.title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #baa047;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-left: 10px;
+  border-left: 1px solid rgba(212, 175, 55, 0.25);
+}
+
+.score-box {
+  min-width: 240px;
+  padding: 4px 14px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  height: 38px;
+}
+
+.score-label {
+  color: #ffd700;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+#score {
+  font-size: 22px;
+  font-weight: 900;
+  color: #ffffff;
+  min-width: 80px;
+  font-variant-numeric: tabular-nums;
+}
+
+.stars {
+  font-size: 20px;
+  color: rgba(255, 255, 255, 0.2);
+}
+
+.stars .on {
+  color: #ffd700;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.9);
+}
+
+.lives {
+  height: 38px;
+  padding: 0 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 16px;
+  font-weight: 900;
+  color: #fef2f2;
+}
+
+.heart {
+  color: #eac300;
+  font-size: 22px;
+  text-shadow: 0 0 10px rgba(219, 34, 34, 0.8);
+}
+
+.stage {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 10px;
+  padding: 10px;
+  min-height: 0;
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 0;
+}
+
+.now-playing {
+  display: grid;
+  grid-template-columns: 45px 1fr;
+  align-items: center;
+  gap: 10px;
+  padding: 8px;
+}
+
+.clef {
+  font-size: 32px;
+  color: #ffd700;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+  text-align: center;
+}
+
+.muted {
+  color: #baa047;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.song-title {
+  font-size: 15px;
+  font-weight: 900;
+  line-height: 1.2;
+  color: #fef2f2;
+}
+
+.panel {
+  padding: 10px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  justify-content: space-between;
+}
+
+.section-label {
+  margin: 0 0 4px;
+  color: #baa047;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.progress-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 8px;
+}
+
+.meter {
+  height: 12px;
+  border-radius: 99px;
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  background: #000000;
+  overflow: hidden;
+}
+
+#progressBar {
+  display: block;
+  width: 0%;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #aa8822, #ffd700, white);
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.85);
+  transition: width 0.22s ease;
+}
+
+#progressText {
+  font-size: 12px;
+  color: #ffd700;
+}
+
+.note-list-container {
+  flex: 1;
+  overflow-y: auto;
+  margin: 6px 0;
+  padding-right: 4px;
+}
+
+.note-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.note-pill {
+  width: 32px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  border-radius: 4px;
+  background: rgba(20, 20, 20, 0.86);
+  color: #fef2f2;
+  font-weight: 900;
+  font-size: 11px;
+}
+
+.note-pill.done {
+  color: #000000;
+  background: linear-gradient(180deg, #ffffff, #d4af37);
+  box-shadow: 0 0 8px rgba(212, 175, 55, 0.9);
+}
+
+.note-pill.current {
+  border-color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 0 8px #ffd700;
+}
+
+.note-pill.demo-current {
+  border-color: #d4af37;
+  background: rgba(212, 175, 55, 0.3);
+  box-shadow: 0 0 12px #ffd700;
+}
+
+.note-pill.miss {
+  background: rgba(219, 34, 34, 0.35);
+  border-color: #db2222;
+  color: white;
+}
+
+.combo-box {
+  display: grid;
+  grid-template-columns: 60px 1fr;
+  align-items: center;
+  gap: 8px;
+  padding-top: 6px;
+  border-top: 1px solid rgba(212, 175, 55, 0.22);
+}
+
+#combo {
+  color: #ffd700;
+  font-size: 24px;
+  font-weight: 900;
+  text-shadow: 0 0 6px rgba(255, 215, 0, 0.4);
+}
+
+#feedback {
+  font-size: 18px;
+  font-weight: 900;
+  color: #ffffff;
+  text-shadow:
+    0 0 10px rgba(255, 255, 255, 0.6),
+    0 0 15px rgba(212, 175, 55, 0.9);
+  text-align: right;
+}
+
+.main {
+  display: grid;
+  grid-template-rows: 1fr auto;
+  gap: 10px;
+  min-width: 0;
+  height: 100%;
+}
+
+.staff-wrap {
+  position: relative;
+  overflow: hidden;
+  border-radius: 10px;
+  background: rgba(10, 10, 10, 0.6);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+}
+
+.instruction {
+  text-align: center;
+  padding: 6px;
+  font-size: 14px;
+  font-weight: 700;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  background: linear-gradient(180deg, rgba(10, 10, 10, 0.95), transparent);
+  color: #fef2f2;
+}
+
+.sparkle {
+  color: #ffd700;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.85);
+}
+
+.staff {
+  position: absolute;
+  left: 40px;
+  right: 14px;
+  top: 40px;
+  bottom: 10px;
+}
+
+.staff-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: rgba(212, 175, 55, 0.35);
+  box-shadow: 0 0 4px rgba(212, 175, 55, 0.2);
+}
+
+.staff-line:nth-child(1) { top: 15%; }
+.staff-line:nth-child(2) { top: 30%; }
+.staff-line:nth-child(3) { top: 45%; }
+.staff-line:nth-child(4) { top: 60%; }
+.staff-line:nth-child(5) { top: 75%; }
+
+.big-clef {
+  position: absolute;
+  left: 4px;
+  top: -2px;
+  font-size: 56px;
+  color: #ffd700;
+  text-shadow: 0 0 12px rgba(255, 215, 0, 0.85);
+}
+
+.time-sig {
+  position: absolute;
+  left: 55px;
+  top: 15px;
+  font-size: 26px;
+  font-weight: 900;
+  line-height: 0.8;
+  color: #fef2f2;
+}
+
+.note-track {
+  position: absolute;
+  left: 90px;
+  right: 10px;
+  top: 0;
+  bottom: 0;
+}
+
+.music-note {
+  position: absolute;
+  top: var(--y);
+  left: var(--x);
+  width: 14px;
+  height: 11px;
+  border-radius: 50%;
+  transform: rotate(-18deg);
+  background: linear-gradient(135deg, white, #ffd700 45%, #b59410);
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.9);
+  transition: 0.18s ease;
+}
+
+.music-note::before {
+  content: "";
+  position: absolute;
+  width: 1.5px;
+  height: 35px;
+  left: 12px;
+  bottom: 5px;
+  background: rgba(254, 242, 242, 0.9);
+}
+
+.music-note.done {
+  opacity: 0.22;
+}
+
+.music-note.current {
+  transform: rotate(-18deg) scale(1.25);
+  animation: pulse 850ms infinite;
+}
+
+.music-note.demo-current {
+  transform: rotate(-18deg) scale(1.35);
+  box-shadow: 0 0 20px #ffffff, 0 0 30px #ffd700;
+}
+
+.note-label {
+  position: absolute;
+  top: 82%;
+  left: calc(var(--x) - 10px);
+  min-width: 34px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 900;
+  color: #baa047;
+}
+
+.note-label.current {
+  transform: translateY(-3px);
+  color: #ffffff;
+  text-shadow: 0 0 12px rgba(255, 215, 0, 1);
+}
+
+.note-label.demo-current {
+  color: #ffffff;
+  font-size: 15px;
+  text-shadow: 0 0 15px #ffd700;
+}
+
+.play-head {
+  position: absolute;
+  top: 0;
+  bottom: 20%;
+  left: var(--head, 2%);
+  width: 40px;
+  background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.3), transparent);
+  pointer-events: none;
+  transform: translateX(-50%);
+  z-index: 10;
+  transition: left 0.2s ease;
+}
+
+.keyboard-wrap {
+  position: relative;
+  height: 190px;
+  padding: 6px 12px;
+  background: #000000;
+  border-radius: 12px;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.9);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  width: 100%;
+}
+
+.keyboard {
+  --white-count: 14;
+  --black-width: 30px;
+  position: relative;
+  height: 100%;
+  width: 100%;
+  background: #000000;
+}
+
+.key {
+  position: absolute;
+  border: 0;
+  cursor: pointer;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 900;
+  transition: filter 0.05s ease, background 0.05s ease, transform 0.05s ease;
+}
+
+.key.white {
+  left: var(--left);
+  bottom: 0;
+  width: calc((100% - 6px) / var(--white-count));
+  margin-left: 3px;
+  height: 100%;
+  align-items: flex-end;
+  padding-bottom: 24px;
+  color: #111111;
+  font-size: 15px;
+  border-radius: 8px 8px 10px 10px;
+  background: linear-gradient(180deg, #ffffff 0%, #fefdfb 75%, #fdfbf7 88%, #f7ecd0 100%);
+  box-shadow: 
+    inset 0 2px 2px rgba(255,255,255,1),
+    inset 0 -6px 4px #d4ccb6,
+    0 4px 5px rgba(0,0,0,0.5);
+  z-index: 1;
+}
+
+.key.black {
+  left: calc(var(--left) - (var(--black-width) / 2) + 3px);
+  top: 0;
+  width: var(--black-width);
+  height: 62%;
+  align-items: center;
+  padding-top: 35px;
+  color: #ffd700;
+  font-size: 10px;
+  border-radius: 6px 6px 12px 12px;
+  background: linear-gradient(180deg, #3a3a3a 0%, #262626 15%, #121212 90%, #262626 100%);
+  box-shadow: 
+    inset 0 2px 3px rgba(255,255,255,0.1),
+    inset 0 -4px 3px #000000,
+    5px 8px 12px rgba(0, 0, 0, 0.75);
+  z-index: 5;
+}
+
+.key.active {
+  filter: brightness(0.85);
+}
+
+.key.white.active {
+  background: linear-gradient(180deg, #fffbeb 0%, #ffd700 100%);
+  box-shadow: inset 0 4px 8px rgba(0,0,0,0.3), 0 2px 2px rgba(0,0,0,0.2);
+}
+
+.key.black.active {
+  background: linear-gradient(180deg, #1a1a1a 0%, #b59410 100%);
+  box-shadow: 2px 3px 6px rgba(0, 0, 0, 0.8);
+}
+
+.key.target.white {
+  background: linear-gradient(180deg, #ffffff 0%, #fffbeb 70%, #fde68a 100%);
+  box-shadow: 
+    inset 0 0 15px rgba(212, 175, 55, 0.5),
+    inset 0 -6px 4px #e5dcb6,
+    0 4px 5px rgba(0,0,0,0.4);
+}
+
+.key.target.black {
+  background: linear-gradient(180deg, #3a3a3a 0%, #78350f 50%, #ffd700 100%);
+  box-shadow: inset 0 0 8px rgba(212, 175, 55, 0.6), 5px 8px 12px rgba(0, 0, 0, 0.65);
+}
+
+.key.demo-active.white {
+  background: linear-gradient(180deg, #e0f2fe, #38bdf8);
+  box-shadow: 0 0 14px #38bdf8;
+}
+
+.key.demo-active.black {
+  background: linear-gradient(180deg, #0284c7, #0369a1);
+  box-shadow: 0 0 14px #38bdf8;
+}
+
+.bottom {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+}
+
+.info-card {
+  padding: 6px 10px;
+  font-size: 11px;
+}
+
+.info-card h3 {
+  margin: 0 0 2px;
+  color: #ffd700;
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.info-card p {
+  margin: 0;
+  line-height: 1.3;
+  color: #cccccc;
+}
+
+.controls {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.control-btn {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 999px;
+  background: linear-gradient(180deg, #d4af37, #aa8822);
+  color: #000000;
+  padding: 8px 20px;
+  font-weight: 900;
+  font-size: 13px;
+  cursor: pointer;
+  box-shadow: 0 0 15px rgba(212, 175, 55, 0.35);
+}
+
+.control-btn.secondary {
+  background: linear-gradient(180deg, rgba(30, 30, 30, 0.94), rgba(15, 15, 15, 0.96));
+  color: #ffd700;
+  border: 1px solid rgba(212, 175, 55, 0.4);
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.modal-overlay.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.modal-box {
+  background: linear-gradient(180deg, #1a1a1a, #0a0a0a);
+  border: 2px solid #d4af37;
+  box-shadow: 0 0 35px rgba(212, 175, 55, 0.4), inset 0 0 20px rgba(170, 136, 34, 0.2);
+  border-radius: 16px;
+  width: min(440px, 90%);
+  padding: 30px;
+  text-align: center;
+  transform: scale(0.8);
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.modal-overlay.open .modal-box {
+  transform: scale(1);
+}
+
+.modal-trophy {
+  font-size: 64px;
+  margin-bottom: 10px;
+  filter: drop-shadow(0 0 12px rgba(212, 175, 55, 0.7));
+  animation: float 2.5s ease-in-out infinite;
+}
+
+.modal-title {
+  font-size: 28px;
+  font-weight: 900;
+  margin: 10px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.modal-title.pass {
+  color: #ffd700;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+.modal-title.fail {
+  color: #ff4d4d;
+  text-shadow: 0 0 10px rgba(255, 77, 77, 0.5);
+}
+
+.modal-body {
+  font-size: 15px;
+  color: #dddddd;
+  margin-bottom: 24px;
+  line-height: 1.4;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.modal-btn {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  padding: 10px 22px;
+  font-weight: 900;
+  font-size: 13px;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  transition: transform 0.1s ease, filter 0.1s ease;
+}
+
+.modal-btn:active {
+  transform: scale(0.96);
+}
+
+.modal-btn.primary {
+  background: linear-gradient(180deg, #ffd700, #aa8822);
+  color: #000000;
+  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.35);
+  border-color: #fffbeb;
+}
+
+.modal-btn.secondary {
+  background: linear-gradient(180deg, #262626, #121212);
+  color: #ffd700;
+  border: 1px solid rgba(212, 175, 55, 0.4);
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes pulse {
+  50% {
+    box-shadow:
+      0 0 15px white,
+      0 0 25px rgba(255, 215, 0, 0.75);
+  }
+}
+
+@media (max-width: 900px) {
+  .bottom {
+    display: none;
+  }
+}
+</style>
+</head>
+
+<body>
+<div class="app">
+
+<header class="topbar">
+  <div class="topbar-left">
+    <button class="icon-btn" id="pauseBtn">Ⅱ</button>
+    <div class="brand-wrapper">
+      <svg class="logo-icon" viewBox="0 0 24 24">
+        <path d="M19,3H5C3.9,3,3,3.9,3,5v14c0,1.1,0.9,2,2,2h14c1.1,0,2-0.9,2-2V5C21,3.9,20.1,3,19,3z M11,15H9.5v4H8v-4H6.5v4H5V5h3v8h1.5V5h3V15z M19,19h-1.5v-4H16v4h-1.5V5h3v8H19V19z"/>
+      </svg>
+      <span class="logo-text">PIANOVA</span>
+    </div>
+  </div>
+
+  <div class="topbar-center">
+    <div class="level">LESSON 3</div>
+    <div class="title">Old MacDonald Had a Farm</div>
+  </div>
+
+  <div class="topbar-right">
+    <div class="score-box">
+      <div class="score-label">Score</div>
+      <div id="score">000000</div>
+      <div class="stars" id="stars">
+        <span>☆</span><span>☆</span><span>☆</span>
+      </div>
+    </div>
+
+    <div class="lives">
+      <span class="heart">♥</span> x <span id="lives">5</span>
+    </div>
+
+    <button class="home-top" id="homeTopBtn" title="Go Home">🏠</button>
+  </div>
+</header>
+
+<section class="stage">
+  <aside class="sidebar">
+    <div class="panel now-playing">
+      <div class="clef">🎵</div>
+      <div>
+        <div class="muted">Now Playing</div>
+        <div class="song-title">Classic Farm Chorus</div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div>
+        <p class="section-label">Progress</p>
+        <div class="progress-row">
+          <div class="meter"><span id="progressBar"></span></div>
+          <strong id="progressText">0%</strong>
+        </div>
+      </div>
+
+      <div class="note-list-container">
+        <p class="section-label">Notes To Play</p>
+        <div class="note-list" id="noteList"></div>
+      </div>
+
+      <div class="combo-box">
+        <div>
+          <p class="section-label">Combo</p>
+          <div id="combo">0</div>
+        </div>
+        <div id="feedback">READY</div>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="staff-wrap">
+      <div class="instruction">
+        <span class="sparkle">✨</span> "E-I-E-I-O!" <span class="sparkle">✨</span>
+      </div>
+
+      <div class="staff">
+        <div class="staff-line"></div>
+        <div class="staff-line"></div>
+        <div class="staff-line"></div>
+        <div class="staff-line"></div>
+        <div class="staff-line"></div>
+
+        <div class="play-head" id="playHead"></div>
+        <div class="big-clef">𝄞</div>
+        <div class="time-sig"><div>4</div><div>4</div></div>
+        <div class="note-track" id="noteTrack"></div>
+      </div>
+    </div>
+
+    <div class="keyboard-wrap">
+      <div class="keyboard" id="keyboard"></div>
+    </div>
+  </main>
+</section>
+
+<section class="bottom">
+  <div class="info-card">
+    <h3>♪ How To Play</h3>
+    <p>Follow along with the repeating melody loop line of the track section.</p>
+  </div>
+  <div class="info-card">
+    <h3>Note Guide</h3>
+    <p>Uses simple standard pitches! Clean and simple layout for white keys.</p>
+  </div>
+  <div class="info-card">
+    <h3>Scoring</h3>
+    <p>Each landing note scores 10 points. Clean and straightforward progression.</p>
+  </div>
+  <div class="info-card">
+    <h3>Length</h3>
+    <p>2 Verses</p>
+  </div>
+  <div class="info-card">
+    <h3>Song Progress</h3>
+    <p><span id="timeNow">00:00</span> / 00:14</p>
+  </div>
+</section>
+
+<div class="controls">
+  <button class="control-btn" id="demoBtn">Play Demo</button>
+  <button class="control-btn secondary" id="resetBtn">Reset</button>
+  <button class="control-btn secondary" id="exitBtn">Exit</button>
+</div>
+
+</div>
+
+<div class="modal-overlay" id="endGameModal">
+  <div class="modal-box">
+    <div class="modal-trophy" id="modalTrophy">🏆</div>
+    <div class="modal-title" id="modalTitle">Congratulations!</div>
+    <div class="modal-body" id="modalBody">You have successfully mastered the track! Awesome job!</div>
+    <div class="modal-actions" id="modalActions">
+    </div>
+  </div>
+</div>
+
+<script>
+const melody = [
+  // Old MacDonald had a farm...
+  "G", "G", "G", "D", "E", "E", "D",
+  // E-I-E-I-O!
+  "B", "B", "A", "A", "G",
+  // And on that farm he had a cow...
+  "G", "G", "G", "D", "E", "E", "D",
+  // E-I-E-I-O!
+  "B", "B", "A", "A", "G"
+];
+
+const staffY = {
+  "A": "82%",
+  "B": "68%",
+  "D": "54%",
+  "E": "40%",
+  "F": "26%",
+  "G": "12%"
+};
+
+const frequencies = {
+  "A4": 440.00,
+  "B4": 493.88,
+  "D4": 293.66,
+  "E4": 329.63,
+  "F4": 349.23,
+  "G4": 392.00
+};
+
+const whiteNotesOrder = ["C", "D", "E", "F", "G", "A", "B", "C", "D", "E", "F", "G", "A", "B"];
+const whiteKeyCount = whiteNotesOrder.length;
+
+const blackAfterWhiteMap = {
+  "C": "C#",
+  "D": "D#",
+  "F": "F#",
+  "G": "G#",
+  "A": "A#"
+};
+
+const pianoKeys = [];
+
+whiteNotesOrder.forEach((note, i) => {
+  pianoKeys.push({
+    type: "white",
+    note: note,
+    left: `${(i / whiteKeyCount) * 100}%`
+  });
+});
+
+whiteNotesOrder.forEach((note, i) => {
+  if (blackAfterWhiteMap[note] && i < whiteKeyCount - 1) {
+    pianoKeys.push({
+      type: "black",
+      note: blackAfterWhiteMap[note],
+      left: `${((i + 1) / whiteKeyCount) * 100}%`
+    });
+  }
+});
+
+let songIndex = 0;
+let score = 0;
+let combo = 0;
+let lives = 5;
+let paused = false;
+
+// Independent State Tracking Parameters for Non-interactive Demo
+let isDemoRunning = false;
+let demoIndex = 0;
+let demoTimer = null;
+let audioCtx = null;
+
+const scoreEl = document.querySelector("#score");
+const comboEl = document.querySelector("#combo");
+const livesEl = document.querySelector("#lives");
+const feedbackEl = document.querySelector("#feedback");
+const noteListEl = document.querySelector("#noteList");
+const noteTrackEl = document.querySelector("#noteTrack");
+const keyboardEl = document.querySelector("#keyboard");
+const progressBarEl = document.querySelector("#progressBar");
+const progressTextEl = document.querySelector("#progressText");
+const playHeadEl = document.querySelector("#playHead");
+const starsEl = document.querySelector("#stars");
+const timeNowEl = document.querySelector("#timeNow");
+const pauseBtn = document.querySelector("#pauseBtn");
+const demoBtn = document.querySelector("#demoBtn");
+const resetBtn = document.querySelector("#resetBtn");
+const homeTopBtn = document.querySelector("#homeTopBtn");
+const exitBtn = document.querySelector("#exitBtn");
+
+const endGameModal = document.querySelector("#endGameModal");
+const modalTrophy = document.querySelector("#modalTrophy");
+const modalTitle = document.querySelector("#modalTitle");
+const modalBody = document.querySelector("#modalBody");
+const modalActions = document.querySelector("#modalActions");
+
+function setupGame() {
+  createNoteList();
+  createStaffNotes();
+  createPiano();
+  render();
+}
+
+function createNoteList() {
+  melody.forEach((note, index) => {
+    const pill = document.createElement("span");
+    pill.className = "note-pill";
+    pill.textContent = note;
+    pill.dataset.index = index;
+    noteListEl.appendChild(pill);
+  });
+}
+
+function createStaffNotes() {
+  melody.forEach((note, index) => {
+    const x = `${(index / Math.max(1, melody.length - 1)) * 92 + 1}%`;
+
+    const noteShape = document.createElement("span");
+    noteShape.className = "music-note";
+    noteShape.style.setProperty("--x", x);
+    noteShape.style.setProperty("--y", staffY[note] || "50%");
+    noteShape.dataset.index = index;
+    noteTrackEl.appendChild(noteShape);
+
+    const label = document.createElement("span");
+    label.className = "note-label";
+    label.style.setProperty("--x", x);
+    label.textContent = note;
+    label.dataset.index = index;
+    noteTrackEl.appendChild(label);
+  });
+}
+
+function createPiano() {
+  keyboardEl.style.setProperty("--white-count", whiteKeyCount);
+
+  pianoKeys.forEach((pianoKey) => {
+    const key = document.createElement("button");
+    key.type = "button";
+    key.className = `key ${pianoKey.type}`;
+    key.textContent = pianoKey.note;
+    key.dataset.note = pianoKey.note;
+    key.style.setProperty("--left", pianoKey.left);
+    key.setAttribute("aria-label", `Play ${pianoKey.note}`);
+
+    key.addEventListener("pointerdown", () => {
+      if (isDemoRunning) return; 
+      playAttempt(pianoKey.note, key);
+    });
+
+    keyboardEl.appendChild(key);
+  });
+}
+
+function getAudioContext() {
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  return audioCtx;
+}
+
+function playTone(note, correct = true) {
+  const ctx = getAudioContext();
+  const now = ctx.currentTime;
+  
+  const targetFreq = frequencies[note + "4"] || 400;
+
+  if (!correct) {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = "triangle";
+    osc.frequency.setValueAtTime(targetFreq * 0.7, now);
+    gain.gain.setValueAtTime(0.08, now);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.25);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(now);
+    osc.stop(now + 0.25);
+    return;
+  }
+
+  const components = [
+    { type: 'sine', ratio: 1.0, fill: 0.5, vol: 0.5 },
+    { type: 'sine', ratio: 2.0, fill: 0.15, vol: 0.15 },
+    { type: 'triangle', ratio: 3.0, fill: 0.08, vol: 0.08 },
+    { type: 'sine', ratio: 4.0, fill: 0.04, vol: 0.04 }
+  ];
+
+  components.forEach(comp => {
+    const osc = ctx.createOscillator();
+    const gainNode = ctx.createGain();
+    
+    osc.type = comp.type;
+    osc.frequency.setValueAtTime(targetFreq * comp.ratio, now);
+    
+    gainNode.gain.setValueAtTime(0.0001, now);
+    gainNode.gain.linearRampToValueAtTime(comp.vol, now + 0.005);
+    gainNode.gain.exponentialRampToValueAtTime(comp.vol * 0.2, now + 0.18);
+    gainNode.gain.exponentialRampToValueAtTime(0.0001, now + 0.8);
+    
+    osc.connect(gainNode);
+    gainNode.connect(ctx.destination);
+    
+    osc.start(now);
+    osc.stop(now + 0.8);
+  });
+}
+
+function playAttempt(note, keyEl) {
+  if (paused || songIndex >= melody.length) return;
+
+  const expected = melody[songIndex];
+  const correct = note === expected;
+
+  flashKey(note, keyEl, correct);
+  playTone(note, correct);
+
+  if (correct) {
+    combo++;
+    score += 10; 
+    
+    feedbackEl.textContent = "PERFECT!";
+    songIndex++;
+
+    if (songIndex === melody.length) {
+      feedbackEl.textContent = "TRACK DONE!";
+      showEndGamePopup(true);
+    }
+  } else {
+    combo = 0;
+    lives = Math.max(0, lives - 1);
+    feedbackEl.textContent = "MISS!";
+    markMiss();
+
+    if (lives === 0) {
+      paused = true;
+      feedbackEl.textContent = "GAMEOVER";
+      showEndGamePopup(false);
+    }
+  }
+
+  render();
+}
+
+function flashKey(note, keyEl, correct) {
+  const keys = keyEl ? [keyEl] : [...keyboardEl.querySelectorAll(`[data-note="${note}"]`)];
+
+  keys.forEach((key) => {
+    key.classList.add("active");
+    setTimeout(() => {
+      key.classList.remove("active");
+    }, 140);
+  });
+}
+
+function markMiss() {
+  const pill = noteListEl.querySelector(`[data-index="${songIndex}"]`);
+  if (!pill) return;
+
+  pill.classList.add("miss");
+  setTimeout(() => {
+    pill.classList.remove("miss");
+  }, 260);
+}
+
+function render() {
+  if (isDemoRunning) {
+    feedbackEl.textContent = "DEMO GUIDE RUNNING";
+    const percent = Math.round((demoIndex / melody.length) * 100);
+
+    progressBarEl.style.width = `${percent}%`;
+    progressTextEl.textContent = `${percent}%`;
+    timeNowEl.textContent = formatTime(Math.round((demoIndex / melody.length) * 14));
+
+    playHeadEl.style.setProperty(
+      "--head",
+      `${(demoIndex / Math.max(1, melody.length - 1)) * 92 + 1}%`
+    );
+
+    const activePill = noteListEl.querySelector(`[data-index="${demoIndex}"]`);
+    if (activePill) {
+      activePill.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    [...noteListEl.children].forEach((el, index) => {
+      el.classList.toggle("done", index < demoIndex);
+      el.classList.toggle("demo-current", index === demoIndex);
+      el.classList.remove("current");
+    });
+
+    [...noteTrackEl.querySelectorAll(".music-note, .note-label")].forEach((el) => {
+      const index = Number(el.dataset.index);
+      el.classList.toggle("done", index < demoIndex);
+      el.classList.toggle("demo-current", index === demoIndex);
+      el.classList.remove("current");
+    });
+
+    [...keyboardEl.querySelectorAll(".key")].forEach((key) => {
+      key.classList.remove("target");
+      key.classList.toggle("demo-active", key.dataset.note === melody[demoIndex]);
+    });
+
+  } else {
+    scoreEl.textContent = String(score).padStart(6, "0");
+    comboEl.textContent = combo;
+    livesEl.textContent = lives;
+
+    const percent = Math.round((songIndex / melody.length) * 100);
+
+    progressBarEl.style.width = `${percent}%`;
+    progressTextEl.textContent = `${percent}%`;
+    timeNowEl.textContent = formatTime(Math.round((songIndex / melody.length) * 14));
+
+    playHeadEl.style.setProperty(
+      "--head",
+      `${(songIndex / Math.max(1, melody.length - 1)) * 92 + 1}%`
+    );
+
+    const activePill = noteListEl.querySelector(`[data-index="${songIndex}"]`);
+    if (activePill) {
+      activePill.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    [...noteListEl.children].forEach((el, index) => {
+      el.classList.remove("demo-current");
+      el.classList.toggle("done", index < songIndex);
+      el.classList.toggle("current", index === songIndex);
+    });
+
+    [...noteTrackEl.querySelectorAll(".music-note, .note-label")].forEach((el) => {
+      el.classList.remove("demo-current");
+      const index = Number(el.dataset.index);
+      el.classList.toggle("done", index < songIndex);
+      el.classList.toggle("current", index === songIndex);
+    });
+
+    [...keyboardEl.querySelectorAll(".key")].forEach((key) => {
+      key.classList.remove("demo-active");
+      key.classList.toggle("target", key.dataset.note === melody[songIndex]);
+    });
+
+    const starCount = score >= 220 ? 3 : score >= 120 ? 2 : score > 0 ? 1 : 0;
+
+    starsEl.innerHTML = [0, 1, 2]
+      .map((index) => {
+        const active = index < starCount;
+        return `<span class="${active ? "on" : ""}">${active ? "★" : "☆"}</span>`;
+      })
+      .join("");
+  }
+}
+
+function formatTime(seconds) {
+  const mins = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  return `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+}
+
+function showEndGamePopup(isPassed) {
+  modalActions.innerHTML = "";
+  
+  if (isPassed) {
+    modalTrophy.style.display = "block";
+    modalTrophy.textContent = "👑";
+    modalTitle.textContent = "Victory!";
+    modalTitle.className = "modal-title pass";
+    modalBody.textContent = `You completed both verses! Total Score: ${score} points.`;
+    
+    // Removed Replay button completely from Victory Action container
+    const nextLevelBtn = createModalButton("next lesson", "primary", () => { closePopup(); window.location.href = '/lesson3-4'; });
+    const homeBtn = createModalButton("Home", "secondary", () => { closePopup(); window.location.href = '/dashboard'; });
+    
+    modalActions.appendChild(nextLevelBtn);
+    modalActions.appendChild(homeBtn);
+  } else {
+    modalTrophy.style.display = "block";
+    modalTrophy.textContent = "❌";
+    modalTitle.textContent = "Failed!";
+    modalBody.textContent = "Don't break your focus! Listen to the beat and try again.";
+    
+    const tryAgainBtn = createModalButton("Try Again", "primary", () => { closePopup(); resetGame(); });
+    const homeBtn = createModalButton("Home", "secondary", () => { closePopup(); window.location.href = '/dashboard'; });
+    
+    modalActions.appendChild(tryAgainBtn);
+    modalActions.appendChild(homeBtn);
+  }
+  
+  endGameModal.classList.add("open");
+}
+
+function createModalButton(text, type, clickHandler) {
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = `modal-btn ${type}`;
+  btn.textContent = text;
+  btn.addEventListener("click", clickHandler);
+  return btn;
+}
+
+function closePopup() {
+  endGameModal.classList.remove("open");
+}
+
+function resetGame() {
+  songIndex = 0;
+  score = 0;
+  combo = 0;
+  lives = 5;
+  paused = false;
+  stopDemo();
+  feedbackEl.textContent = "READY";
+  render();
+}
+
+function startDemo() {
+  if (isDemoRunning) {
+    stopDemo();
+    return;
+  }
+
+  isDemoRunning = true;
+  demoIndex = 0;
+  demoBtn.textContent = "Stop Demo";
+  playNextDemoStep();
+}
+
+function playNextDemoStep() {
+  if (!isDemoRunning) return;
+
+  if (demoIndex >= melody.length) {
+    stopDemo();
+    feedbackEl.textContent = "YOUR TURN!";
+    return;
+  }
+  
+  const currentStep = demoIndex;
+  playTone(melody[currentStep], true);
+  render();
+  
+  const subIndex = currentStep % 19;
+  let nextDelay = 260;
+  if (subIndex === 0 || subIndex === 1 || subIndex === 8 || subIndex === 9 || subIndex === 10 || subIndex === 17) {
+    nextDelay = 450;
+  } else if (subIndex === 18) {
+    nextDelay = 600;
+  }
+  
+  demoIndex++;
+  demoTimer = setTimeout(playNextDemoStep, nextDelay);
+}
+
+function stopDemo() {
+  isDemoRunning = false;
+  if (demoTimer) {
+    clearTimeout(demoTimer);
+  }
+  demoTimer = null;
+  demoBtn.textContent = "Play Demo";
+  render();
+}
+
+document.addEventListener("keydown", (event) => {
+  if (isDemoRunning) return; 
+  let key = event.key.toUpperCase();
+  
+  if (["A", "B", "C", "D", "E", "F", "G"].includes(key)) {
+    if (event.shiftKey && ["C", "D", "F", "G", "A"].includes(key)) {
+      key += "#";
+    }
+    playAttempt(key);
+  }
+
+  if (event.code === "Space") {
+    event.preventDefault();
+    paused = !paused;
+    feedbackEl.textContent = paused ? "PAUSED" : "READY";
+  }
+});
+
+pauseBtn.addEventListener("click", () => {
+  if (isDemoRunning) stopDemo();
+  paused = !paused;
+  feedbackEl.textContent = paused ? "PAUSED" : "READY";
+});
+
+demoBtn.addEventListener("click", startDemo);
+resetBtn.addEventListener("click", resetGame);
+exitBtn.addEventListener("click", () => {
+  window.location.href = '/lessons';
+});
+homeTopBtn.addEventListener("click", () => {
+  window.location.href = '/dashboard';
+});
+
+setupGame();
+</script>
+<script src="/static/lesson-progress.js"></script>
+<script>
+window.PianovaLessonProgress.attach({
+  levelId: 3,
+  getState() {
+    return {
+      songIndex,
+      score,
+      combo,
+      lives,
+      paused,
+      demoIndex,
+      completionResult: endGameModal.classList.contains('open') ? (lives > 0 ? 'pass' : 'fail') : null,
+    };
+  },
+  applyState(state) {
+    songIndex = Math.max(0, Math.min(Number(state.songIndex || 0), melody.length));
+    score = Math.max(0, Number(state.score || 0));
+    combo = Math.max(0, Number(state.combo || 0));
+    lives = Math.max(0, Number(state.lives || 5));
+    paused = !!state.paused;
+    demoIndex = Math.max(0, Number(state.demoIndex || 0));
+    stopDemo();
+    render();
+    if (state.completionResult) {
+      showEndGamePopup(state.completionResult === 'pass');
+    }
+  },
+});
+</script>
+<script src="/static/practice-tracker.js"></script>
+<script>
+window.PianovaPracticeTracker.attach({ gameType: 'level3_lesson3' });
+</script>
+</body>
+</html>

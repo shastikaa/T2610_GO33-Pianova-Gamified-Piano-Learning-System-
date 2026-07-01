@@ -6,8 +6,6 @@ import secrets
 import smtplib
 import ssl
 import time
-import urllib.error
-import urllib.request
 from email.message import EmailMessage
 from hashlib import sha256
 
@@ -122,6 +120,7 @@ AUTH_CODE_MAX_ATTEMPTS = int(os.getenv('PIANOVA_AUTH_CODE_MAX_ATTEMPTS', '5'))
 AUTH_VERIFIED_SESSION_TTL_SECONDS = int(
     os.getenv('PIANOVA_AUTH_VERIFIED_SESSION_TTL_SECONDS', str(AUTH_CODE_TTL_SECONDS))
 )
+ALLOW_LOCAL_OTP_FALLBACK = env_flag('PIANOVA_ALLOW_LOCAL_OTP_FALLBACK', False)
 
 AUTH_CODE_PURPOSE_REGISTER = 'register'
 AUTH_CODE_PURPOSE_RESET = 'reset'
@@ -428,47 +427,6 @@ def validate_password_strength(password):
 
 
 def send_verification_email(recipient_email, code):
-    resend_api_key = os.getenv('PIANOVA_RESEND_API_KEY', '').strip()
-    resend_from = os.getenv('PIANOVA_RESEND_FROM', '').strip()
-
-    if resend_api_key:
-        from_email = resend_from or os.getenv('PIANOVA_SMTP_FROM', '').strip() or os.getenv('PIANOVA_SMTP_USER', '').strip()
-        if not from_email:
-            raise RuntimeError('Resend is enabled but no sender is configured. Set PIANOVA_RESEND_FROM or PIANOVA_SMTP_FROM.')
-
-        payload = {
-            'from': from_email,
-            'to': [recipient_email],
-            'subject': 'Pianova Verification Code',
-            'text': (
-                'Welcome to Pianova!\n\n'
-                f'Your verification code is: {code}\n\n'
-                f'This code expires in {AUTH_CODE_TTL_SECONDS // 60} minutes.\n'
-                'If you did not request this, please ignore this email.'
-            ),
-        }
-        request_data = json.dumps(payload).encode('utf-8')
-        http_request = urllib.request.Request(
-            'https://api.resend.com/emails',
-            data=request_data,
-            method='POST',
-            headers={
-                'Authorization': f'Bearer {resend_api_key}',
-                'Content-Type': 'application/json',
-            },
-        )
-        try:
-            with urllib.request.urlopen(http_request, timeout=20) as response:
-                if response.status not in {200, 201, 202}:
-                    body = response.read().decode('utf-8', errors='ignore')
-                    raise RuntimeError(f'Resend email send failed ({response.status}): {body}')
-            return
-        except urllib.error.HTTPError as error:
-            body = error.read().decode('utf-8', errors='ignore')
-            raise RuntimeError(f'Resend email send failed ({error.code}): {body}') from error
-        except urllib.error.URLError as error:
-            raise RuntimeError(f'Resend email send failed: {error.reason}') from error
-
     smtp_host = os.getenv('PIANOVA_SMTP_HOST', 'smtp.gmail.com')
     smtp_port = int(os.getenv('PIANOVA_SMTP_PORT', '465'))
     smtp_user = os.getenv('PIANOVA_SMTP_USER', '').strip()
@@ -753,6 +711,11 @@ def send_auth_code_api():
     try:
         send_verification_email(email, code)
     except Exception as error:
+        if ALLOW_LOCAL_OTP_FALLBACK:
+            return {
+                'message': f'Email delivery failed. Temporary OTP: {code}',
+                'fallback': True,
+            }
         delete_auth_code(email, purpose)
         return {'message': f'Email send failed: {error}'}, 500
 

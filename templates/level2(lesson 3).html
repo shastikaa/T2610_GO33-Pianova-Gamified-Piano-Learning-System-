@@ -1504,7 +1504,7 @@
     document.getElementById("btnListen").addEventListener("click", streamSequenceAudio);
     document.getElementById("btnReset").addEventListener("click", () => rebootSessionState());
     document.getElementById("topHomeBtn").addEventListener("click", () => navigateTo("/dashboard"));
-    document.getElementById("topExitBtn").addEventListener("click", () => navigateTo("/"));
+    document.getElementById("topExitBtn").addEventListener("click", () => navigateTo("/lessons"));
     document.getElementById("btnGameOverPlayAgain").addEventListener("click", event => {
       if (event.currentTarget.dataset.nextLesson === "true") {
         navigateTo(window.location.protocol.startsWith("http") ? "/lesson2-4" : "level 2(lesson 4).html");

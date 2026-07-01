@@ -1405,7 +1405,9 @@
         key.addEventListener('click', () => hitKey(key.dataset.note));
       });
 
-      document.getElementById('restartBtn').addEventListener('click', restartLevel);
+      document.getElementById('restartBtn').addEventListener('click', () => {
+        window.location.href = '/lesson2-1-latest';
+      });
       document.getElementById('pauseBtn').addEventListener('click', togglePause);
     }
 
@@ -1830,7 +1832,9 @@
         </section>
       `;
 
-      document.getElementById('playAgainBtn').addEventListener('click', startGame);
+      document.getElementById('playAgainBtn').addEventListener('click', () => {
+        window.location.href = '/lesson2-1-latest';
+      });
       bindTopbarEvents();
       queueFitStage();
     }

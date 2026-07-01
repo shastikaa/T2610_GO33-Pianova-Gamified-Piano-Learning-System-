@@ -76,12 +76,22 @@ def load_env_file(path=None):
 
 load_env_file()
 
+
+def env_flag(name, default=False):
+    raw_value = os.getenv(name)
+    if raw_value is None:
+        return default
+    return str(raw_value).strip().lower() in {'1', 'true', 'yes', 'on'}
+
 app = Flask(__name__, static_folder='static')
 app.secret_key = "secret123"
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 app.config['TEMPLATES_AUTO_RELOAD'] = True
 app.jinja_env.auto_reload = True
 init_database_app(app)
+
+# Resume checkpoints by default. Set PIANOVA_FORCE_START_FROM_BEGINNING=1 to force fresh starts.
+FORCE_START_FROM_BEGINNING = env_flag('PIANOVA_FORCE_START_FROM_BEGINNING', False)
 
 # Dedicated admin login credentials. You can override with environment variables.
 ADMIN_LOGIN_USERNAME = os.getenv('PIANOVA_ADMIN_USERNAME', 'admin')
@@ -311,7 +321,7 @@ def practice_href_for_level(current_level):
 
 def default_lesson_href_for_level(current_level):
     if current_level <= 1:
-        return url_for('game')
+        return url_for('game1_entry')
     if current_level == 2:
         return url_for('lesson2_1_latest')
     if current_level == 3:
@@ -321,14 +331,20 @@ def default_lesson_href_for_level(current_level):
 
 def continue_lesson_href_for_user(user_id):
     current_level = get_current_level(user_id)
+    if FORCE_START_FROM_BEGINNING:
+        return default_lesson_href_for_level(1)
     return get_last_lesson_path(user_id, current_level) or default_lesson_href_for_level(current_level)
 
 
 def continue_lesson_href_for_level(user_id, level_id):
+    if FORCE_START_FROM_BEGINNING:
+        return default_lesson_href_for_level(level_id)
     return get_last_lesson_path(user_id, level_id) or default_lesson_href_for_level(level_id)
 
 
 def record_lesson_checkpoint(level_id, lesson_path=None):
+    if FORCE_START_FROM_BEGINNING:
+        return
     normalized_path = _normalize_lesson_path(lesson_path) or request.path
     save_lesson_checkpoint(session['user_id'], level_id, normalized_path)
 
@@ -1337,6 +1353,11 @@ def log_practice_session():
 @login_required
 @role_required('user')
 def lesson_progress_api():
+    if FORCE_START_FROM_BEGINNING:
+        if request.method == 'GET':
+            return {'status': 'ok', 'state': None}
+        return {'status': 'ok'}
+
     if request.method == 'GET':
         try:
             level_id = int(request.args.get('level_id', 0))

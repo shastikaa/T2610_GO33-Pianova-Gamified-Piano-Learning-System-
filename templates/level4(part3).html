@@ -1093,7 +1093,6 @@
 
         <div class="action-stack modal-actions-grid">
           <button class="modal-btn primary" id="btnModalPlay">Play Again</button>
-          <button class="modal-btn secondary" id="btnModalHome">Finish Level</button>
         </div>
       </div>
     </section>
@@ -1525,14 +1524,7 @@
     document.getElementById("btnHelp").addEventListener("click", () => setHelpVisibility(true));
     document.getElementById("btnCloseHelp").addEventListener("click", () => setHelpVisibility(false));
     document.getElementById("btnModalPlay").addEventListener("click", () => {
-      reinitializeGameState();
-      if (lessonProgressController && typeof lessonProgressController.save === 'function') {
-        lessonProgressController.save();
-      }
-    });
-    document.getElementById("btnModalHome").addEventListener("click", () => {
-      preCertificateOverlay.classList.add("visible");
-      preCertificateOverlay.setAttribute("aria-hidden", "false");
+      window.location.href = "/lesson2-1-latest";
     });
     document.getElementById("btnPreCertContinue").addEventListener("click", async () => {
       await saveLevel4Completion();

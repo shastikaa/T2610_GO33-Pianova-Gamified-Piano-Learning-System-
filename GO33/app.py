@@ -1187,6 +1187,9 @@ def level2_home():
 @login_required
 @role_required('user')
 def lesson2_4():
+    if 2 in set(get_completed_level_ids(session['user_id'])):
+        flash('Level 2 is already completed. Replay is locked.', 'error')
+        return redirect(url_for('lessons'))
     record_lesson_checkpoint(2)
     return render_template('level 2(lesson 4).html')
 
@@ -1219,6 +1222,9 @@ def level2_lesson1_alias():
 @login_required
 @role_required('user')
 def level2_lesson4_alias():
+    if 2 in set(get_completed_level_ids(session['user_id'])):
+        flash('Level 2 is already completed. Replay is locked.', 'error')
+        return redirect(url_for('lessons'))
     record_lesson_checkpoint(2, '/lesson2-4')
     return render_template('level 2(lesson 4).html')
 

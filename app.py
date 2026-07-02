@@ -217,6 +217,20 @@ def level_required(min_level, redirect_endpoint='lessons'):
     return decorator
 
 
+def level_not_completed_required(level_id, redirect_endpoint='lessons'):
+    def decorator(view_func):
+        @wraps(view_func)
+        def wrapped_view(*args, **kwargs):
+            if session.get('role') == 'user' and level_id in set(get_completed_level_ids(session['user_id'])):
+                flash(f'Level {level_id} is already completed. Replay is locked.', 'error')
+                return redirect(url_for(redirect_endpoint))
+            return view_func(*args, **kwargs)
+
+        return wrapped_view
+
+    return decorator
+
+
 def build_progress_chart(metrics):
     labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
     completed_lessons = int(metrics.get('completed_lessons', 0))
@@ -1102,6 +1116,7 @@ def lessons():
 @app.route('/game', methods=['GET', 'POST'])
 @login_required
 @role_required('user')
+@level_not_completed_required(1)
 def game():
     record_lesson_checkpoint(1, '/game')
     return render_template('templates/game1.html')
@@ -1110,6 +1125,7 @@ def game():
 @app.route('/game1', methods=['GET'])
 @login_required
 @role_required('user')
+@level_not_completed_required(1)
 def game1_entry():
     record_lesson_checkpoint(1)
     return render_template('templates/level1(lesson1).html')
@@ -1118,6 +1134,7 @@ def game1_entry():
 @app.route('/level1-notes', methods=['GET'])
 @login_required
 @role_required('user')
+@level_not_completed_required(1)
 def level1_notes():
     record_lesson_checkpoint(1, '/game')
     return render_template('templates/game1.html')
@@ -1134,6 +1151,7 @@ def game2():
 @app.route('/level1-lesson1', methods=['GET'])
 @login_required
 @role_required('user')
+@level_not_completed_required(1)
 def level1_lesson1():
     record_lesson_checkpoint(1)
     return render_template('templates/level1(lesson1).html')
@@ -1142,6 +1160,7 @@ def level1_lesson1():
 @app.route('/level1-lesson1exercise', methods=['GET'])
 @login_required
 @role_required('user')
+@level_not_completed_required(1)
 def level1_lesson1exercise():
     record_lesson_checkpoint(1)
     return render_template('templates/level1(lesson1exercise).html')
@@ -1150,6 +1169,7 @@ def level1_lesson1exercise():
 @app.route('/lesson2-1', methods=['GET'])
 @login_required
 @role_required('user')
+@level_not_completed_required(2)
 def lesson2_1():
     record_lesson_checkpoint(2, '/lesson2-1-latest')
     return render_template('level2(lesson 1).html')
@@ -1158,6 +1178,7 @@ def lesson2_1():
 @app.route('/lesson2-2', methods=['GET'])
 @login_required
 @role_required('user')
+@level_not_completed_required(2)
 def lesson2_2():
     record_lesson_checkpoint(2)
     return render_template('level 2(lesson 2).html')
@@ -1167,6 +1188,7 @@ def lesson2_2():
 @app.route('/level2-lesson3', methods=['GET'])
 @login_required
 @role_required('user')
+@level_not_completed_required(2)
 def lesson2_3():
     record_lesson_checkpoint(2, '/lesson2-3')
     lesson3_template = 'level2(lesson 3).html'
@@ -1186,10 +1208,8 @@ def level2_home():
 @app.route('/lesson2-4', methods=['GET'])
 @login_required
 @role_required('user')
+@level_not_completed_required(2)
 def lesson2_4():
-    if 2 in set(get_completed_level_ids(session['user_id'])):
-        flash('Level 2 is already completed. Replay is locked.', 'error')
-        return redirect(url_for('lessons'))
     record_lesson_checkpoint(2)
     return render_template('level 2(lesson 4).html')
 
@@ -1197,6 +1217,7 @@ def lesson2_4():
 @app.route('/level1-lesson2', methods=['GET'])
 @login_required
 @role_required('user')
+@level_not_completed_required(2)
 def level1_lesson2():
     record_lesson_checkpoint(2, '/lesson2-1-latest')
     return render_template('level2(lesson 1).html')
@@ -1205,6 +1226,7 @@ def level1_lesson2():
 @app.route('/lesson2-1-latest', methods=['GET'])
 @login_required
 @role_required('user')
+@level_not_completed_required(2)
 def lesson2_1_latest():
     record_lesson_checkpoint(2, '/lesson2-1-latest')
     return render_template('level2(lesson 1).html')
@@ -1213,6 +1235,7 @@ def lesson2_1_latest():
 @app.route('/level2-lesson1', methods=['GET'])
 @login_required
 @role_required('user')
+@level_not_completed_required(2)
 def level2_lesson1_alias():
     record_lesson_checkpoint(2, '/lesson2-1-latest')
     return render_template('level2(lesson 1).html')
@@ -1221,10 +1244,8 @@ def level2_lesson1_alias():
 @app.route('/level2-lesson4', methods=['GET'])
 @login_required
 @role_required('user')
+@level_not_completed_required(2)
 def level2_lesson4_alias():
-    if 2 in set(get_completed_level_ids(session['user_id'])):
-        flash('Level 2 is already completed. Replay is locked.', 'error')
-        return redirect(url_for('lessons'))
     record_lesson_checkpoint(2, '/lesson2-4')
     return render_template('level 2(lesson 4).html')
 
@@ -1232,6 +1253,7 @@ def level2_lesson4_alias():
 @app.route('/lesson3-1', methods=['GET'])
 @login_required
 @role_required('user')
+@level_not_completed_required(3)
 @level_required(3)
 def lesson3_1():
     record_lesson_checkpoint(3)
@@ -1241,6 +1263,7 @@ def lesson3_1():
 @app.route('/lesson3-2', methods=['GET'])
 @login_required
 @role_required('user')
+@level_not_completed_required(3)
 @level_required(3)
 def lesson3_2():
     record_lesson_checkpoint(3)
@@ -1250,6 +1273,7 @@ def lesson3_2():
 @app.route('/lesson3-3', methods=['GET'])
 @login_required
 @role_required('user')
+@level_not_completed_required(3)
 @level_required(3)
 def lesson3_3():
     record_lesson_checkpoint(3)
@@ -1259,6 +1283,7 @@ def lesson3_3():
 @app.route('/lesson3-4', methods=['GET'])
 @login_required
 @role_required('user')
+@level_not_completed_required(3)
 @level_required(3)
 def lesson3_4():
     record_lesson_checkpoint(3)
@@ -1270,6 +1295,7 @@ def lesson3_4():
 @app.route('/level3(lesson5).html.html', methods=['GET'])
 @login_required
 @role_required('user')
+@level_not_completed_required(3)
 @level_required(3)
 def lesson3_5():
     record_lesson_checkpoint(3)
@@ -1281,6 +1307,7 @@ def lesson3_5():
 @app.route('/level3(lesson6).html.html', methods=['GET'])
 @login_required
 @role_required('user')
+@level_not_completed_required(3)
 @level_required(3)
 def lesson3_6():
     record_lesson_checkpoint(3)

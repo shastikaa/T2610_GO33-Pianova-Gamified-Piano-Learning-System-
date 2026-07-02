@@ -1096,6 +1096,7 @@
     let paused = false;
     let lastFrame = 0;
     let animationId = null;
+    let lessonProgressController = null;
 
     const root = document.getElementById('appRoot');
 
@@ -1406,7 +1407,7 @@
       });
 
       document.getElementById('restartBtn').addEventListener('click', () => {
-        window.location.href = '/lesson2-1-latest';
+        restartLevel();
       });
       document.getElementById('pauseBtn').addEventListener('click', togglePause);
     }
@@ -1440,6 +1441,10 @@
       score = 0;
       combo = 0;
       totalCorrect = 0;
+      lives = MAX_LIVES;
+      level = 1;
+      speed = 78;
+      spawnGap = 1450;
       resetSongState();
       renderGame();
 
@@ -1449,6 +1454,10 @@
       lastSpawn = lastFrame;
 
       setFeedback('Press Start Song when ready', true);
+
+      if (lessonProgressController && typeof lessonProgressController.save === 'function') {
+        lessonProgressController.save();
+      }
     }
 
     function resetSongState() {
@@ -1833,7 +1842,7 @@
       `;
 
       document.getElementById('playAgainBtn').addEventListener('click', () => {
-        window.location.href = '/lesson2-1-latest';
+        restartLevel();
       });
       bindTopbarEvents();
       queueFitStage();
@@ -1859,7 +1868,7 @@
   </script>
   <script src="/static/lesson-progress.js"></script>
   <script>
-    window.PianovaLessonProgress.attach({
+    lessonProgressController = window.PianovaLessonProgress.attach({
       levelId: 2,
       lessonPath: '/lesson2-4',
       getState() {

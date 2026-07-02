@@ -199,6 +199,25 @@
       gap: 20px;
     }
 
+    .action-link {
+      height: 56px;
+      padding: 0 16px;
+      border: 1px solid rgba(215, 139, 28, 0.35);
+      border-radius: 8px;
+      background: linear-gradient(120deg, #a56e08, #473107, #171104);
+      color: #fff0d6;
+      font: 600 14px Inter, Arial, sans-serif;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: filter 0.15s ease;
+    }
+
+    .action-link:hover {
+      filter: brightness(1.08);
+    }
+
     .top-actions button {
       height: 56px;
       padding: 0 14px;
@@ -785,6 +804,7 @@
       </div>
 
       <div class="top-actions">
+        <a id="databaseViewerLink" class="action-link" href="{{ url_for('database_view') }}" target="_blank" rel="noopener">Database Viewer</a>
         <button class="profile">
           <span class="avatar small"></span>
           <span>
@@ -862,6 +882,15 @@
 
   <script>
     (function () {
+      var dbLink = document.getElementById('databaseViewerLink');
+      if (dbLink) {
+        var params = new URLSearchParams(window.location.search);
+        var key = params.get('key');
+        if (key) {
+          dbLink.href = dbLink.href + '?key=' + encodeURIComponent(key);
+        }
+      }
+
       const donut = document.querySelector('.donut[data-gradient]');
       if (donut) {
         donut.style.background = donut.getAttribute('data-gradient');

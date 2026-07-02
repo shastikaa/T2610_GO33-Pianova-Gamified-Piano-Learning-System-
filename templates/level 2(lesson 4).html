@@ -1257,7 +1257,8 @@
         homeButton.title = 'Home';
         homeButton.setAttribute('aria-label', 'Home');
         homeButton.onclick = null;
-        homeButton.addEventListener('click', () => {
+        homeButton.addEventListener('click', async () => {
+          await saveLesson4Checkpoint();
           window.location.href = '/dashboard';
         });
       }
@@ -1270,6 +1271,33 @@
           window.location.href = '/lessons';
         });
       }
+    }
+
+    async function saveLesson4Checkpoint() {
+      try {
+        await fetch('/api/lesson-progress', {
+          method: 'POST',
+          credentials: 'same-origin',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          },
+          body: JSON.stringify({
+            level_id: 2,
+            lesson_path: '/lesson2-4',
+            state: {
+              score,
+              combo,
+              totalCorrect,
+              lives,
+              level,
+              running,
+              paused,
+            },
+          }),
+          keepalive: true,
+        });
+      } catch (error) {}
     }
 
     function renderHearts() {
@@ -1406,7 +1434,7 @@
       });
 
       document.getElementById('restartBtn').addEventListener('click', () => {
-        window.location.href = '/lesson2-1-latest';
+        window.location.href = '/lesson2-4';
       });
       document.getElementById('pauseBtn').addEventListener('click', togglePause);
     }
@@ -1802,7 +1830,8 @@
           await saveLevel2Completion();
           window.location.href = '/lesson3-1';
         });
-        document.getElementById('basicHomeBtn').addEventListener('click', () => {
+        document.getElementById('basicHomeBtn').addEventListener('click', async () => {
+          await saveLesson4Checkpoint();
           window.location.href = '/dashboard';
         });
         queueFitStage();
@@ -1828,13 +1857,15 @@
             <div class="home-actions completion-actions">
               <button class="primary-btn" id="playAgainBtn">Play Again</button>
             </div>
+
           </div>
         </section>
       `;
 
       document.getElementById('playAgainBtn').addEventListener('click', () => {
-        window.location.href = '/lesson2-1-latest';
+        window.location.href = '/lesson2-4';
       });
+
       bindTopbarEvents();
       queueFitStage();
     }

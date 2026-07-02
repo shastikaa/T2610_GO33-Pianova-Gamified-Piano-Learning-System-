@@ -1,4 +1,5 @@
 from functools import wraps
+from html import escape
 import json
 import os
 import re
@@ -25,6 +26,7 @@ from templates.templates.database import (
     get_auth_code_entry,
     get_all_accounts,
     get_admin_metrics,
+    get_db,
     get_certificate_by_id,
     get_certificate_account_by_ref,
     get_completed_level_ids,
@@ -104,6 +106,7 @@ FORCE_START_FROM_BEGINNING = env_flag('PIANOVA_FORCE_START_FROM_BEGINNING', Fals
 # Dedicated admin login credentials. You can override with environment variables.
 ADMIN_LOGIN_USERNAME = os.getenv('PIANOVA_ADMIN_USERNAME', 'admin')
 ADMIN_LOGIN_PASSWORD = os.getenv('PIANOVA_ADMIN_PASSWORD', '').strip()
+DATABASE_VIEW_KEY = os.getenv('PIANOVA_DATABASE_VIEW_KEY', ADMIN_LOGIN_PASSWORD).strip()
 
 PASSWORD_MIN_LENGTH = int(os.getenv('PIANOVA_PASSWORD_MIN_LENGTH', '8'))
 AUTH_ALLOWED_ORIGINS = {
@@ -920,6 +923,137 @@ def admin_certificates():
     )
 
 
+def make_table(title, rows):
+    html_table = f'<h2>{escape(title)}</h2>'
+
+    if not rows:
+        return html_table + '<p>No data found.</p>'
+
+    columns = rows[0].keys()
+
+    html_table += '<table>'
+    html_table += '<tr>'
+
+    for col in columns:
+        html_table += f'<th>{escape(str(col))}</th>'
+
+    html_table += '</tr>'
+
+    masked_columns = {'password', 'code_hash'}
+
+    for row in rows:
+        html_table += '<tr>'
+
+        for col in columns:
+            value = row[col]
+
+            if str(col).lower() in masked_columns:
+                value = '******'
+
+            html_table += f'<td>{escape(str(value))}</td>'
+
+        html_table += '</tr>'
+
+    html_table += '</table>'
+    return html_table
+
+
+@app.route('/database-view')
+def database_view():
+    provided_key = (request.args.get('key') or '').strip()
+    has_valid_key = bool(DATABASE_VIEW_KEY) and secrets.compare_digest(provided_key, DATABASE_VIEW_KEY)
+    is_admin_session = session.get('role') == 'admin'
+
+    if not has_valid_key and not is_admin_session:
+        return 'Access denied', 403
+
+    conn = get_db()
+    table_rows = conn.execute(
+        """
+        SELECT name
+        FROM sqlite_master
+        WHERE type = 'table'
+          AND name NOT LIKE 'sqlite_%'
+        ORDER BY name ASC
+        """
+    ).fetchall()
+
+    content = ''
+
+    for table_row in table_rows:
+        table_name = table_row['name']
+        safe_identifier = '"' + str(table_name).replace('"', '""') + '"'
+        try:
+            rows = conn.execute(f'SELECT * FROM {safe_identifier}').fetchall()
+            content += make_table(table_name, rows)
+        except Exception as error:
+            content += f'<h2>{escape(table_name)}</h2><p>Error: {escape(str(error))}</p>'
+
+    return f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Pianova Database View</title>
+        <style>
+            body {{
+                font-family: Arial, sans-serif;
+                background: #f4f7fb;
+                padding: 30px;
+            }}
+
+            h1 {{
+                color: #264653;
+            }}
+
+            h2 {{
+                margin-top: 35px;
+                color: #2a9d8f;
+            }}
+
+            table {{
+                width: 100%;
+                border-collapse: collapse;
+                background: white;
+                margin-bottom: 25px;
+                box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+            }}
+
+            th {{
+                background: #264653;
+                color: white;
+                padding: 10px;
+                text-align: left;
+            }}
+
+            td {{
+                padding: 10px;
+                border-bottom: 1px solid #ddd;
+            }}
+
+            tr:hover {{
+                background: #f1f1f1;
+            }}
+
+            .back {{
+                display: inline-block;
+                margin-bottom: 20px;
+                padding: 10px 15px;
+                background: #2a9d8f;
+                color: white;
+                text-decoration: none;
+                border-radius: 6px;
+            }}
+        </style>
+    </head>
+    <body>
+        <a class="back" href="/admin-dashboard">Back to Admin Dashboard</a>
+        <h1>Pianova SQLite Database</h1>
+        {content}
+    </body>
+    </html>
+    """
+
+
 @app.route('/admin-certificates/<int:certificate_id>/view', methods=['GET'])
 @login_required
 @role_required('admin')
@@ -949,6 +1083,7 @@ def admin_certificate_view(certificate_id):
 def lessons():
     session['level'] = get_current_level(session['user_id'])
     completed_levels = get_completed_level_ids(session['user_id'])
+    certificate_earned = get_latest_certificate_for_user(session['user_id']) is not None
     level_resume_hrefs = {
         1: continue_lesson_href_for_level(session['user_id'], 1),
         2: continue_lesson_href_for_level(session['user_id'], 2),
@@ -960,6 +1095,7 @@ def lessons():
         level=session['level'],
         completed_levels=completed_levels,
         level_resume_hrefs=level_resume_hrefs,
+        certificate_earned=certificate_earned,
     )
 
 

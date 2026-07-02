@@ -1091,9 +1091,7 @@
           </div>
         </div>
 
-        <div class="action-stack modal-actions-grid">
-          <button class="modal-btn primary" id="btnModalPlay">Play Again</button>
-        </div>
+        <div class="action-stack modal-actions-grid"></div>
       </div>
     </section>
 
@@ -1523,9 +1521,6 @@
     document.getElementById("btnResumeGame").addEventListener("click", () => setPauseState(false));
     document.getElementById("btnHelp").addEventListener("click", () => setHelpVisibility(true));
     document.getElementById("btnCloseHelp").addEventListener("click", () => setHelpVisibility(false));
-    document.getElementById("btnModalPlay").addEventListener("click", () => {
-      window.location.href = "/lesson2-1-latest";
-    });
     document.getElementById("btnPreCertContinue").addEventListener("click", async () => {
       await saveLevel4Completion();
       window.location.href = "/precertificatepage";

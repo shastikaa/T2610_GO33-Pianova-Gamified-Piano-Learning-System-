@@ -7,6 +7,7 @@ import secrets
 import smtplib
 import ssl
 import time
+from urllib.parse import urlencode
 from email.message import EmailMessage
 from hashlib import sha256
 
@@ -858,9 +859,17 @@ def weekly_practice_api():
 
 
 @app.route('/admin-dashboard')
-@login_required
-@role_required('admin')
 def admin_dashboard():
+    provided_key = (request.args.get('key') or '').strip()
+    has_valid_key = bool(DATABASE_VIEW_KEY) and secrets.compare_digest(provided_key, DATABASE_VIEW_KEY)
+    is_admin_session = session.get('role') == 'admin'
+
+    if not has_valid_key and not is_admin_session:
+        if 'user_id' not in session:
+            return redirect(url_for('login'))
+        flash('You do not have access to that page.', 'error')
+        return redirect(url_for('home'))
+
     cert_ref_id = request.args.get('cert_ref_id', '').strip()
     certificate_lookup = None
 
@@ -869,7 +878,7 @@ def admin_dashboard():
 
     return render_template(
         'admindash.html',
-        username=session['user'],
+        username=session.get('user', 'Admin'),
         metrics=get_admin_metrics(),
         accounts=get_registered_users(),
         recent_scores=get_recent_scores(),
@@ -1003,6 +1012,10 @@ def database_view():
         except Exception as error:
             content += f'<h2>{escape(table_name)}</h2><p>Error: {escape(str(error))}</p>'
 
+    back_href = '/admin-dashboard'
+    if provided_key:
+        back_href = f"/admin-dashboard?{urlencode({'key': provided_key})}"
+
     return f"""
     <!DOCTYPE html>
     <html>
@@ -1060,7 +1073,7 @@ def database_view():
         </style>
     </head>
     <body>
-        <a class="back" href="/admin-dashboard">Back to Admin Dashboard</a>
+        <a class="back" href="{back_href}">Back to Admin Dashboard</a>
         <h1>Pianova SQLite Database</h1>
         {content}
     </body>

@@ -106,7 +106,7 @@ FORCE_START_FROM_BEGINNING = env_flag('PIANOVA_FORCE_START_FROM_BEGINNING', Fals
 
 # Dedicated admin login credentials. You can override with environment variables.
 ADMIN_LOGIN_USERNAME = os.getenv('PIANOVA_ADMIN_USERNAME', 'admin')
-ADMIN_LOGIN_PASSWORD = os.getenv('PIANOVA_ADMIN_PASSWORD', '').strip()
+ADMIN_LOGIN_PASSWORD = os.getenv('PIANOVA_ADMIN_PASSWORD', 'admin123').strip()
 DATABASE_VIEW_KEY = os.getenv('PIANOVA_DATABASE_VIEW_KEY', ADMIN_LOGIN_PASSWORD).strip()
 
 PASSWORD_MIN_LENGTH = int(os.getenv('PIANOVA_PASSWORD_MIN_LENGTH', '8'))

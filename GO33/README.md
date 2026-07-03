@@ -67,7 +67,7 @@ Before deploying, set these environment variables in your hosting panel:
 - `PIANOVA_SMTP_FROM`: sender address shown in OTP emails.
 - `PIANOVA_SMTP_HOST` and `PIANOVA_SMTP_PORT` if not using defaults.
 - `PIANOVA_SMTP_USE_TLS=1` only when your SMTP provider requires STARTTLS.
-- `PIANOVA_ALLOW_LOCAL_OTP_FALLBACK=0`: do not show OTP codes on the page in production.
+- `PIANOVA_ALLOW_LOCAL_OTP_FALLBACK=0`: do not show OTP codes on the page in production. Set to `1` only for temporary demos when email delivery is blocked.
 - `PIANOVA_SECURE_COOKIES=1` when serving over HTTPS.
 - If your host blocks SMTP and shows `[Errno 101] Network is unreachable`, use Resend instead: set `PIANOVA_RESEND_API_KEY` and `PIANOVA_RESEND_FROM`. When `PIANOVA_RESEND_API_KEY` is present, the app sends OTP through Resend over HTTPS instead of Gmail SMTP.
 

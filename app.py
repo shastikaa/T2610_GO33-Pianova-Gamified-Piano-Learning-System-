@@ -770,7 +770,7 @@ def send_auth_code_api():
         send_verification_email(email, code)
     except Exception as error:
         app.logger.exception('OTP email delivery failed for %s', email)
-        if ALLOW_LOCAL_OTP_FALLBACK and app.debug:
+        if ALLOW_LOCAL_OTP_FALLBACK:
             return {
                 'message': f'Email delivery failed. Temporary OTP: {code}',
                 'fallback': True,

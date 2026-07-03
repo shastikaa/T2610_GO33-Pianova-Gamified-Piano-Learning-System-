@@ -777,7 +777,7 @@ def send_auth_code_api():
             }
         delete_auth_code(email, purpose)
         return {
-            'message': 'Email delivery failed. Please check the server SMTP settings and try again.',
+            'message': 'Email delivery failed. Please check the server email settings and try again.',
             'detail': str(error) if app.debug else '',
         }, 500
 

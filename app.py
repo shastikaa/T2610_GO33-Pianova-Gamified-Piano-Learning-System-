@@ -8,6 +8,7 @@ import smtplib
 import ssl
 import time
 from urllib.parse import urlencode
+from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 from email.message import EmailMessage
 from hashlib import sha256
@@ -477,9 +478,13 @@ def send_verification_email_with_resend(recipient_email, code):
         method='POST',
     )
 
-    with urlopen(request, timeout=20) as response:
-        if response.status >= 400:
-            raise RuntimeError(f'Resend email send failed with status {response.status}.')
+    try:
+        with urlopen(request, timeout=20) as response:
+            if response.status >= 400:
+                raise RuntimeError(f'Resend email send failed with status {response.status}.')
+    except HTTPError as error:
+        error_body = error.read().decode('utf-8', errors='replace')
+        raise RuntimeError(f'Resend email send failed with status {error.code}: {error_body}') from error
 
 
 def send_verification_email(recipient_email, code):

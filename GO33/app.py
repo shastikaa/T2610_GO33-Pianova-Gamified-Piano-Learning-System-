@@ -8,6 +8,7 @@ import smtplib
 import ssl
 import time
 from urllib.parse import urlencode
+from urllib.request import Request, urlopen
 from email.message import EmailMessage
 from hashlib import sha256
 
@@ -444,7 +445,48 @@ def validate_password_strength(password):
     return True, ''
 
 
+def build_verification_email_text(code):
+    return (
+        'Welcome to Pianova!\n\n'
+        f'Your verification code is: {code}\n\n'
+        f'This code expires in {AUTH_CODE_TTL_SECONDS // 60} minutes.\n'
+        'If you did not request this, please ignore this email.'
+    )
+
+
+def send_verification_email_with_resend(recipient_email, code):
+    resend_api_key = os.getenv('PIANOVA_RESEND_API_KEY', '').strip()
+    resend_from = os.getenv('PIANOVA_RESEND_FROM', '').strip()
+
+    if not resend_api_key or not resend_from:
+        raise RuntimeError('Resend is not configured. Set PIANOVA_RESEND_API_KEY and PIANOVA_RESEND_FROM.')
+
+    payload = json.dumps({
+        'from': resend_from,
+        'to': [recipient_email],
+        'subject': 'Pianova Verification Code',
+        'text': build_verification_email_text(code),
+    }).encode('utf-8')
+    request = Request(
+        'https://api.resend.com/emails',
+        data=payload,
+        headers={
+            'Authorization': f'Bearer {resend_api_key}',
+            'Content-Type': 'application/json',
+        },
+        method='POST',
+    )
+
+    with urlopen(request, timeout=20) as response:
+        if response.status >= 400:
+            raise RuntimeError(f'Resend email send failed with status {response.status}.')
+
+
 def send_verification_email(recipient_email, code):
+    if os.getenv('PIANOVA_RESEND_API_KEY', '').strip():
+        send_verification_email_with_resend(recipient_email, code)
+        return
+
     smtp_host = os.getenv('PIANOVA_SMTP_HOST', 'smtp.gmail.com')
     smtp_port = int(os.getenv('PIANOVA_SMTP_PORT', '465'))
     smtp_user = os.getenv('PIANOVA_SMTP_USER', '').strip()
@@ -462,14 +504,7 @@ def send_verification_email(recipient_email, code):
     message['Subject'] = 'Pianova Verification Code'
     message['From'] = smtp_from
     message['To'] = recipient_email
-    message.set_content(
-        (
-            'Welcome to Pianova!\n\n'
-            f'Your verification code is: {code}\n\n'
-            f'This code expires in {AUTH_CODE_TTL_SECONDS // 60} minutes.\n'
-            'If you did not request this, please ignore this email.'
-        )
-    )
+    message.set_content(build_verification_email_text(code))
 
     use_tls = str(os.getenv('PIANOVA_SMTP_USE_TLS', 'false')).strip().lower() in {'1', 'true', 'yes'}
 
@@ -729,13 +764,17 @@ def send_auth_code_api():
     try:
         send_verification_email(email, code)
     except Exception as error:
-        if ALLOW_LOCAL_OTP_FALLBACK:
+        app.logger.exception('OTP email delivery failed for %s', email)
+        if ALLOW_LOCAL_OTP_FALLBACK and app.debug:
             return {
                 'message': f'Email delivery failed. Temporary OTP: {code}',
                 'fallback': True,
             }
         delete_auth_code(email, purpose)
-        return {'message': f'Email send failed: {error}'}, 500
+        return {
+            'message': 'Email delivery failed. Please check the server SMTP settings and try again.',
+            'detail': str(error) if app.debug else '',
+        }, 500
 
     return {'message': 'Verification code sent successfully.'}
 

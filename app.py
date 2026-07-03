@@ -7,7 +7,7 @@ import secrets
 import smtplib
 import ssl
 import time
-from urllib.parse import urlencode
+from urllib.parse import urlencode, urlparse
 from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 from email.message import EmailMessage
@@ -136,12 +136,42 @@ def normalize_origin(origin):
     return str(origin or '').strip().rstrip('/')
 
 
+def is_local_hostname(hostname):
+    hostname = str(hostname or '').lower()
+    return hostname in {'localhost', '127.0.0.1', '::1'}
+
+
+def is_request_to_local_app():
+    host = str(request.host or '')
+    if host.startswith('[') and ']' in host:
+        hostname = host[1:host.index(']')]
+    else:
+        hostname = host.split(':', 1)[0]
+    return is_local_hostname(hostname)
+
+
+def is_same_app_origin(origin):
+    normalized_origin = normalize_origin(origin)
+    if not normalized_origin:
+        return True
+    return normalized_origin == normalize_origin(request.host_url)
+
+
+def is_local_browser_origin(origin):
+    parsed_origin = urlparse(normalize_origin(origin))
+    if parsed_origin.scheme not in {'http', 'https'}:
+        return False
+    return is_local_hostname(parsed_origin.hostname)
+
+
 def is_auth_origin_allowed(origin):
     normalized_origin = normalize_origin(origin)
     if not normalized_origin:
         return True
     if normalized_origin == 'null':
-        return ALLOW_NULL_ORIGIN
+        return ALLOW_NULL_ORIGIN or is_request_to_local_app()
+    if is_same_app_origin(normalized_origin) or is_local_browser_origin(normalized_origin):
+        return True
     if '*' in AUTH_ALLOWED_ORIGINS:
         return True
     return normalized_origin in AUTH_ALLOWED_ORIGINS
